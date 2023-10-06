@@ -1,0 +1,50 @@
+name: ShipIt
+
+on:
+  push:
+    branches:
+      - "ship"
+
+env:
+  PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
+  PYPI_PASSWD: ${{ secrets.PYPI_PASSWD }}
+
+jobs:
+  test:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+          persist-credentials: false
+          fetch-depth: 0
+    
+    - name: Set up Python 3.10.6
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10.6"
+
+    - name: setup poetry
+      run: pip3 install poetry
+
+    - name: bump version
+      run: poetry version patch
+
+    - name: Commit & Push changes
+
+        # if u gonna reuse this step in ur workflow file
+        #   first allow `read and write` pessmissions in
+        #     repo settings actions>general>workflow permissions section
+
+      uses: actions-js/push@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        author_email: "axdjuraev@gmail.com"
+        author_name: "axdjuraev"
+        branch: "ship"
+        message: "bump-version"
+        directory: .
+
+    - name: Upload to PyPI
+      run: poetry publish --username $PYPI_USERNAME --password $PYPI_PASSWD --build

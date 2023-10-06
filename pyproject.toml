@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "pydantic-handler-converter"
+version = "0.1.0"
+description = "This code simplifies the conversion of Pydantic schemas into Aiogram handler groups, making it easy to create form-filling handlers."
+authors = ["axdjuraev <axdjuraev@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
