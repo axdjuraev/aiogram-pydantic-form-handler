@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Iterable, Optional
+from pydantic import BaseModel
 from pydantic.fields import ModelField
 from axabc.logging import SimpleFileLogger
 
@@ -13,6 +14,14 @@ class BaseFieldFactory(ABC):
     def __init_subclass__(cls, elem_postfix: str) -> None:
         cls.elem_postfix = elem_postfix
 
+    def create_by_schema(self, schema: BaseModel, parents, **kwargs):
+        views = []
+
+        for field in schema.__fields__.values():
+            views.append(self.create(field, parents, **kwargs))
+
+        return views
+
     def create(self, field: ModelField, parents: Optional[Iterable[str]] = None, **kwargs):
         type_ = field.type_
         base_type_name = type(type_).__name__ 
@@ -20,7 +29,8 @@ class BaseFieldFactory(ABC):
 
         try: 
             creator = getattr(self, f'_create_{base_type_name}')
-            creator(field, kwargs, parents) 
+            res = creator(field, kwargs, parents)
+            return res if isinstance(res, Iterable) else (res,)
         except AttributeError:
             raise NotImplementedError(f'`{base_type_name}` is not supported in {self.__class__.__name__}')
 
@@ -36,4 +46,6 @@ class BaseFieldFactory(ABC):
 
     def _create_modelmetaclass(self, field: ModelField, kwargs, parents: Optional[Iterable[str]] = None):
         logger.debug(f"[{self.__class__.__name__}][_create_modelmetaclass_view]: {field.name=}; {parents=}; {kwargs=};")
+        parents = (*parents, field.name) if parents else (field.name,)
+        return self.create_by_schema(field.type_, parents, **kwargs) 
 

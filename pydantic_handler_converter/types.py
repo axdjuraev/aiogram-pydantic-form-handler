@@ -2,6 +2,17 @@ from typing import Any, Protocol, Union, runtime_checkable
 
 
 @runtime_checkable
+class DescriptiveEnum(Protocol):
+    @property
+    def name(self):
+        raise NotImplementedError
+
+    @property
+    def description(self):
+        raise NotImplementedError
+
+
+@runtime_checkable
 class AnswerAbleEvent(Protocol):
     async def answer(self, text, reply_markup: Union[None, Any] = None):
         raise NotImplementedError
