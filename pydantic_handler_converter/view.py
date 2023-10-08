@@ -79,25 +79,26 @@ class BaseView(AbstractView):
 
 class StrView(BaseView):
     async def main(self, _: THandler, event: Event, state: FSMContext) -> Any:
-        await event.answer(f"{self.dialects.INPUT_STR} {self.field.name}", reply_markup=self.keyboard)
+        await event.answer(self.dialects.INPUT_STR.format(field_name=self.field.name), reply_markup=self.keyboard)
         await state.set_state(self.state)
 
 
 class FloatView(BaseView):
     async def main(self, _: THandler, event: Event, state: FSMContext) -> Any:
-        await event.answer(f"{self.dialects.INPUT_STR} {self.field.name}", reply_markup=self.keyboard)
+        await event.answer(self.dialects.INPUT_STR.format(field_name=self.field.name), reply_markup=self.keyboard)
         await state.set_state(self.state)
 
 
 class IntView(BaseView):
     async def main(self, _: THandler, event: Event, state: FSMContext) -> Any:
-        await event.answer(f"{self.dialects.INPUT_INT} {self.field.name}", reply_markup=self.keyboard)
+        await event.answer(self.dialects.INPUT_STR.format(field_name=self.field.name), reply_markup=self.keyboard)
         await state.set_state(self.state)
 
 
 class EnumMetaView(BaseView):
-    def __init__(self, field: ModelField, *args, **kwargs) -> None:
+    def __init__(self, field: ModelField, *args, is_string_allowed: bool = False, **kwargs) -> None:
         self.item_callback_data = None
+        self.is_string_allowed = is_string_allowed
         super().__init__(field, *args, **kwargs)
 
     def _enum2dict(self, enum: Type[Enum]) -> dict:
@@ -122,9 +123,9 @@ class EnumMetaView(BaseView):
         return super()._get_keyboard(builder)
 
     async def main(self, _: THandler, event: Event, state: FSMContext) -> Any:
-        await event.answer(f"{self.dialects.CHOOSE_FROM_ENUM} {self.field.name}", reply_markup=self.keyboard)
+        text = self.dialects.CHOOSE_FROM_ENUM if not self.is_string_allowed else self.dialects.CHOOSE_FROM_ENUM_OR_INPUT
+        await event.answer(text.format(field_name=self.field.name), reply_markup=self.keyboard)
         await state.set_state(self.state)
-
 
 class ViewFactory(BaseFieldFactory, ABC):
     CONVERT_DIALECTS = {

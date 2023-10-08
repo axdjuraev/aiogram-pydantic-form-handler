@@ -1,5 +1,7 @@
 from abc import ABC
-from typing import Any, Iterable, Optional, Type, Union
+from copy import deepcopy
+from itertools import chain
+from typing import Any, Iterable, Optional, Type, Union 
 from aiogram.fsm.state import StatesGroup
 from enum import Enum
 from pydantic import BaseModel
@@ -35,14 +37,12 @@ class BaseFieldFactory(ABC):
             logger.error(str(e))
             raise NotImplementedError(f'`{base_type_name}` is not supported metatype in {self.__class__.__name__}')
 
-    def _create_uniongenericalias(self, field: ModelField, parents, **kwargs):
+    def _countup_things(self, field, things: list):
         strs_count = 0
         enums = []
         models = []
-        args = field.type_.__args__
-        e = NotImplementedError(f'`{field.type_}` is too comple type for `{self.__class__.__name__}`')
 
-        for item in args:
+        for item in things:
             if issubclass(item, Enum):
                 enums.append(item)
             elif issubclass(item, BaseModel):
@@ -50,23 +50,33 @@ class BaseFieldFactory(ABC):
             elif issubclass(item, Union[str, float, int]):
                 strs_count += 1
             else:
-                raise e
+                raise NotImplementedError(f'`{field.type_}` is too comple type for `{self.__class__.__name__}`')
 
-        return len(args) == len(enums)
+        return strs_count, enums, models
+
+    def _create_uniongenericalias(self, field: ModelField, parents, **kwargs):
+        args = field.type_.__args__
+        all_count = len(args)
+        strs_count, enums, models = self._countup_things(field, args)
+
+        if strs_count == all_count:
+            return self._create_type(field, parents, force_type=str, **kwargs)
+        elif all_count == (len(enums) + strs_count):
+            combined_name = ''.join(map(lambda x: x.__name__, enums))
+            field.type_ = Enum(combined_name, [(x.name, x.value) for x in chain(*enums)])
+            return self._create_enummeta(field, parents, is_string_allowed=strs_count > 0, **kwargs)
+        elif strs_count or len(enums):
+            raise NotImplementedError(f'`{field.type_}` is too comple type for `{self.__class__.__name__}`')
+        else:
+            return self._create_type(field, parents, force_type=list[BaseModel], models=models, **kwargs) 
 
     def _create_enummeta(self, field, parents, **kwargs):
-        logger.debug(f"[{self.__class__.__name__}][_create_enummeta]: {field.name=}; {parents=};")
-        view_cls = self.CONVERT_DIALECTS.get(Enum)
+        return self._create_type(field, parents, force_type=Enum, **kwargs)
 
-        if view_cls is None:
-            raise NotImplementedError(f'`{field.type_}` is not supported in {self.__class__.__name__}')
-
-        return view_cls.create(field, parents=parents, **kwargs)
-
-    def _create_type(self, field: ModelField, parents: Optional[Iterable[str]] = None, **kwargs):
+    def _create_type(self, field: ModelField, parents: Optional[Iterable[str]] = None, force_type: Optional[type] = None, **kwargs):
         logger.debug(f"[{self.__class__.__name__}][_create_type]: {field.name=}; {parents=};")
 
-        view_cls = self.CONVERT_DIALECTS.get(field.type_)
+        view_cls = self.CONVERT_DIALECTS.get(force_type or field.type_)
 
         if view_cls is None:
             raise NotImplementedError(f'`{field.type_}` is not supported in {self.__class__.__name__}')
