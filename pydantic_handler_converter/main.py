@@ -1,10 +1,12 @@
 from typing import Generic, TypeVar
 from aiogram import Router
-from aiogram.fsm.state import State, StatesGroup
 from pydantic import BaseModel
 
-from .view import ViewFactory, logger
+from pydantic_handler_converter.dialecsts import BaseDialects
+
+from .view import BaseView, ViewFactory, logger
 from .abstract_handler import AbstractPydanticFormHandlers
+from .state_builder import SchemaStates
 
 
 TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
@@ -13,15 +15,25 @@ TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
 class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generic[TBaseSchema]):
     __abstract__ = True
 
+    DIALECTS: BaseDialects = BaseDialects()
+    views: list[BaseView]
+
     def __init_subclass__(cls) -> None:
         super().__init_subclass__()
         cls.views = []
-        cls.states = StatesGroup()
+        cls.states = SchemaStates.create(cls.Schema)
         view_factory = ViewFactory()
 
         for field in cls.Schema.__fields__.values():
-            setattr(cls.states, field.name, State(field.name))
-            for view in view_factory.create(field):
+            back_data = cls.views[-1].callback_data if cls.views else None
+            views = view_factory.create(
+                field, 
+                states=cls.states, 
+                back_data=back_data,
+                dialects=cls.DIALECTS,
+                parents=(cls.Schema.__name__,)
+            )
+            for view in views:
                 view_name = view.name
                 try:
                     getattr(cls, view_name)

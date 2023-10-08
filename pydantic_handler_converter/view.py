@@ -4,16 +4,14 @@ from pydantic.fields import ModelField
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.fsm.state import State
-from enum import Enum
+from aiogram.fsm.state import State, StatesGroup
+from enum import Enum, EnumMeta
 
 from .abstract_handler import AbstractPydanticFormHandlers as THandler
 from .abstract_view import AbstractView
 from .base_field_factory import BaseFieldFactory, logger
 from .dialecsts import BaseDialects
 from .types import Event, DescriptiveEnum
-
-
 
 
 class BaseView(AbstractView):
@@ -97,10 +95,10 @@ class IntView(BaseView):
         await state.set_state(self.state)
 
 
-class EnumView(BaseView):
+class EnumMetaView(BaseView):
     def __init__(self, field: ModelField, *args, **kwargs) -> None:
+        self.item_callback_data = None
         super().__init__(field, *args, **kwargs)
-        self.item_callback_data = f"elem_{self.callback_data}"
 
     def _enum2dict(self, enum: Type[Enum]) -> dict:
         res = {}
@@ -113,12 +111,15 @@ class EnumView(BaseView):
         return res
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
+        if self.item_callback_data is None:
+            self.item_callback_data = f"elem_{self.callback_data}"
+
         builder = builder or InlineKeyboardBuilder()
 
-        for name, description in self._enum2dict(self.field.type_):
+        for name, description in self._enum2dict(self.field.type_).items():
             builder.button(text=description, data=f"{self.item_callback_data}:{name}")
 
-        return self._get_keyboard(builder)
+        return super()._get_keyboard(builder)
 
     async def main(self, _: THandler, event: Event, state: FSMContext) -> Any:
         await event.answer(f"{self.dialects.CHOOSE_FROM_ENUM} {self.field.name}", reply_markup=self.keyboard)
@@ -130,9 +131,9 @@ class ViewFactory(BaseFieldFactory, ABC):
         str: StrView,
         int: IntView,
         float: FloatView,
-        Enum: EnumView,
+        Enum: EnumMetaView,
     }
 
-    def create(self, field: ModelField, parents: Optional[Iterable[str]] = None, **kwargs) -> Iterable[BaseView]:
-        return super().create(field, parents, **kwargs)
+    def create(self, field: ModelField, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
+        return super().create(field, states, parents, **kwargs)
 
