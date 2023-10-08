@@ -29,12 +29,13 @@ class BaseFieldFactory(ABC):
 
         try: 
             creator = getattr(self, f'_create_{base_type_name}')
-            state = getattr(states, field.name)
-            res = creator(field, state=state, **kwargs, parents=parents)
-            return res if isinstance(res, Iterable) else (res,)
         except AttributeError as e:
             logger.error(str(e))
             raise NotImplementedError(f'`{base_type_name}` is not supported metatype in {self.__class__.__name__}')
+
+        state = getattr(states, field.name)
+        res = creator(field, state=state, states=states, **kwargs, parents=parents)
+        return res
 
     def _countup_things(self, field, things: list):
         strs_count = 0
@@ -83,7 +84,8 @@ class BaseFieldFactory(ABC):
         return view_cls.create(field, parents=parents, **kwargs)
 
     def _create_modelmetaclass(self, field: ModelField, parents: Optional[Iterable[str]] = None, **kwargs):
-        states = kwargs.pop('states').get(field.name)
+        kwargs.pop('state')
+        states = getattr(kwargs.pop('states'), field.name)
         logger.debug(f"[{self.__class__.__name__}][_create_modelmetaclass_view]: {field.name=}; {parents=}; {kwargs=};")
         parents = (*parents, field.name) if parents else (field.name,)
         return self.create_by_schema(field.type_, parents=parents, **kwargs, states=states) 

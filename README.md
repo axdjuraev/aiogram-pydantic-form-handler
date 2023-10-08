@@ -26,9 +26,8 @@ making it easy to create form-filling handlers.
 ...     pass
 ...
 ...
->>> assert PersonFormHanlders.Schema == PersonPydanticFormSchema
 >>> dirs = dir(PersonFormHanlders)
->>> assert len(tuple(filter(lambda x: not x in dirs, ['_name_view', '_age_view', '_height_view']))) == 0
+>>> assert len(tuple(filter(lambda x: not x in dirs, ['name_view', 'age_view', 'height_view']))) == 0
 
 
 >>> class Mood(Enum):
@@ -48,8 +47,30 @@ making it easy to create form-filling handlers.
 ...     pass
 ...
 ...
->>> assert PersonMoodFormHanlders.Schema == PersonMoodPydanticFormSchema
 >>> dirs = dir(PersonMoodFormHanlders)
->>> assert len(tuple(filter(lambda x: not x in dirs, ['_name_view', '_current_mood_view']))) == 0
+>>> assert len(tuple(filter(lambda x: not x in dirs, ['name_view', 'current_mood_view']))) == 0
+
+
+
+>>>  # Complex schema
+>>> class Address(BaseModel):
+...     street: str
+...     city: str
+...     postal_code: str
+...
+>>> class Person(BaseModel):
+...      name: str
+...      age: int
+...      address: Address
+...
+...
+>>> class PersonFormHanlders(BasePydanticFormHandlers[Person]): 
+...     pass
+...
+...
+>>> dirs = dir(PersonFormHanlders)
+>>> assert len(tuple(filter(lambda x: not x in dirs, 
+...     ['name_view', 'address_street_view', 'address_city_view', 'address_postal_code_view']
+... ))) == 0
 
 ```

@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import Generic, Iterable, TypeVar
 from aiogram import Router
 from pydantic import BaseModel
 
@@ -33,6 +33,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
                 dialects=cls.DIALECTS,
                 parents=(cls.Schema.__name__,)
             )
+            views = views if isinstance(views, Iterable) else (views,)
+            logger.info(f"[{cls.__name__}][__init_subclass__]: {views=}")
             for view in views:
                 view_name = view.name
                 try:
