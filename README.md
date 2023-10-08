@@ -16,9 +16,8 @@ making it easy to create form-filling handlers.
 >>> from pydantic import BaseModel
 >>> from pydantic_handler_converter import BasePydanticFormHandlers
 
-# -----------------------------------------------------------------------------------------------
+# ----------------------------------------Simple datatypes schema--------------------------------------
 
->>> # Simple datatypes schema 
 >>> class PersonPydanticFormSchema(BaseModel):
 ...     name: str
 ...     age: int
@@ -32,9 +31,8 @@ making it easy to create form-filling handlers.
 >>> dirs = dir(PersonFormHanlders)
 >>> assert len(tuple(filter(lambda x: not x in dirs, ['name_view', 'age_view', 'height_view']))) == 0
 
-# -----------------------------------------------------------------------------------------------
+# ----------------------------------------Enum datatype schema-----------------------------------------
 
->>>  # Enum datatype schema
 >>> class Mood(Enum):
 ...     HAPPY = "😄 Happy"
 ...     SAD = "😢 Sad"
@@ -54,9 +52,8 @@ making it easy to create form-filling handlers.
 >>> dirs = dir(PersonMoodFormHanlders)
 >>> assert len(tuple(filter(lambda x: not x in dirs, ['name_view', 'current_mood_view']))) == 0
 
-# -----------------------------------------------------------------------------------------------
+# ----------------------------------------Complex schema-----------------------------------------------
 
->>>  # Complex schema
 >>> class Address(BaseModel):
 ...     street: str
 ...     city: str
@@ -78,7 +75,7 @@ making it easy to create form-filling handlers.
 ... ))) == 0
 ...
 
-# -----------------------------------------------------------------------------------------------
+# ------------------------------------Combined Enum datatype schema------------------------------------
 
 >>> class HappyMood(Enum):
 ...     HAPPY = "😄 Happy"
@@ -93,7 +90,6 @@ making it easy to create form-filling handlers.
 ...     RELAXED = "😌 Relaxed"
 ...
 >>>
->>>  # Combined Enum datatype schema
 >>> class PersonMoodPydanticFormSchema(BaseModel):
 ...     name: str
 ...     current_mood: Union[HappyMood, SadMood, ExcitedMood, RelaxedMood]
