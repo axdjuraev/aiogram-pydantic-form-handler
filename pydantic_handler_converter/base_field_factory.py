@@ -1,5 +1,4 @@
 from abc import ABC
-from copy import deepcopy
 from itertools import chain
 from typing import Any, Iterable, Optional, Type, Union 
 from aiogram.fsm.state import StatesGroup
@@ -67,8 +66,8 @@ class BaseFieldFactory(ABC):
             return self._create_enummeta(field, parents, is_string_allowed=strs_count > 0, **kwargs)
         elif strs_count or len(enums):
             raise NotImplementedError(f'`{field.type_}` is too comple type for `{self.__class__.__name__}`')
-        else:
-            return self._create_type(field, parents, force_type=list[BaseModel], models=models, **kwargs) 
+
+        return self._create_type(field, parents, force_type=list[BaseModel], models=models, **kwargs) 
 
     def _create_enummeta(self, field, parents, **kwargs):
         return self._create_type(field, parents, force_type=Enum, **kwargs)
