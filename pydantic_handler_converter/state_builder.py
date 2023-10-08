@@ -1,4 +1,5 @@
 from typing import Type
+from inspect import isclass
 from aiogram.fsm.state import State, StatesGroup
 from pydantic import BaseModel
 
@@ -12,7 +13,7 @@ class SchemaStates(StatesGroup):
         self = self or cls(schema.__name__)
 
         for field in schema.__fields__.values():
-            if not issubclass(field.type_, BaseModel):
+            if not isclass(field.type_) or not issubclass(field.type_, BaseModel):
                 setattr(self, field.name, State(field.name, self._base_name))
                 continue
                 
