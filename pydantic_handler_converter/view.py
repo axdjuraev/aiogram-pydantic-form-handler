@@ -8,32 +8,35 @@ from aiogram.fsm.state import State
 from enum import Enum
 
 from .abstract_handler import AbstractPydanticFormHandlers as THandler
+from .abstract_view import AbstractView
 from .base_field_factory import BaseFieldFactory, logger
 from .dialecsts import BaseDialects
 from .types import Event, DescriptiveEnum
 
 
 class ViewFactory(BaseFieldFactory, ABC, elem_postfix='View'):
-    pass
+    def create(self, field: ModelField, parents: Optional[Iterable[str]] = None, **kwargs) -> Iterable['BaseView']:
+        return super().create(field, parents, **kwargs)
 
 
-class BaseView(ABC):
+class BaseView(AbstractView):
     def __init__(
         self, 
         field: ModelField, 
         state: State,
         dialects: BaseDialects, 
+        parents: Iterable[str],
         filters: Iterable = tuple(),
         back_data: Optional[str] = None,
-        parents: Optional[Iterable[str]] = None,
     ) -> None:
         self.field = field
         self.state = state
         self.dialects = dialects
         self.parents = parents
-        self.callback_data = self._get_callback_data()
         self.filters = filters
         self.back_data = back_data
+        self.name = self._get_name()
+        self.callback_data = self._get_callback_data()
         self.keyboard = self._get_keyboard()
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
@@ -52,6 +55,9 @@ class BaseView(ABC):
             )
 
         return builder.adjust(1)
+
+    def _get_name(self) -> str:
+        return f'{"".join(tuple(self.parents)[1:])}_{self.field.name}'
 
     def _get_callback_data(self) -> str:
         top_levels = '.'.join(self.parents or tuple())
