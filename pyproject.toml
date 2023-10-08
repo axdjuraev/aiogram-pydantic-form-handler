@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "1.10.4"
+aiogram = "3.0.0b7"
 
 
 [build-system]
