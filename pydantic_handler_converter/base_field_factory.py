@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, Iterable, Optional, Type
+from typing import Any, Iterable, Optional, Type, Union
 from aiogram.fsm.state import StatesGroup
 from enum import Enum
 from pydantic import BaseModel
@@ -34,6 +34,25 @@ class BaseFieldFactory(ABC):
         except AttributeError as e:
             logger.error(str(e))
             raise NotImplementedError(f'`{base_type_name}` is not supported metatype in {self.__class__.__name__}')
+
+    def _create_uniongenericalias(self, field: ModelField, parents, **kwargs):
+        strs_count = 0
+        enums = []
+        models = []
+        args = field.type_.__args__
+        e = NotImplementedError(f'`{field.type_}` is too comple type for `{self.__class__.__name__}`')
+
+        for item in args:
+            if issubclass(item, Enum):
+                enums.append(item)
+            elif issubclass(item, BaseModel):
+                models.append(models)
+            elif issubclass(item, Union[str, float, int]):
+                strs_count += 1
+            else:
+                raise e
+
+        return len(args) == len(enums)
 
     def _create_enummeta(self, field, parents, **kwargs):
         logger.debug(f"[{self.__class__.__name__}][_create_enummeta]: {field.name=}; {parents=};")
