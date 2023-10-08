@@ -2,12 +2,15 @@ from abc import ABC
 from typing import Type, TypeVar, Generic
 from pydantic import BaseModel
 
+from .abstract_view import AbstractView
+
 
 TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
 
 
 class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
     Schema: Type[TBaseSchema]
+    views: list[AbstractView]
 
     __abstract__ = True
     def __init_subclass__(cls) -> None:

@@ -31,6 +31,9 @@ class EditAbleEvent(Protocol):
         raise NotImplementedError
 
 
+TEvent = Union[EditAbleEvent, AnswerAbleEvent]
+
+
 class Event:
     def __init__(self, event: Union[AnswerAbleEvent, EditAbleEvent]) -> None:
         self.answer = event.message.edit_text if isinstance(event, EditAbleEvent) else event.answer

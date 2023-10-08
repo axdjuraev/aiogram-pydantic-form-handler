@@ -13,5 +13,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
     def __init_subclass__(cls) -> None:
         super().__init_subclass__()
-        ViewFactory.create(cls.Schema)
+        view_factory = ViewFactory()
+
+        for field in cls.Schema:
+            .create(cls.Schema)
 
