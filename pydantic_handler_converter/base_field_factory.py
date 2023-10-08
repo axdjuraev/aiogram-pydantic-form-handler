@@ -54,7 +54,7 @@ class BaseFieldFactory(ABC):
 
         return strs_count, enums, models
 
-    def _create_uniongenericalias(self, field: ModelField, parents, **kwargs):
+    def _create__uniongenericalias(self, field: ModelField, parents, **kwargs):
         args = field.type_.__args__
         all_count = len(args)
         strs_count, enums, models = self._countup_things(field, args)
