@@ -14,9 +14,6 @@ from .dialecsts import BaseDialects
 from .types import Event, DescriptiveEnum
 
 
-class ViewFactory(BaseFieldFactory, ABC, elem_postfix='View'):
-    def create(self, field: ModelField, parents: Optional[Iterable[str]] = None, **kwargs) -> Iterable['BaseView']:
-        return super().create(field, parents, **kwargs)
 
 
 class BaseView(AbstractView):
@@ -57,7 +54,7 @@ class BaseView(AbstractView):
         return builder.adjust(1)
 
     def _get_name(self) -> str:
-        return f'{"".join(tuple(self.parents)[1:])}_{self.field.name}'
+        return f'{"".join(tuple(self.parents)[1:])}_{self.field.name}_view'
 
     def _get_callback_data(self) -> str:
         top_levels = '.'.join(self.parents or tuple())
@@ -126,4 +123,16 @@ class EnumView(BaseView):
     async def main(self, _: THandler, event: Event, state: FSMContext) -> Any:
         await event.answer(f"{self.dialects.CHOOSE_FROM_ENUM} {self.field.name}", reply_markup=self.keyboard)
         await state.set_state(self.state)
+
+
+class ViewFactory(BaseFieldFactory, ABC):
+    CONVERT_DIALECTS = {
+        str: StrView,
+        int: IntView,
+        float: FloatView,
+        Enum: EnumView,
+    }
+
+    def create(self, field: ModelField, parents: Optional[Iterable[str]] = None, **kwargs) -> Iterable[BaseView]:
+        return super().create(field, parents, **kwargs)
 
