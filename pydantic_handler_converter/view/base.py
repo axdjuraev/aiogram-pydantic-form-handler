@@ -1,5 +1,6 @@
 from abc import abstractmethod
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Optional, Union
+from typing import _GenericAlias, GenericAlias  # type: ignore
 from pydantic.fields import ModelField
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
@@ -47,6 +48,12 @@ class BaseView(AbstractView):
             builder.button(
                 text=self.dialects.BACK_BUTTON, 
                 callback_data=self.back_data
+            )
+
+        if isinstance(self.field.outer_type_, Union[_GenericAlias, GenericAlias]):
+            builder.button(
+                text=self.dialects.READY_BUTTON, 
+                callback_data=self.dialects.READY_BUTTON_DATA, 
             )
 
         return builder.adjust(1)
