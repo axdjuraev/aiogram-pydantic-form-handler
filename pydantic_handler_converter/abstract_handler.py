@@ -3,7 +3,7 @@ from typing import Type, TypeVar, Generic
 from aiogram.fsm.state import StatesGroup
 from pydantic import BaseModel
 
-from .abstract_view import AbstractView
+from .view.abstract import AbstractView
 
 
 TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)

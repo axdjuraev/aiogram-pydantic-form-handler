@@ -4,7 +4,8 @@ from pydantic import BaseModel
 
 from pydantic_handler_converter.dialecsts import BaseDialects
 
-from .view import BaseView, ViewFactory, logger
+from .view import BaseView, ViewFactory
+from .field_factory import logger
 from .abstract_handler import AbstractPydanticFormHandlers
 from .state_builder import SchemaStates
 

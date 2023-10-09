@@ -3,7 +3,7 @@ from typing import Any
 from aiogram import Router
 
 from aiogram.fsm.context import FSMContext
-from .types import TEvent
+from ..types import TEvent
 
 
 class AbstractView(ABC):
