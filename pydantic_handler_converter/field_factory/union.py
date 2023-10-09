@@ -4,10 +4,9 @@ from typing import Union
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 from .base import BaseFieldFactory
-from .enum import EnumFieldFactory
 
 
-class UnionFieldFactory(EnumFieldFactory, BaseFieldFactory):
+class UnionFieldFactory(BaseFieldFactory):
     def _countup_things(self, field, things: list):
         strs_count = 0
         enums = []
@@ -38,8 +37,8 @@ class UnionFieldFactory(EnumFieldFactory, BaseFieldFactory):
 
         if all_count == (len(enums) + strs_count):
             combined_name = ''.join(map(lambda x: x.__name__, enums))
-            field.type_ = Enum(combined_name, [(x.name, x.value) for x in chain(*enums)])
-            return self.create4enummeta(field, parents, is_string_allowed=strs_count > 0, **kwargs)
+            type_ = Enum(combined_name, [(x.name, x.value) for x in chain(*enums)])
+            return self._create(field, type_=type_, parents=parents, is_string_allowed=strs_count > 0, **kwargs)
 
         elif strs_count or len(enums):
             raise NotImplementedError(f'`{field.type_}` is too comple type for `{self.__class__.__name__}`')

@@ -16,6 +16,10 @@ class BaseFieldFactory(ABC):
     def create(self, field: ModelField, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
         raise NotImplementedError
 
+    @abstractmethod
+    def _create(self, field: ModelField, type_: type, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
+        raise NotImplementedError
+
     def create4type(self, field: ModelField, parents: Optional[Iterable[str]] = None, force_type: Optional[type] = None, **kwargs):
         logger.debug(f"[{self.__class__.__name__}][_create_type]: {field.name=}; {parents=};")
 
