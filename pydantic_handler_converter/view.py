@@ -5,13 +5,13 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.state import State, StatesGroup
-from enum import Enum, EnumMeta
+from enum import Enum
 
 from .abstract_handler import AbstractPydanticFormHandlers as THandler
 from .abstract_view import AbstractView
-from .base_field_factory import BaseFieldFactory, logger
 from .dialecsts import BaseDialects
 from .types import Event, DescriptiveEnum
+from .field_factory import FieldFactory, logger
 
 
 class BaseView(AbstractView):
@@ -131,7 +131,8 @@ class EnumMetaView(BaseView):
         await event.answer(text.format(field_name=self.field.name), reply_markup=self.keyboard)
         await state.set_state(self.state)
 
-class ViewFactory(BaseFieldFactory, ABC):
+
+class ViewFactory(FieldFactory, ABC):
     CONVERT_DIALECTS = {
         str: StrView,
         int: IntView,

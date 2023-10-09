@@ -31,3 +31,4 @@ class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
 
         if not issubclass(cls.Schema, BaseModel):
             raise e
+
