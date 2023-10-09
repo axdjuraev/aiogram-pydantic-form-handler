@@ -25,6 +25,9 @@ class UnionFieldFactory(EnumFieldFactory, BaseFieldFactory):
 
         return strs_count, enums, models
 
+    def create4uniontype(self, field: ModelField, parents, **kwargs):
+        return self.create4_uniongenericalias(field, parents, **kwargs)
+
     def create4_uniongenericalias(self, field: ModelField, parents, **kwargs):
         args = field.type_.__args__
         all_count = len(args)

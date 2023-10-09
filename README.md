@@ -93,6 +93,7 @@ making it easy to create form-filling handlers.
 >>> class PersonMoodPydanticFormSchema(BaseModel):
 ...     name: str
 ...     current_mood: Union[HappyMood, SadMood, ExcitedMood, RelaxedMood]
+...     future_mood: HappyMood | SadMood | ExcitedMood | RelaxedMood
 ...
 >>> class PersonMoodFormHanlders(BasePydanticFormHandlers[PersonMoodPydanticFormSchema]): 
 ...     pass
