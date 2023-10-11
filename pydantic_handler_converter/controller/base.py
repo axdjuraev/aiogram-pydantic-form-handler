@@ -56,7 +56,12 @@ class BaseController(BaseSingleHandler):
             parent_elem[self.field.name] = value
         else:
             elems = parent_elem.get(self.field.name, [])
-            elems.append(value)
+
+            if isinstance(value, Iterable):
+                elems.extend(value)
+            else:
+                elems.append(value)
+
             parent_elem[self.field.name] = elems
 
         await state.update_data(**data)

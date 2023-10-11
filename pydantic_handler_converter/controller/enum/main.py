@@ -15,5 +15,5 @@ class EnumController(Base):
         if isinstance(field.outer_type_, Union[_GenericAlias, GenericAlias]):
             return Multiple.create(field, **kwargs)
 
-        return Single(field=field, **kwargs)
+        return Single.create(field=field, **kwargs)
 
