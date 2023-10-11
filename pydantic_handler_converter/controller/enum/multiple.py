@@ -1,3 +1,4 @@
+from types import MethodType
 from aiogram import types
 from aiogram.fsm.context import FSMContext
 from aiogram.types.inline_keyboard_button import InlineKeyboardButton
@@ -44,4 +45,8 @@ class MultipleValueEnumController(BaseEnumController):
                     return key
 
         raise NotImplementedError
+
+    def bind(self, elem):
+        super().bind(elem)
+        self.ready = MethodType(self.ready, elem)
 
