@@ -1,4 +1,4 @@
-from typing import Generic, Optional, TypeVar
+from typing import Generic, Iterable, Optional, TypeVar
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from pydantic import BaseModel
@@ -26,13 +26,13 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
     def __init__(self, router: Optional[Router] = None) -> None:
         self.router = router or Router()
-        map(
-            lambda view_elem: view_elem.elem.register2router(self.router), 
-            self.views.values()
-        )
+        self._register_bindabls(tuple(self.views.values()))  # type: ignore
+        self._register_bindabls(tuple(self.controllers.values()))  # type: ignore
 
-    def _register_bindabls(self, elems: list):
-
+    def _register_bindabls(self, elems: Iterable[CallableWithNext[BaseSingleHandler]]) -> None:
+        for item in elems:
+            item.elem.bind(self)
+            item.elem.register2router(self.router)
 
     def __init_subclass__(cls) -> None:
         super().__init_subclass__()
