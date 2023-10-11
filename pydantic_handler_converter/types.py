@@ -23,7 +23,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         raise NotImplementedError
 
     @abstractmethod
-    def bind(self, elem):
+    def bind(self, elem) -> 'BaseSingleHandler':
         return super().bind(elem)
 
 
