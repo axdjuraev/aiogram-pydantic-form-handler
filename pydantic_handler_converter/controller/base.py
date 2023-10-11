@@ -9,10 +9,12 @@ from aiogram.filters.state import StateFilter
 from pydantic_handler_converter.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_handler_converter.dialecsts import BaseDialects
 from pydantic_handler_converter.field_factory import logger
-from pydantic_handler_converter.types import Event, BaseSingleHandler
+from pydantic_handler_converter.types import Event
+
+from .abstract import AbstractController
 
 
-class BaseController(BaseSingleHandler):
+class BaseController(AbstractController):
     def __init__(
         self, 
         field: ModelField, 
