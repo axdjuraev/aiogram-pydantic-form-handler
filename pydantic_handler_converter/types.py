@@ -80,7 +80,7 @@ class Event:
         self._answer = event.message.edit_text if isinstance(event, EditAbleEvent) else event.answer
         self.default_parse_mode = 'Markdown'
 
-    async def answer(self, text: str, *, reply_markup, **kwargs):
+    async def answer(self, text: str, *, reply_markup = None, **kwargs):
         kwargs['parse_mode'] = kwargs.get('parse_mode', self.default_parse_mode)
 
         return await self._answer(text, reply_markup=reply_markup, **kwargs)
