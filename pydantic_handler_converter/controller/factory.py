@@ -3,7 +3,6 @@ from typing import Iterable, Optional
 from pydantic.fields import ModelField
 from aiogram.fsm.state import StatesGroup
 from enum import Enum
-from pydantic_handler_converter.controller.base import BaseView
 
 from pydantic_handler_converter.field_factory import FieldFactory
 from .string import StrView
@@ -20,6 +19,6 @@ class ViewFactory(FieldFactory, ABC):
         Enum: EnumView,
     }
 
-    def create(self, field: ModelField, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs) -> Iterable[BaseView]:
+    def create(self, field: ModelField, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
         return super().create(field, states, parents, **kwargs)
 

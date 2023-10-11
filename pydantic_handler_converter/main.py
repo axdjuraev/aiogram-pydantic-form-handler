@@ -1,8 +1,11 @@
-from typing import Generic, Iterable, TypeVar
+from types import MethodType
+from typing import Generic, Iterable, Optional, TypeVar
 from aiogram import Router
+from aiogram.fsm.context import FSMContext
 from pydantic import BaseModel
 
 from pydantic_handler_converter.dialecsts import BaseDialects
+from pydantic_handler_converter.types import Event, CallableWithNext
 
 from .view import BaseView, ViewFactory
 from .field_factory import logger
@@ -17,37 +20,47 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     __abstract__ = True
 
     DIALECTS: BaseDialects = BaseDialects()
-    views: list[BaseView]
+    views: dict[str, CallableWithNext[BaseView]]
+
+    def __init__(self, router: Optional[Router] = None) -> None:
+        self.router = router or Router()
+        map(
+            lambda view_elem: view_elem.elem.register2router(self.router), 
+            self.views.values()
+        )
 
     def __init_subclass__(cls) -> None:
         super().__init_subclass__()
-        cls.views = []
+        cls.views = {}
         cls.states = SchemaStates.create(cls.Schema)
         view_factory = ViewFactory()
 
-        for field in cls.Schema.__fields__.values():
-            back_data = cls.views[-1].callback_data if cls.views else None
-            views = view_factory.create(
-                field, 
-                states=cls.states, 
-                back_data=back_data,
-                dialects=cls.DIALECTS,
-                parents=(cls.Schema.__name__,)
-            )
-            views = views if isinstance(views, Iterable) else (views,)
-            logger.info(f"[{cls.__name__}][__init_subclass__]: {views=}")
-            for view in views:
-                view_name = view.name
-                try:
-                    getattr(cls, view_name)
-                    logger.info(f"[{cls.__name__}][__init_subclass__][skip]: {field.name=}")
-                except AttributeError:
-                    setattr(cls, view_name, view.__call__)
-                    cls.views.append(view)
+        views = view_factory.create_by_schema(
+            cls.Schema, 
+            states=cls.states, 
+            dialects=cls.DIALECTS,
+            parents=(cls.Schema.__name__,)
+        )
+        views_count = len(views)
+
+        for num, view in enumerate(views, start=1):
+            view_name = view.name
+            try:
+                getattr(cls, view_name)
+            except AttributeError:
+                setattr(cls, view_name, view.__call__)
+                next = views[num] if num < views_count else None
+                cls.views[view.step_name] = CallableWithNext(view, next=next)
+
+    async def next(self, current_step: str, event: Event, state: FSMContext):
+        try:
+            return await self.views[current_step].next(event, state)
+        except NotImplementedError:
+            return await self.finish(event, state)
+
+    async def finish(self, event: Event, state: FSMContext):
+        return await super().finish(event, state)
 
     def register2router(self, router: Router) -> Router:
-        for view in self.views:
-            view.register2router(router)
-
-        return router
+        return router.include_router(self.router)
 

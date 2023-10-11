@@ -11,7 +11,15 @@ class ModelFieldFactory(BaseFieldFactory):
         views = []
 
         for field in schema.__fields__.values():
-            views.append(self.create(field, **kwargs))
+            if views:
+                kwargs['back_data'] = views[-1].callback_data
+    
+            res = self.create(field, **kwargs)
+
+            if isinstance(res, Iterable):
+                views.extend(res)
+            else:
+                views.append(res)
 
         return views
 

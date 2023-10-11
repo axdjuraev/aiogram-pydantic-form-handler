@@ -31,6 +31,7 @@ class BaseView(AbstractView):
         self.parents = parents
         self.filters = filters
         self.back_data = back_data
+        self.step_name = self._get_step_name()
         self.name = self._get_name()
         self.callback_data = self._get_callback_data()
         self.keyboard = self._get_keyboard()
@@ -58,11 +59,14 @@ class BaseView(AbstractView):
 
         return builder.adjust(1)
 
-    def _get_name(self) -> str:
+    def _get_step_name(self) -> str:
         if len(tuple(self.parents)) < 2:
-            return f"{self.field.name}_view"
+            return f"{self.field.name}"
 
-        return f'{"".join(tuple(self.parents)[1:])}_{self.field.name}_view'
+        return f'{"".join(tuple(self.parents)[1:])}_{self.field.name}'
+
+    def _get_name(self) -> str:
+        return f"{self.step_name}_view"
 
     def _get_callback_data(self) -> str:
         top_levels = '.'.join(self.parents or tuple())

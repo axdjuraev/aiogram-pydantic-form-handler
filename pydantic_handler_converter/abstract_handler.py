@@ -1,7 +1,10 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Type, TypeVar, Generic
+from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from pydantic import BaseModel
+
+from pydantic_handler_converter.types import Event
 
 from .view.abstract import AbstractView
 
@@ -31,4 +34,12 @@ class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
 
         if not issubclass(cls.Schema, BaseModel):
             raise e
+
+    @abstractmethod
+    async def next(self, current_step: str, event: Event, state: FSMContext):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def finish(self, event: Event, state: FSMContext):
+        raise NotImplementedError
 
