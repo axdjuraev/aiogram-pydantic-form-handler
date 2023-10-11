@@ -30,7 +30,7 @@ making it easy to create form-filling handlers.
 ...
 >>> dirs = dir(PersonFormHanlders)
 >>> assert len(tuple(filter(lambda x: not x in dirs, ['name_view', 'age_view', 'height_view']))) == 0
->>> assert PersonFormHanlders() is not None
+>>> assert PersonFormHanlders()
 
 # ----------------------------------------Enum datatype schema-----------------------------------------
 
@@ -52,7 +52,7 @@ making it easy to create form-filling handlers.
 ...
 >>> dirs = dir(PersonMoodFormHanlders)
 >>> assert len(tuple(filter(lambda x: not x in dirs, ['name_view', 'current_mood_view']))) == 0
->>> assert PersonMoodFormHanlders() is not None
+>>> assert PersonMoodFormHanlders()
 
 # ----------------------------------------Complex schema-----------------------------------------------
 
@@ -76,7 +76,7 @@ making it easy to create form-filling handlers.
 ...     ['name_view', 'address_street_view', 'address_city_view', 'address_postal_code_view']
 ... ))) == 0
 ...
->>> assert PersonFormHanlders() is not None
+>>> assert PersonFormHanlders()
 
 # ------------------------------------Combined Enum datatype schema------------------------------------
 
@@ -105,6 +105,6 @@ making it easy to create form-filling handlers.
 ...
 >>> dirs = dir(PersonMoodFormHanlders)
 >>> assert len(tuple(filter(lambda x: not x in dirs, ['name_view', 'current_mood_view']))) == 0
->>> assert PersonMoodFormHanlders() is not None
+>>> assert PersonMoodFormHanlders()
 
 ```
