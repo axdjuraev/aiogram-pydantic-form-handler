@@ -9,6 +9,6 @@ from .base import BaseEnumController
 class SingleValueEnumController(BaseEnumController):
     async def item_selected_handler(self, self_: THandler, cq: types.CallbackQuery, state: FSMContext):
         _, value = str(cq.data).split(":")
-        await self._setvalue(value, state)
+        await self._setvalue(getattr(self.field.type_, value), state)
         return await self_.next(Event(cq), state, self.step_name)  # type: ignore
 
