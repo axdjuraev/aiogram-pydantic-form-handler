@@ -1,7 +1,4 @@
 ```python
-#--------------------------------bunch-of-imports--------------------------------
-...
-...
 #-------------------configuration-settings-schema-declaration--------------------
 >>> from pydantic import BaseSettings
 >>>
