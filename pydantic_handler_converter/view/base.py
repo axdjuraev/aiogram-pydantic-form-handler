@@ -75,6 +75,7 @@ class BaseView(AbstractView):
     def register2router(self, router: Router) -> Router:
         router.callback_query(F.data.startswith(self.callback_data), *self.filters)(self.__call__)
 
+        logger.debug(f"[{self.__class__.__name__}][register2router]: {locals()=};")
         return router
 
     async def __call__(self, self_: THandler, event, state: FSMContext) -> Any:
