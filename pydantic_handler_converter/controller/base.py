@@ -88,6 +88,7 @@ class BaseController(BaseSingleHandler):
     def register2router(self, router: Router) -> Router:
         router.message(StateFilter(self.state))(self.__call__)
         
+        logger.debug(f"[{self.__class__.__name__}][register2router]: {locals()=};")
         return router
 
     @classmethod
