@@ -29,7 +29,7 @@ class BaseEnumController(BaseController):
         return await self_.next(Event(message), state, self.step_name)  # type: ignore
 
     def register2router(self, router: Router) -> Router:
-        router.callback_query(StateFilter(self.state), F.data.startswith(self.item_callback_data))
+        router.callback_query(StateFilter(self.state), F.data.startswith(self.item_callback_data))(self.__call__)
         return super().register2router(router)
     
     @abstractmethod
