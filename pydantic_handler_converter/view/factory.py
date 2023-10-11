@@ -3,7 +3,7 @@ from typing import Iterable, Optional
 from pydantic.fields import ModelField
 from aiogram.fsm.state import StatesGroup
 from enum import Enum
-from pydantic_handler_converter.controller.base import BaseView
+from pydantic_handler_converter.view.base import BaseView
 
 from pydantic_handler_converter.field_factory import FieldFactory
 from .string import StrView

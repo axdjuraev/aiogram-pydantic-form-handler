@@ -7,6 +7,7 @@ from pydantic_handler_converter.dialecsts import BaseDialects
 from pydantic_handler_converter.types import Event, CallableWithNext
 
 from .view import BaseView, ViewFactory
+from .controller import ControllerFactory
 from .field_factory import logger
 from .abstract_handler import AbstractPydanticFormHandlers
 from .state_builder import SchemaStates
@@ -33,14 +34,19 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         super().__init_subclass__()
         cls.views = {}
         cls.states = SchemaStates.create(cls.Schema)
-        view_factory = ViewFactory()
+        data = {
+            'schema': cls.Schema, 
+            'states': cls.states, 
+            'dialects': cls.DIALECTS,
+            'parents': (cls.Schema.__name__,)
+        }
 
-        views = view_factory.create_by_schema(
-            cls.Schema, 
-            states=cls.states, 
-            dialects=cls.DIALECTS,
-            parents=(cls.Schema.__name__,)
-        )
+        view_factory = ViewFactory()
+        controller_factory = ControllerFactory()
+
+        views = view_factory.create_by_schema(**data)
+        controller_factory.create_by_schema(**data)
+
         views_count = len(views)
 
         for num, view in enumerate(views, start=1):
