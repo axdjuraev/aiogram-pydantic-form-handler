@@ -88,7 +88,10 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             return await self.finish(event, state)
 
     async def finish(self, event: Event, state: FSMContext):
-        schema = self.Schema(**await state.get_data())
+        data = await state.get_data()
+        logger.debug(f"[{self.__class__.__name__}][finish]: {locals()=}")
+
+        schema = self.Schema(**data[self.Schema.__name__])
         return await self._finish_call(schema, event, state)
 
     def register2router(self, router: Router) -> Router:
