@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from pydantic import BaseModel
 
 from pydantic_handler_converter.dialecsts import BaseDialects
-from pydantic_handler_converter.types import Event, CallableWithNext
+from pydantic_handler_converter.types import Event, CallableWithNext, BaseSingleHandler
 
 from .view import BaseView, ViewFactory
 from .controller import ControllerFactory
@@ -22,6 +22,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     DIALECTS: BaseDialects = BaseDialects()
     start_point: BaseView
     views: dict[str, CallableWithNext[BaseView]]
+    controllers: dict[str, CallableWithNext[BaseView]]
 
     def __init__(self, router: Optional[Router] = None) -> None:
         self.router = router or Router()
@@ -32,7 +33,6 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
     def __init_subclass__(cls) -> None:
         super().__init_subclass__()
-        cls.views = {}
         cls.states = SchemaStates.create(cls.Schema)
         data = {
             'schema': cls.Schema, 
@@ -41,28 +41,39 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             'parents': (cls.Schema.__name__,)
         }
 
-        view_factory = ViewFactory()
-        controller_factory = ControllerFactory()
-
-        views = view_factory.create_by_schema(**data)
-        controller_factory.create_by_schema(**data)
-
-        views_count = len(views)
-
-        for num, view in enumerate(views, start=1):
-            view_name = view.name
-            try:
-                getattr(cls, view_name)
-                logger.info(f"[{cls.__name__}][__init_subclass__][view][skip]: {view_name=}")
-            except AttributeError:
-                setattr(cls, view_name, view.__call__)
-                next = views[num] if num < views_count else None
-                cls.views[view.step_name] = CallableWithNext(view, next=next)
+        cls.views = cls._register_nextabls(ViewFactory().create_by_schema(**data))
+        cls.controllers = cls._register_nextabls(ControllerFactory().create_by_schema(**data))
 
         if not cls.views:
             raise ValueError(f'Could not create views for schema `{cls.Schema}`')
 
         cls.start_point = tuple(cls.views.values())[0].elem
+
+    @classmethod
+    def _register_nextabls(cls, nextabls: list[BaseSingleHandler]) -> dict[str, CallableWithNext]:
+        res = {}
+        all_count = len(nextabls)
+
+        for num, elem in enumerate(nextabls, start=1):
+            elem_name = elem.name
+            next = nextabls[num] if num < all_count else None
+
+            try:
+                if next:
+                    next = getattr(cls, next.name)
+            except AttributeError:
+                pass
+
+            try:
+                current = getattr(cls, elem_name)
+                logger.info(f"[{cls.__name__}][_register_nextabls][skip]: {elem_name=}")
+            except AttributeError:
+                setattr(cls, elem_name, elem.__call__)
+                current = elem
+
+            res[elem.step_name] = CallableWithNext(current, next=next)
+
+        return res
 
     async def next(self, event: Event, state: FSMContext, current_step: Optional[str] = None):
         try:
