@@ -21,7 +21,8 @@ class MultipleValueEnumController(BaseEnumController):
 
     async def ready(self, self_: THandler, cq: types.CallbackQuery, state: FSMContext):
         selected_keys = self._get_selections_by_text_symbol(cq.message.reply_markup, '+')  # type: ignore
-        selections = tuple(map(lambda key: str(key.callback_data).split(':')[1], selected_keys))
+        selections = tuple(map(lambda key: getattr(self.field.type_, str(key.callback_data).split(':')[1]), selected_keys))
+
         await self._setvalue(selections, state)
         return await self_.next(Event(cq), state, self.step_name)  # type: ignore
 
