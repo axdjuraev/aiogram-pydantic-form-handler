@@ -11,8 +11,9 @@ from ..base import BaseController
 
 class BaseEnumController(BaseController):
     def __init__(self, field: ModelField, *args, is_string_allowed: bool = False, **kwargs) -> None:
-        self.is_string_allowed = is_string_allowed
         super().__init__(field, *args, **kwargs)
+        self.item_callback_data = f"elem_{self.callback_data}"
+        self.is_string_allowed = is_string_allowed
 
     async def __call__(self, self_: THandler, event: Union[types.Message, types.CallbackQuery], state: FSMContext):
         if isinstance(event, types.Message):
