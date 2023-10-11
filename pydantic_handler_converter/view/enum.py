@@ -32,12 +32,12 @@ class EnumView(BaseView):
         builder = builder or InlineKeyboardBuilder()
 
         for name, description in self._enum2dict(self.field.type_).items():
-            builder.button(text=description, data=f"{self.item_callback_data}:{name}")
+            builder.button(text=description, callback_data=f"{self.item_callback_data}:{name}")
 
         return super()._get_keyboard(builder)
 
     async def main(self, _: THandler, event: Event, state: FSMContext):
         text = self.dialects.CHOOSE_FROM_ENUM if not self.is_string_allowed else self.dialects.CHOOSE_FROM_ENUM_OR_INPUT
-        await event.answer(text.format(field_name=self.field.name), reply_markup=self.keyboard)
+        await event.answer(text.format(field_name=self.field.name), reply_markup=self.keyboard.as_markup())
         await state.set_state(self.state)
 
