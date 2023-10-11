@@ -1,5 +1,6 @@
 from types import MethodType
-from aiogram import types
+from aiogram import F, Router, types
+from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types.inline_keyboard_button import InlineKeyboardButton
 from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
@@ -49,4 +50,8 @@ class MultipleValueEnumController(BaseEnumController):
     def bind(self, elem):
         super().bind(elem)
         self.ready = MethodType(self.ready, elem)
+
+    def register2router(self, router: Router) -> Router:
+        router.callback_query(StateFilter(self.state), F.data == self.dialects.READY_BUTTON_DATA)(self.ready)
+        return super().register2router(router)
 
