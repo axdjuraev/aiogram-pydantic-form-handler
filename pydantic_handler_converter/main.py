@@ -1,4 +1,4 @@
-from typing import Generic, Iterable, Optional, TypeVar
+from typing import Awaitable, Callable, Generic, Iterable, Optional, TypeVar
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from pydantic import BaseModel
@@ -24,7 +24,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     views: dict[str, CallableWithNext[BaseView]]
     controllers: dict[str, CallableWithNext[BaseView]]
 
-    def __init__(self, router: Optional[Router] = None) -> None:
+    def __init__(self, finish_call: Callable[[TBaseSchema, Event, FSMContext], Awaitable], router: Optional[Router] = None) -> None:
+        self._finish_call = finish_call 
         self.router = router or Router()
         self._register_bindabls(tuple(self.views.values()))  # type: ignore
         self._register_bindabls(tuple(self.controllers.values()))  # type: ignore
@@ -87,7 +88,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             return await self.finish(event, state)
 
     async def finish(self, event: Event, state: FSMContext):
-        return await super().finish(event, state)
+        schema = self.Schema(**await state.get_data())
+        return await self._finish_call(schema, event, state)
 
     def register2router(self, router: Router) -> Router:
         return router.include_router(self.router)
