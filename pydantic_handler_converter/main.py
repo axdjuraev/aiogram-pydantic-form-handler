@@ -1,5 +1,4 @@
-from types import MethodType
-from typing import Generic, Iterable, Optional, TypeVar
+from typing import Generic, Optional, TypeVar
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from pydantic import BaseModel
@@ -47,6 +46,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             view_name = view.name
             try:
                 getattr(cls, view_name)
+                logger.info(f"[{cls.__name__}][__init_subclass__][view][skip]: {view_name=}")
             except AttributeError:
                 setattr(cls, view_name, view.__call__)
                 next = views[num] if num < views_count else None
