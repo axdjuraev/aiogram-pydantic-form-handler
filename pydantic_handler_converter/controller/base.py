@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from typing import Any, Iterable, Union
 from typing import _GenericAlias, GenericAlias  # type: ignore
 from pydantic.fields import ModelField
@@ -10,11 +9,10 @@ from aiogram.filters.state import StateFilter
 from pydantic_handler_converter.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_handler_converter.dialecsts import BaseDialects
 from pydantic_handler_converter.field_factory import logger
-from pydantic_handler_converter.types import Event
-from .abstract import AbstractView
+from pydantic_handler_converter.types import Event, BaseSingleHandler
 
 
-class BaseView(AbstractView):
+class BaseView(BaseSingleHandler):
     def __init__(
         self, 
         field: ModelField, 
@@ -77,7 +75,7 @@ class BaseView(AbstractView):
         await self._setvalue(res, state)
         await self_.next(self.step_name, Event(event), state)  # type: ignore
 
-    def register2router(self, self_, router: Router) -> Router:
+    def register2router(self, router: Router) -> Router:
         router.message(StateFilter(self.state))(self.__call__)
         
         return router

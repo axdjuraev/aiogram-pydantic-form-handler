@@ -1,4 +1,19 @@
+from abc import ABC, abstractmethod
 from typing import Any, Callable, Generic, Optional, Protocol, TypeVar, Union, runtime_checkable
+
+from aiogram import Router
+
+
+class BaseSingleHandler(ABC):
+    name: str
+
+    @abstractmethod
+    async def __call__(self, *args: Any, **kwds: Any) -> Any:
+        raise NotImplementedError
+
+    @abstractmethod
+    def register2router(self, router: Router):
+        raise NotImplementedError
 
 
 @runtime_checkable
