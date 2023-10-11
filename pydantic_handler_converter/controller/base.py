@@ -12,7 +12,7 @@ from pydantic_handler_converter.field_factory import logger
 from pydantic_handler_converter.types import Event, BaseSingleHandler
 
 
-class BaseView(BaseSingleHandler):
+class BaseController(BaseSingleHandler):
     def __init__(
         self, 
         field: ModelField, 
@@ -39,12 +39,6 @@ class BaseView(BaseSingleHandler):
     def _get_name(self) -> str:
         return f"{self.step_name}_ctrl"
 
-    async def __call__(self, self_: THandler, event: types.Message, state: FSMContext) -> Any:
-        if not event.text:
-            return await event.delete()
-
-        return await self.main(self_, event, state)
-
     async def _setvalue(self, value, state: FSMContext):
         data = await state.get_data()
         parent_elem = data
@@ -67,6 +61,12 @@ class BaseView(BaseSingleHandler):
 
         await state.update_data(**data)
 
+    async def __call__(self, self_: THandler, event: types.Message, state: FSMContext) -> Any:
+        if not event.text:
+            return await event.delete()
+
+        return await self.main(self_, event, state)
+
     async def main(self, self_: THandler, event: types.Message, state: FSMContext) -> Any:
         try:
             res = self.field.type_(event.text)
@@ -81,7 +81,7 @@ class BaseView(BaseSingleHandler):
         return router
 
     @classmethod
-    def create(cls, field: ModelField, **kwargs) -> 'BaseView':
+    def create(cls, field: ModelField, **kwargs) -> 'BaseController':
         logger.debug(f"[{cls.__name__}][create]: {field.name=};")
         return cls(field=field, **kwargs)
 

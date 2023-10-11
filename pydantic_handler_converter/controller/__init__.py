@@ -1,5 +1,5 @@
-from .abstract import AbstractView
-from .base import BaseView
+from .abstract import AbstractController
+from .base import BaseController
 from .int import IntView
 from .float import FloatView
 from .string import StrView
@@ -8,8 +8,8 @@ from .factory import ViewFactory
 
 
 __all__ = [
-	'AbstractView',
-	'BaseView',
+	'AbstractController',
+	'BaseController',
 	'IntView',
 	'FloatView',
 	'StrView',

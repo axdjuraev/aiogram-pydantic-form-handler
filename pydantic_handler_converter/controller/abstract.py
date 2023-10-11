@@ -1,12 +1,12 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Any
 from aiogram import Router
 
 from aiogram.fsm.context import FSMContext
-from ..types import TEvent
+from ..types import TEvent, BaseSingleHandler
 
 
-class AbstractView(ABC):
+class AbstractController(BaseSingleHandler):
     @abstractmethod
     async def __call__(self, self_, event: TEvent, state: FSMContext) -> Any:
         raise NotImplementedError
