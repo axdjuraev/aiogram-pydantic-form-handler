@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Type, TypeVar, Generic
+from typing import Optional, Type, TypeVar, Generic
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from pydantic import BaseModel
@@ -36,7 +36,7 @@ class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
             raise e
 
     @abstractmethod
-    async def next(self, current_step: str, event: Event, state: FSMContext):
+    async def next(self, event: Event, state: FSMContext, current_step: Optional[str] = None):
         raise NotImplementedError
 
     @abstractmethod

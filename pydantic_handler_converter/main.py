@@ -19,6 +19,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     __abstract__ = True
 
     DIALECTS: BaseDialects = BaseDialects()
+    start_point: BaseView
     views: dict[str, CallableWithNext[BaseView]]
 
     def __init__(self, router: Optional[Router] = None) -> None:
@@ -52,9 +53,17 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
                 next = views[num] if num < views_count else None
                 cls.views[view.step_name] = CallableWithNext(view, next=next)
 
-    async def next(self, current_step: str, event: Event, state: FSMContext):
+        if not cls.views:
+            raise ValueError(f'Could not create views for schema `{cls.Schema}`')
+
+        cls.start_point = tuple(cls.views.values())[0].elem
+
+    async def next(self, event: Event, state: FSMContext, current_step: Optional[str] = None):
         try:
-            return await self.views[current_step].next(event, state)
+            if not current_step:
+                return await self.start_point(self, event, state)
+
+            return await self.views[current_step].next(self, event, state)
         except NotImplementedError:
             return await self.finish(event, state)
 
