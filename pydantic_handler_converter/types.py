@@ -4,7 +4,13 @@ from typing import Any, Callable, Generic, Optional, Protocol, TypeVar, Union, r
 from aiogram import Router
 
 
-class BaseSingleHandler(ABC):
+@runtime_checkable
+class BindAbleCallable(Protocol):
+    def bind(self, elem):
+        raise NotImplementedError
+
+
+class BaseSingleHandler(ABC, BindAbleCallable):
     name: str
 
     @abstractmethod
@@ -14,6 +20,10 @@ class BaseSingleHandler(ABC):
     @abstractmethod
     def register2router(self, router: Router):
         raise NotImplementedError
+
+    @abstractmethod
+    def bind(self, elem):
+        return super().bind(elem)
 
 
 @runtime_checkable
