@@ -85,7 +85,7 @@ class BaseController(AbstractController):
         except ValueError:
             return await event.delete()
         await self._setvalue(res, state)
-        await self_.next(self.step_name, Event(event), state)  # type: ignore
+        await self_.next(Event(event), state, self.step_name)  # type: ignore
 
     def register2router(self, router: Router) -> Router:
         router.message(StateFilter(self.state))(self.__call__)
