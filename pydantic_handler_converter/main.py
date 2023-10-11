@@ -31,6 +31,9 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             self.views.values()
         )
 
+    def _register_bindabls(self, elems: list):
+
+
     def __init_subclass__(cls) -> None:
         super().__init_subclass__()
         cls.states = SchemaStates.create(cls.Schema)
@@ -65,13 +68,12 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
                 pass
 
             try:
-                current = getattr(cls, elem_name)
+                elem.__call__ = getattr(cls, elem_name)
                 logger.info(f"[{cls.__name__}][_register_nextabls][skip]: {elem_name=}")
             except AttributeError:
                 setattr(cls, elem_name, elem.__call__)
-                current = elem
 
-            res[elem.step_name] = CallableWithNext(current, next=next)
+            res[elem.step_name] = CallableWithNext(elem, next=next)
 
         return res
 
