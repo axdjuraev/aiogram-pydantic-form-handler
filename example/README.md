@@ -57,7 +57,7 @@
 >>>
 >>>
 >>> async def final_callable(data: TicketSchema, event: Event, _: FSMContext):
-...     return await event.answer(f"Your final schema data: {data.json()}")
+...     return await event._event.edit_text(f"Your final schema data: {data.json()}")
 ... 
 ... 
 #------------------------creation-of-main-polling-method-------------------------
