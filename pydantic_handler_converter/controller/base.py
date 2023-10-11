@@ -28,7 +28,12 @@ class BaseController(BaseSingleHandler):
         self.parents = parents
         self.filters = filters
         self.step_name = self._get_step_name()
+        self.callback_data = self._get_callback_data()
         self.name = self._get_name()
+
+    def _get_callback_data(self) -> str:
+        top_levels = '.'.join(self.parents or tuple())
+        return f"{top_levels}.{self.field.name}"
 
     def _get_step_name(self) -> str:
         if len(tuple(self.parents)) < 2:
