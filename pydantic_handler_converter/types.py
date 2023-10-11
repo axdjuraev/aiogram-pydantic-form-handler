@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Generic, Optional, Protocol, TypeVar, Union, runtime_checkable
-
 from aiogram import Router
 
 
@@ -78,5 +77,11 @@ TEvent = Union[EditAbleEvent, AnswerAbleEvent]
 class Event:
     def __init__(self, event: Union[AnswerAbleEvent, EditAbleEvent]) -> None:
         self._event = event
-        self.answer = event.message.edit_text if isinstance(event, EditAbleEvent) else event.answer
+        self._answer = event.message.edit_text if isinstance(event, EditAbleEvent) else event.answer
+        self.default_parse_mode = 'Markdown'
+
+    async def answer(self, text: str, *, reply_markup, **kwargs):
+        kwargs['parse_mode'] = kwargs.get('parse_mode', self.default_parse_mode)
+
+        return await self._answer(text, reply_markup=reply_markup, **kwargs)
 
