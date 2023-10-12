@@ -32,6 +32,7 @@ class BaseController(AbstractController):
         self.step_name = self._get_step_name()
         self.callback_data = self._get_callback_data()
         self.name = self._get_name()
+        super().__init__()
 
     def _get_callback_data(self) -> str:
         top_levels = '.'.join(self.parents or tuple())
