@@ -35,6 +35,7 @@ class BaseView(AbstractView):
         self.name = self._get_name()
         self.callback_data = self._get_callback_data()
         self.keyboard = self._get_keyboard()
+        super().__init__()
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()
