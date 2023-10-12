@@ -12,6 +12,10 @@ class BindAbleCallable(Protocol):
 class BaseSingleHandler(ABC, BindAbleCallable):
     name: str
     step_name: str
+    is_custom: bool
+
+    def __init__(self) -> None:
+        self.is_custom = False
 
     @abstractmethod
     async def __call__(self, *args: Any, **kwds: Any) -> Any:
