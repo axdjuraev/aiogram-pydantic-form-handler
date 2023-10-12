@@ -32,7 +32,9 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
     def _register_bindabls(self, elems: Iterable[CallableWithNext[BaseSingleHandler]]) -> None:
         for item in elems:
-            item.elem.bind(self)
+            if not item.elem.is_custom:
+                item.elem.bind(self)
+
             item.elem.register2router(self.router)
 
     def __init_subclass__(cls) -> None:
@@ -70,6 +72,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
             try:
                 elem.__call__ = getattr(cls, elem_name)
+                elem.is_custom = True
                 logger.info(f"[{cls.__name__}][_register_nextabls][skip]: {elem_name=}")
             except AttributeError:
                 setattr(cls, elem_name, elem.__call__)
