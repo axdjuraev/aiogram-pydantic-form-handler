@@ -24,6 +24,9 @@ class BaseEnumController(BaseController):
             
         return await self.item_selected_handler(self_, event, state) 
 
+    def _validate_data(self, data):
+        return getattr(self.field.type_, data)
+
     async def message_handler(self, self_: THandler, message: types.Message, state: FSMContext):
         await self._setvalue(message.text, state)
         return await self_.next(Event(message), state, self.step_name)  # type: ignore

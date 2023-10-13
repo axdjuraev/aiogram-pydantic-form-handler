@@ -22,3 +22,9 @@ class ControllerFactory(FieldFactory, ABC):
     def create(self, field: ModelField, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
         return super().create(field, states, parents, **kwargs)
 
+    def create4type(self, field: ModelField, parents: Optional[Iterable[str]] = None, force_type: Optional[type] = None, **kwargs):
+        if field.field_info.extra.get('getter'):
+            force_type = Enum
+
+        return super().create4type(field, parents, force_type, **kwargs)
+
