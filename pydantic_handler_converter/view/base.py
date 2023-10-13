@@ -36,6 +36,7 @@ class BaseView(AbstractView):
         self.callback_data = self._get_callback_data()
         self.keyboard = self._get_keyboard()
         super().__init__()
+        logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()
@@ -46,6 +47,7 @@ class BaseView(AbstractView):
                 callback_data=self.dialects.SKIP_STEP_DATA,
             )
 
+        logger.debug(f"[{self.__class__.__name__}][_get_keyboard]: {self.back_data=}; {locals()=};")
         if self.back_data:
             builder.button(
                 text=self.dialects.BACK_BUTTON, 
