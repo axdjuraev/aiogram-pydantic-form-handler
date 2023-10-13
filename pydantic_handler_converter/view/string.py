@@ -34,10 +34,10 @@ class CustomDataStrView(BaseView):
         builder = builder or InlineKeyboardBuilder()
         elems = await self.getter()
 
-        for elem in elems:
+        for data, text in elems.items():
             builder.button(
-                text=elem.text, 
-                callback_data=f"{self.item_callback_data}:{elem.data}",
+                text=text, 
+                callback_data=f"{self.item_callback_data}:{data}",
             )
 
         return super()._get_keyboard(builder)

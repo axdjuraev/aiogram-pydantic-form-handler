@@ -3,26 +3,22 @@ from typing import Any, Callable, Generic, Optional, Protocol, TypeVar, Union, r
 from aiogram import Router
 
 
-@runtime_checkable
-class KeyboardItem(Protocol):
-    @property
-    def text(self):
-        raise NotImplementedError
-
-    @property
-    def data(self):
-        raise NotImplementedError
+class KeyboardItem(dict):
+    """
+        key: callback_data
+        value: text
+    """
 
 
 @runtime_checkable
 class GetterField(Protocol):
-    async def getter(self) -> list[KeyboardItem]:
+    async def getter(self) -> KeyboardItem:
         raise NotImplementedError
 
 
 @runtime_checkable
 class DataGetterCallable(Protocol):
-    async def __call__(self) -> list[KeyboardItem]:
+    async def __call__(self) -> KeyboardItem:
         raise NotImplementedError
 
 
