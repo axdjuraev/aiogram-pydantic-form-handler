@@ -21,6 +21,12 @@ class GetterField(Protocol):
 
 
 @runtime_checkable
+class DataGetterCallable(Protocol):
+    async def __call__(self) -> list[KeyboardItem]:
+        raise NotImplementedError
+
+
+@runtime_checkable
 class ExtraStringField(Protocol):
     async def is_extra_str(self) -> bool:
         raise NotImplementedError
