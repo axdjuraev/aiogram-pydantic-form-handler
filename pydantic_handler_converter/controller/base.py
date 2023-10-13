@@ -33,6 +33,7 @@ class BaseController(AbstractController):
         self.callback_data = self._get_callback_data()
         self.name = self._get_name()
         super().__init__()
+        logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_callback_data(self) -> str:
         top_levels = '.'.join(self.parents or tuple())
