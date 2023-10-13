@@ -24,6 +24,7 @@ class StrView(BaseView):
 class CustomDataStrView(BaseView):
     def __init__(self, *args, getter: DataGetterCallable, is_extra_str: bool = False, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.item_callback_data = f"elem_{self.callback_data}"
         self.getter = getter
         self.is_extra_str = is_extra_str
         self.text = self.dialects.CHOOSE_FROM_LIST_OR_INPUT if is_extra_str else self.dialects.CHOOSE_FROM_LIST
@@ -34,7 +35,10 @@ class CustomDataStrView(BaseView):
         elems = await self.getter()
 
         for elem in elems:
-            builder.button(text=elem.text, callback_data=elem.data)
+            builder.button(
+                text=elem.text, 
+                callback_data=f"{self.item_callback_data}:{elem.data}",
+            )
 
         return super()._get_keyboard(builder)
 
