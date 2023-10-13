@@ -3,6 +3,8 @@ from abc import ABC
 
 class BaseDialects(ABC):
     INPUT = 'Enter a valuef for `{field_name}`'
+    CHOOSE_FROM_LIST = 'Choose value for `{field_name}`'
+    CHOOSE_FROM_LIST_OR_INPUT = 'Choose or enter value for `{field_name}`'
     INPUT_STR = 'Enter a string for `{field_name}`'
     INPUT_INT = 'Enter a number for `{field_name}`'
     INPUT_FLOAT = 'Enter a decimal number for `{field_name}`'
