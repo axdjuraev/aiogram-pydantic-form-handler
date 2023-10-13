@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from pydantic_handler_converter.abstract_handler import AbstractPydanticFormHandlers as THandler
-from pydantic_handler_converter.types import Event, DataGetterCallable, GetterField, ExtraStringField
+from pydantic_handler_converter.types import Event, DataGetterCallable
 from .base import BaseView
 
 
@@ -14,9 +14,9 @@ class StrView(BaseView):
     
     @classmethod
     def create(cls, field, **kwargs) -> 'BaseView':
-        if isinstance(field, GetterField):
-            is_extra_str = False if not isinstance(field.outer_type_, ExtraStringField) else field.outer_type_.is_extra_str
-            return CustomDataStrView(field=field, getter=field.getter, is_extra_str=is_extra_str, **kwargs)
+        if getter := field.field_info.extra.get('getter'):
+            is_extra_str = field.field_info.extra.get('is_extra_str', False)
+            return CustomDataStrView(field=field, getter=getter, is_extra_str=is_extra_str, **kwargs)
 
         return super().create(field, **kwargs)
 
