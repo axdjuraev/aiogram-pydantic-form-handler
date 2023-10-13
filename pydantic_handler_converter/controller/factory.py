@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Union
 from pydantic.fields import ModelField
 from aiogram.fsm.state import StatesGroup
 from enum import Enum
@@ -9,6 +9,7 @@ from .string import StrController
 from .float import FloatController
 from .int import IntController
 from .enum import EnumController
+from .custom_data_str import CustomDataStrController
 
 
 class ControllerFactory(FieldFactory, ABC):
@@ -17,6 +18,7 @@ class ControllerFactory(FieldFactory, ABC):
         int: IntController,
         float: FloatController,
         Enum: EnumController,
+        Union[str, Enum]: CustomDataStrController,
     }
 
     def create(self, field: ModelField, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
@@ -24,7 +26,7 @@ class ControllerFactory(FieldFactory, ABC):
 
     def create4type(self, field: ModelField, parents: Optional[Iterable[str]] = None, force_type: Optional[type] = None, **kwargs):
         if field.field_info.extra.get('getter'):
-            force_type = Enum
+            force_type = Union[str, Enum]
 
         return super().create4type(field, parents, force_type, **kwargs)
 
