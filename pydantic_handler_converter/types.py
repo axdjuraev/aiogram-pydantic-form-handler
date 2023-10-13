@@ -4,8 +4,25 @@ from aiogram import Router
 
 
 @runtime_checkable
+class KeyboardItem(Protocol):
+    @property
+    def text(self):
+        raise NotImplementedError
+
+    @property
+    def data(self):
+        raise NotImplementedError
+
+
+@runtime_checkable
 class GetterField(Protocol):
-    async def getter(self):
+    async def getter(self) -> list[KeyboardItem]:
+        raise NotImplementedError
+
+
+@runtime_checkable
+class ExtraStringField(Protocol):
+    async def is_extra_str(self) -> bool:
         raise NotImplementedError
 
 
