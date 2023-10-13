@@ -4,6 +4,12 @@ from aiogram import Router
 
 
 @runtime_checkable
+class GetterField(Protocol):
+    async def getter(self):
+        raise NotImplementedError
+
+
+@runtime_checkable
 class BindAbleCallable(Protocol):
     def bind(self, elem):
         raise NotImplementedError
