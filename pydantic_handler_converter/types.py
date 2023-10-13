@@ -28,7 +28,8 @@ class DataGetterCallable(Protocol):
 
 @runtime_checkable
 class ExtraStringField(Protocol):
-    async def is_extra_str(self) -> bool:
+    @property
+    def is_extra_str(self) -> bool:
         raise NotImplementedError
 
 
