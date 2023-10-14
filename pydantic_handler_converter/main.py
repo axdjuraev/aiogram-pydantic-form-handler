@@ -79,18 +79,18 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             except AttributeError:
                 setattr(cls, elem_name, elem.__call__)
 
-            current = CallableWithNext(elem)
+            current = CallableWithNext(elem, previos=previous_elem)
             res[elem.step_name] = current
 
             if previous_elem is not None:
-                previous_elem.set_next(current.elem.__call__)
+                previous_elem.set_next(current)
 
             if current.elem.tree_id is None:
                 if previous_elem is not None:
                     tree_tails.append(previous_elem)
 
                     while tree_tails and (tail := tree_tails.pop()):
-                        tail.set_next(current.elem.__call__)
+                        tail.set_next(current)
             elif current.elem.tree_id != previous_tree_id and previous_elem is not None:
                 tree_tails.append(previous_elem)
 
@@ -104,7 +104,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             if not current_step:
                 return await self.start_point(self, event, state)
 
-            return await self.views[current_step].next(self, event, state)
+            return await self.views[current_step].next(event, state)
         except NotImplementedError:
             return await self.finish(event, state)
 
