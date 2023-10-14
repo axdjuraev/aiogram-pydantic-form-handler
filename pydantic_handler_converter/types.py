@@ -100,10 +100,10 @@ class CallableWithNext(Generic[TCallableElem]):
         self._next = next
         self._previos = previos
 
-    def set_next(self, next):
+    def set_next(self, next: 'CallableWithNext'):
         self._next = next
 
-    def set_previos(self, previos):
+    def set_previos(self, previos: 'CallableWithNext'):
         self._previos = previos
 
     async def _move(self, move: Optional['CallableWithNext'], args, kwargs):
