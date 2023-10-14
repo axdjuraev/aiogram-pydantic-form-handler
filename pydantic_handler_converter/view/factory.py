@@ -40,9 +40,9 @@ class ViewFactory(FieldFactory, ABC):
         views = []
         models_dialects = {}
 
-        for model in models:
+        for tree_id, model in enumerate(models, start=1):
             logger.debug(f"[{self.__class__.__name__}][create4models]: {locals()=}")
-            model_views = self.create_by_schema(model, **kwargs)
+            model_views = self.create_by_schema(model, tree_id=tree_id, **kwargs)
 
             if model_views:
                 models_dialects[model] = model_views[0]

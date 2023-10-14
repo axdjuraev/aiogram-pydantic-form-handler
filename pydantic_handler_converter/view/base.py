@@ -23,6 +23,7 @@ class BaseView(AbstractView):
         parents: Iterable[str],
         filters: Iterable = tuple(),
         back_data: Optional[str] = None,
+        tree_id: Optional[int] = None,
         **_,
     ) -> None:
         self.field = field
@@ -35,6 +36,7 @@ class BaseView(AbstractView):
         self.name = self._get_name()
         self.callback_data = self._get_callback_data()
         self.keyboard = self._get_keyboard()
+        self.tree_id = tree_id
         super().__init__()
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
