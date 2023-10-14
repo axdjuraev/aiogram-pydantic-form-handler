@@ -91,18 +91,32 @@ TCallableElem = TypeVar('TCallableElem', bound=Callable)
 
 
 class CallableWithNext(Generic[TCallableElem]):
-    def __init__(self, elem: TCallableElem, next: Optional[TCallableElem] = None) -> None:
+    def __init__(
+        self, elem: TCallableElem, 
+        next: Optional[TCallableElem] = None,
+        previos: Optional[TCallableElem] = None,
+    ) -> None:
         self.elem = elem
         self._next = next
+        self._previos = previos
 
     def set_next(self, next):
         self._next = next
 
-    async def next(self, *args, **kwargs):
-        if not self._next:
+    def set_previos(self, previos):
+        self._previos = previos
+
+    async def _move(self, move, args, kwargs):
+        if not move:
             raise NotImplementedError
 
-        return await self._next(*args, **kwargs)
+        return await move(*args, **kwargs)
+
+    async def back(self, *args, **kwargs):
+        return await self._move(self._previos, args, kwargs)
+
+    async def next(self, *args, **kwargs):
+        return await self._move(self.next, args, kwargs)
 
 
 TEvent = Union[EditAbleEvent, AnswerAbleEvent]
