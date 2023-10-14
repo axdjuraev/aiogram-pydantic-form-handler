@@ -1,7 +1,8 @@
 from types import MethodType
 from typing import Awaitable, Callable, Generic, Iterable, Optional, TypeVar
-from aiogram import Router
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery
 from pydantic import BaseModel
 
 from pydantic_handler_converter.dialecsts import BaseDialects
@@ -99,6 +100,9 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
         return res
 
+    async def _get_current_step(self, state: FSMContext):
+        return (await state.get_data()).get('__step__')
+
     async def next(self, event: Event, state: FSMContext, current_step: Optional[str] = None):
         try:
             if not current_step:
@@ -108,6 +112,15 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         except NotImplementedError:
             return await self.finish(event, state)
 
+    async def back(self, event: CallbackQuery, state: FSMContext):
+        current_step = await self._get_current_step(state)
+        try:
+            if not current_step:
+                raise NotImplementedError
+            return await self.views[current_step].next(event, state)
+        except NotImplementedError:
+            return await self.start_point(self, event, state)
+
     async def finish(self, event: Event, state: FSMContext):
         data = await state.get_data()
         logger.debug(f"[{self.__class__.__name__}][finish]: {locals()=}")
@@ -116,5 +129,6 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         return await self._finish_call(schema, event, state)
 
     def register2router(self, router: Router) -> Router:
+        router.callback_query(F.data == self.DIALECTS.BACK_BUTTON_DATA)(self.back)
         return router.include_router(self.router)
 
