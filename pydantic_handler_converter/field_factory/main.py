@@ -30,6 +30,7 @@ class FieldFactory(Model, Enum, Union, Base, ABC):
             logger.error(str(e))
             raise NotImplementedError(f'`{base_type_name}` is not supported metatype in {self.__class__.__name__}')
 
+        logger.debug(f"[{self.__class__.__name__}][create]: {dir(states)=}")
         state = getattr(states, field.name)
         kwargs['state'] = state
         res = creator(field, states=states, **kwargs, parents=parents)

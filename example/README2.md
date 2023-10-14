@@ -27,10 +27,10 @@
 >>> 
 >>> 
 >>> class ContragentSchema(BaseModel):
+...     juridical_details: Union[JuridicDetailSchema, ForeignJuridicDetailSchema] = Field(description='Юридические реквизиты')
 ...     external_id: str = Field(default_factory=lambda: str(uuid4()))
 ...     name: str
 ...     rs_url: Optional[str] = None
-...     juridical_details: Union[JuridicDetailSchema, ForeignJuridicDetailSchema] = Field(description='Юридические реквизиты')
 ... 
 ... 
 >>> #----------------------------creating-handlers-group-----------------------------

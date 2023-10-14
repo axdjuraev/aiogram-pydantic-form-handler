@@ -48,6 +48,8 @@ class UnionFieldFactory(BaseFieldFactory):
         elif strs_count or len(enums):
             raise NotImplementedError(f'`{field.type_}` is too comple type for `{self.__class__.__name__}`')
 
-        kwargs['parents'] = parents
+        kwargs['parents'] = (*parents, field.name)
+        kwargs['states'] = getattr(kwargs['states'], field.name)
+        
         return self.create4models(field, models=models, kwargs=kwargs) 
 

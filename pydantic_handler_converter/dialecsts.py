@@ -12,6 +12,7 @@ class BaseDialects(ABC):
     CHOOSE_FROM_ENUM = 'Choose from options for `{field_name}`'
     CONTENT_TYPE_NOT_ALLOWED = 'Invalid content type, please select from the available options'
     CHOOSE_FROM_ENUM_OR_INPUT = 'Select or input a value for `{field_name}`'
+    CHOOSE_FIELD_TYPE = 'Select type of `{field_name}`'
     BACK_BUTTON = 'Back'
     READY_BUTTON = 'Ready'
     READY_BUTTON_DATA = 'ready'

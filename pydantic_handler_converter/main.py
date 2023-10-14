@@ -25,7 +25,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     controllers: dict[str, CallableWithNext[BaseView]]
 
     def __init__(self, finish_call: Callable[[TBaseSchema, Event, FSMContext], Awaitable], router: Optional[Router] = None) -> None:
-        self._finish_call = finish_call 
+        self._finish_call = finish_call
         self.router = router or Router()
         self._register_bindabls(tuple(self.views.values()))  # type: ignore
         self._register_bindabls(tuple(self.controllers.values()))  # type: ignore
@@ -41,8 +41,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         super().__init_subclass__()
         cls.states = SchemaStates.create(cls.Schema)
         data = {
-            'schema': cls.Schema, 
-            'states': cls.states, 
+            'schema': cls.Schema,
+            'states': cls.states,
             'dialects': cls.DIALECTS,
             'parents': (cls.Schema.__name__,)
         }
