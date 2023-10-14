@@ -62,6 +62,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         res = {}
         previous_elem: Optional[CallableWithNext] = None
         previous_tree_id: Optional[int] = None
+        tree_head: Optional[CallableWithNext] = None
+        tree_sub_heads: list[CallableWithNext] = []
         tree_tails: list[CallableWithNext] = []
 
         for elem in nextabls:
@@ -92,6 +94,11 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
                     while tree_tails and (tail := tree_tails.pop()):
                         tail.set_next(current)
+
+                    while tree_head and tree_sub_heads and (head := tree_sub_heads.pop()):
+                        head.set_previos(tree_head)
+
+                tree_head = current
             elif current.elem.tree_id != previous_tree_id and previous_elem is not None:
                 tree_tails.append(previous_elem)
 
