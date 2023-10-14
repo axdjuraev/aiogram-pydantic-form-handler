@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from enum import Enum
 from itertools import chain
 from typing import Union
@@ -24,6 +25,10 @@ class UnionFieldFactory(BaseFieldFactory):
 
         return strs_count, enums, models
 
+    @abstractmethod
+    def create4models(self, field: ModelField, models: list[BaseModel], kwargs: dict):
+        raise NotImplementedError
+
     def create4uniontype(self, field: ModelField, parents, **kwargs):
         return self.create4_uniongenericalias(field, parents, **kwargs)
 
@@ -43,5 +48,6 @@ class UnionFieldFactory(BaseFieldFactory):
         elif strs_count or len(enums):
             raise NotImplementedError(f'`{field.type_}` is too comple type for `{self.__class__.__name__}`')
 
-        return self.create4type(field, parents, force_type=list[BaseModel], models=models, **kwargs) 
+        kwargs['parents'] = parents
+        return self.create4models(field, models=models, kwargs=kwargs) 
 
