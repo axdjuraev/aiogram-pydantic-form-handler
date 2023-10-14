@@ -22,7 +22,7 @@ class BaseView(AbstractView):
         dialects: BaseDialects, 
         parents: Iterable[str],
         filters: Iterable = tuple(),
-        back_data: Optional[str] = None,
+        is_has_back: Optional[str] = None,
         tree_id: Optional[int] = None,
         **_,
     ) -> None:
@@ -31,7 +31,7 @@ class BaseView(AbstractView):
         self.dialects = dialects
         self.parents = parents
         self.filters = filters
-        self.back_data = back_data
+        self.is_has_back = is_has_back
         self.step_name = self._get_step_name()
         self.name = self._get_name()
         self.callback_data = self._get_callback_data()
@@ -49,11 +49,11 @@ class BaseView(AbstractView):
                 callback_data=self.dialects.SKIP_STEP_DATA,
             )
 
-        logger.debug(f"[{self.__class__.__name__}][_get_keyboard]: {self.back_data=}; {locals()=};")
-        if self.back_data:
+        logger.debug(f"[{self.__class__.__name__}][_get_keyboard]: {self.is_has_back=}; {locals()=};")
+        if self.is_has_back:
             builder.button(
                 text=self.dialects.BACK_BUTTON, 
-                callback_data=self.back_data
+                callback_data=self.dialects.BACK_BUTTON,
             )
 
         if isinstance(self.field.outer_type_, Union[_GenericAlias, GenericAlias]):

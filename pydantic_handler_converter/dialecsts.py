@@ -14,6 +14,7 @@ class BaseDialects(ABC):
     CHOOSE_FROM_ENUM_OR_INPUT = 'Select or input a value for `{field_name}`'
     CHOOSE_FIELD_TYPE = 'Select type of `{field_name}`'
     BACK_BUTTON = 'Back'
+    BACK_BUTTON_DATA = 'back'
     READY_BUTTON = 'Ready'
     READY_BUTTON_DATA = 'ready'
     SKIP_BUTTON = 'Skip'
