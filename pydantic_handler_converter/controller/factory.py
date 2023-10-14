@@ -1,5 +1,6 @@
 from abc import ABC
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional, Type, Union
+from pydantic import BaseModel
 from pydantic.fields import ModelField
 from aiogram.fsm.state import StatesGroup
 from enum import Enum
@@ -20,6 +21,14 @@ class ControllerFactory(FieldFactory, ABC):
         Enum: EnumController,
         Union[str, Enum]: CustomDataStrController,
     }
+
+    def create4models(self, _: ModelField, models: list[Type[BaseModel]], kwargs: dict):
+        res = []
+        
+        for model in models:
+            res.extend(self.create_by_schema(model, **kwargs))
+
+        return res
 
     def create(self, field: ModelField, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
         return super().create(field, states, parents, **kwargs)
