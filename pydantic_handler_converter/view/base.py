@@ -53,7 +53,7 @@ class BaseView(AbstractView):
         if self.is_has_back:
             builder.button(
                 text=self.dialects.BACK_BUTTON, 
-                callback_data=self.dialects.BACK_BUTTON,
+                callback_data=self.dialects.BACK_BUTTON_DATA,
             )
 
         if isinstance(self.field.outer_type_, Union[_GenericAlias, GenericAlias]):
