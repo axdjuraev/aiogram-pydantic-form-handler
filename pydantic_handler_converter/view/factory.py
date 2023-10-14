@@ -1,10 +1,8 @@
 from abc import ABC
-from typing import Iterable, Optional, Type
+from typing import Iterable, Type
 from pydantic import BaseModel
 from pydantic.fields import ModelField
-from aiogram.fsm.state import StatesGroup
 from enum import Enum
-from pydantic_handler_converter.view.base import BaseView
 
 from pydantic_handler_converter.field_factory import FieldFactory
 from .string import StrView
@@ -23,6 +21,7 @@ class ViewFactory(FieldFactory, ABC):
     }
 
     def create_by_schema(self, schema: Type[BaseModel], **kwargs):
+        super().create_by_schema
         views = []
 
         for field in schema.__fields__.values():
@@ -42,4 +41,12 @@ class ViewFactory(FieldFactory, ABC):
 
         for model in models:
             model_views = self.create_by_schema(model)
+
+            if model_views:
+                models_dialects[model] = model_views[0]
+                views.extend(model_views)
+        
+        views.append(ModelsView.create(field, models_dialects=models_dialects, **kwargs))
+
+        return views
 
