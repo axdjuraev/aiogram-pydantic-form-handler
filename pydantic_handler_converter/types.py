@@ -39,6 +39,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
     name: str
     step_name: str
     is_custom: bool
+    tree_id: Optional[int] = None
 
     def __init__(self) -> None:
         self.is_custom = False
@@ -92,6 +93,9 @@ TCallableElem = TypeVar('TCallableElem', bound=Callable)
 class CallableWithNext(Generic[TCallableElem]):
     def __init__(self, elem: TCallableElem, next: Optional[TCallableElem] = None) -> None:
         self.elem = elem
+        self._next = next
+
+    def set_next(self, next):
         self._next = next
 
     async def next(self, *args, **kwargs):

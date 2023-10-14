@@ -59,17 +59,10 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     @classmethod
     def _register_nextabls(cls, nextabls: list[BaseSingleHandler]) -> dict[str, CallableWithNext]:
         res = {}
-        all_count = len(nextabls)
+        previous_elem: Optional[CallableWithNext] = None
 
-        for num, elem in enumerate(nextabls, start=1):
+        for elem in nextabls:
             elem_name = elem.name
-            next = nextabls[num] if num < all_count else None
-
-            try:
-                if next:
-                    next = getattr(cls, next.name)
-            except AttributeError:
-                pass
 
             try:
                 val = getattr(cls, elem_name)
@@ -84,7 +77,12 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             except AttributeError:
                 setattr(cls, elem_name, elem.__call__)
 
-            res[elem.step_name] = CallableWithNext(elem, next=next)
+            res[elem.step_name] = CallableWithNext(elem)
+
+            if previous_elem is not None:
+                previous_elem.set_next(res[elem.step_name].elem.__call__)
+
+            previous_elem = res[elem.step_name]
 
         return res
 
