@@ -1,3 +1,4 @@
+from types import MethodType
 from typing import Awaitable, Callable, Generic, Iterable, Optional, TypeVar
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
@@ -72,11 +73,14 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
             try:
                 val = getattr(cls, elem_name)
-                elem.__call__ = val
 
-                if not isinstance(val, BaseSingleHandler):
-                    elem.is_custom = True
-                    logger.info(f"[{cls.__name__}][_register_nextabls][skip]: {elem_name=}")
+                if isinstance(val, MethodType) and isinstance(val.__self__, BaseSingleHandler):
+                    logger.info(f"[{cls.__name__}][_register_nextabls][dublicate]: {elem_name=}")
+                    continue
+
+                elem.__call__ = val
+                elem.is_custom = True
+                logger.info(f"[{cls.__name__}][_register_nextabls][skip]: {elem_name=}")
             except AttributeError:
                 setattr(cls, elem_name, elem.__call__)
 

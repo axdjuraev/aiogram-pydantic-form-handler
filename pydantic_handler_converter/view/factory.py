@@ -48,7 +48,7 @@ class ViewFactory(FieldFactory, ABC):
                 models_dialects[model] = model_views[0]
                 views.extend(model_views)
         
-        views.append(ModelsView.create(field, models_dialects=models_dialects, **kwargs))
+        views.insert(0, ModelsView.create(field, models_dialects=models_dialects, **kwargs))
 
         return views
 

@@ -1,3 +1,4 @@
+from types import MethodType
 from typing import Optional, Type
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
@@ -41,11 +42,15 @@ class ModelsView(BaseView):
         return super()._get_keyboard(builder) 
 
     async def item_select_handler(self, self_: THandler, event: CallbackQuery, state: FSMContext):
-        _, index = str(event.data).strip(':')
-        return await self.model_list_dialects[int(index)].__call__(self_, event, state)
+        _, index = str(event.data).split(':')
+        return await self.model_list_dialects[int(index)].__call__(event, state)  # type: ignore
 
     async def main(self, self_: THandler, event: Event, _: FSMContext):
         await event.answer(self.dialects.CHOOSE_FIELD_TYPE, reply_markup=self.keyboard.as_markup())
+
+    def bind(self, elem):
+        self.item_select_handler = MethodType(self.item_select_handler, elem)
+        return super().bind(elem)
 
     def register2router(self, router: Router) -> Router:
         router.callback_query(F.data.startswith(self.item_callback_data), *self.filters)(self.item_select_handler)
