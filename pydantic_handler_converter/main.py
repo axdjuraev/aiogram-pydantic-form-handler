@@ -117,7 +117,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         try:
             if not current_step:
                 raise NotImplementedError
-            return await self.views[current_step].next(event, state)
+            return await self.views[current_step].back(event, state)
         except NotImplementedError:
             return await self.start_point(self, event, state)
 
