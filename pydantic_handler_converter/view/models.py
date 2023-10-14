@@ -16,10 +16,13 @@ class ModelsView(BaseView):
     def __init__(self, *args, models_dialects: dict[Type[BaseModel], BaseView], **kwargs) -> None:
         self.models_dialects = models_dialects
         self.model_list_dialects = tuple(self.models_dialects.values())
+        self.item_callback_data = None 
         super().__init__(*args, **kwargs)
-        self.item_callback_data = f"item_{self.callback_data}"
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
+        if self.item_callback_data is None:
+            self.item_callback_data = f"item_{self.callback_data}"
+
         builder = builder or InlineKeyboardBuilder()
 
         for index, model in enumerate(self.models_dialects.keys()):
