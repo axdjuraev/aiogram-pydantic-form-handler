@@ -21,7 +21,7 @@ async def _main(handler_group: BasePydanticFormHandlers, settings: Optional[Sett
 
     @router.message(CommandStart())
     async def _(message: Message, state: FSMContext):
-        return await ticket_hanlders.next(message, state)  # type: ignore
+        return await handler_group.next(message, state)  # type: ignore
 
     dp = Dispatcher()
     dp.include_router(router)
