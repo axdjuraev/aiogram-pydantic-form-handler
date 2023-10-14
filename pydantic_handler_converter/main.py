@@ -71,9 +71,12 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
                 pass
 
             try:
-                elem.__call__ = getattr(cls, elem_name)
-                elem.is_custom = True
-                logger.info(f"[{cls.__name__}][_register_nextabls][skip]: {elem_name=}")
+                val = getattr(cls, elem_name)
+                elem.__call__ = val
+
+                if not isinstance(val, BaseSingleHandler):
+                    elem.is_custom = True
+                    logger.info(f"[{cls.__name__}][_register_nextabls][skip]: {elem_name=}")
             except AttributeError:
                 setattr(cls, elem_name, elem.__call__)
 
