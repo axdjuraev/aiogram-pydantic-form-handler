@@ -1,15 +1,4 @@
 ```python
-#-------------------configuration-settings-schema-declaration--------------------
->>> from pydantic import BaseSettings
->>>
->>>
->>> class Settings(BaseSettings):
-...     BOT_TOKEN: str
-... 
-...     class Config:
-...         env_file = '.env'
-... 
-... 
 #---------------------------priority-enum-declaration----------------------------
 >>> from enum import Enum
 >>>
@@ -32,7 +21,7 @@
 ...         return self._description
 ...
 ...
-#----------------------------subject-enum-declaration----------------------------
+>>> #----------------------------subject-enum-declaration----------------------------
 >>> class SubjectEnum(Enum):
 ...     FEAT = "feat", "Need to add feature"
 ...     FIX = "fix", "Resolve issue"
@@ -55,8 +44,18 @@
 ...         return self._description
 ... 
 ... 
-#---------------------------actual-schema-declaration----------------------------
->>> from pydantic import BaseModel
+>>> #---------------------------some-keyboard-items-getter---------------------------
+>>> 
+>>> async def getter():
+...    return {
+...        'elem1': 'Elem1',
+...        'elem2': 'Elem2',
+...        'elem3': 'Elem3',
+...    }
+... 
+... 
+>>> #---------------------------actual-schema-declaration----------------------------
+>>> from pydantic import BaseModel, Field
 >>>
 >>>
 >>> class TicketSchema(BaseModel):
@@ -64,9 +63,10 @@
 ...     short_description: str
 ...     priority: PriorityEnum
 ...     subject: list[SubjectEnum]
+...     elem: str = Field(getter=getter, is_extra_str=True)
 ... 
 ... 
-#--------------------------------using-converter---------------------------------
+>>> #--------------------------------using-converter---------------------------------
 >>> from pydantic_handler_converter import BasePydanticFormHandlers
 >>>
 >>>
@@ -74,7 +74,7 @@
 ...     pass
 ... 
 ...     
-#-----------------method-that-will-run-after-schema-filling-out------------------
+>>> #-----------------method-that-will-run-after-schema-filling-out------------------
 >>> from aiogram.fsm.context import FSMContext
 >>> from aiogram.types import Message
 >>> from pydantic_handler_converter.types import Event
@@ -84,40 +84,8 @@
 ...     return await event._event.edit_text(f"Your final schema data: {data.json()}")
 ... 
 ... 
-#------------------------creation-of-main-polling-method-------------------------
->>> from aiogram import Router, Bot, Dispatcher
->>> from aiogram.filters.command import Command as CommandFilter
->>>
->>>
->>> async def main():
-...     router = Router()
-...     ticket_hanlders = TicketHandlers(finish_call=final_callable)
-...     ticket_hanlders.register2router(router)
-... 
-...     settings = Settings()  # type: ignore
-...     bot = Bot(token=settings.BOT_TOKEN)
-... 
-...     @router.message(CommandFilter('start'))
-...     async def start(message: Message, state: FSMContext):
-...         return await ticket_hanlders.next(message, state)  # type: ignore
-... 
-...     dp = Dispatcher()
-...     dp.include_router(router)
-...     await dp.start_polling(bot)
-... 
-... 
->>> def _main():
-...     import sys
-...     import logging
-...     import asyncio
-... 
-...     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-...     loop = asyncio.new_event_loop()
-...     loop.run_until_complete(main())
-...     loop.close()
-... 
-... 
->>> if __name__ == "__main__":
-...     _main()
-... 
+>>> #------------------------creation-of-main-polling-method-------------------------
+>>> from example.runner import main
+>>> main(TicketHandlers(finish_call=final_callable))
 
+```
