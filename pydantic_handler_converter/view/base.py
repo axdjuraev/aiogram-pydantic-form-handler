@@ -85,7 +85,12 @@ class BaseView(AbstractView):
 
     async def __call__(self, self_: THandler, event, state: FSMContext) -> Any:
         event = Event(event)
-        return await self.main(self_, event, state)
+        res = await self.main(self_, event, state)
+        await self._set_current_step(state)
+        return res
+
+    async def _set_current_step(self, state: FSMContext):
+        await state.update_data(__step__=self.step_name)
 
     @abstractmethod
     async def main(self, self_: THandler, event: Event, state: FSMContext) -> Any:
