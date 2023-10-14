@@ -60,6 +60,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     def _register_nextabls(cls, nextabls: list[BaseSingleHandler]) -> dict[str, CallableWithNext]:
         res = {}
         previous_elem: Optional[CallableWithNext] = None
+        previous_tree_id: Optional[int] = None
+        tree_tails: list[CallableWithNext] = []
 
         for elem in nextabls:
             elem_name = elem.name
@@ -77,12 +79,23 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             except AttributeError:
                 setattr(cls, elem_name, elem.__call__)
 
-            res[elem.step_name] = CallableWithNext(elem)
+            current = CallableWithNext(elem)
+            res[elem.step_name] = current
 
             if previous_elem is not None:
-                previous_elem.set_next(res[elem.step_name].elem.__call__)
+                previous_elem.set_next(current.elem.__call__)
 
-            previous_elem = res[elem.step_name]
+            if current.elem.tree_id is None:
+                if previous_elem is not None:
+                    tree_tails.append(previous_elem)
+
+                    while tree_tails and (tail := tree_tails.pop()):
+                        tail.set_next(current.elem.__call__)
+            elif current.elem.tree_id != previous_tree_id and previous_elem is not None:
+                tree_tails.append(previous_elem)
+
+            previous_elem = current
+            previous_tree_id = current.elem.tree_id
 
         return res
 
