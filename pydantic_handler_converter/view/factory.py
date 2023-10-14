@@ -11,6 +11,7 @@ from .string import StrView
 from .float import FloatView
 from .int import IntView
 from .enum import EnumView
+from .models import ModelsView
 
 
 class ViewFactory(FieldFactory, ABC):
@@ -35,6 +36,10 @@ class ViewFactory(FieldFactory, ABC):
 
         return views
 
-    def create(self, field: ModelField, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs) -> Iterable[BaseView]:
-        return super().create(field, states, parents, **kwargs)
+    def create4models(self, field: ModelField, models: list[Type[BaseModel]], kwargs: dict):
+        views = []
+        models_dialects = {}
+
+        for model in models:
+            model_views = self.create_by_schema(model)
 

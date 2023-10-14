@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from enum import Enum
 from itertools import chain
-from typing import Union
+from typing import Type, Union
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 from .base import BaseFieldFactory
@@ -26,7 +26,7 @@ class UnionFieldFactory(BaseFieldFactory):
         return strs_count, enums, models
 
     @abstractmethod
-    def create4models(self, field: ModelField, models: list[BaseModel], kwargs: dict):
+    def create4models(self, field: ModelField, models: list[Type[BaseModel]], kwargs: dict):
         raise NotImplementedError
 
     def create4uniontype(self, field: ModelField, parents, **kwargs):
