@@ -17,7 +17,7 @@ class UnionFieldFactory(BaseFieldFactory):
             if issubclass(item, Enum):
                 enums.append(item)
             elif issubclass(item, BaseModel):
-                models.append(models)
+                models.append(item)
             elif issubclass(item, Union[str, float, int]):
                 strs_count += 1
             else:
