@@ -52,8 +52,9 @@
 ... 
 ... 
 >>> #-----------------------initialization-&-starting-polling------------------------
->>> from example.runner import main
->>> main(ContragentCreationHandlers(finish_call=final_callable))
+>>> from example.runner import main, Settings
+>>> 
+>>> main(ContragentCreationHandlers(finish_call=final_callable), settings=Settings())
 >>> 
 
 ```
