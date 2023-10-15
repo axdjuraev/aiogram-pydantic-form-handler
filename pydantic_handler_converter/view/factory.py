@@ -22,7 +22,6 @@ class ViewFactory(FieldFactory, ABC):
     }
 
     def create_by_schema(self, schema: Type[BaseModel], **kwargs):
-        super().create_by_schema
         views = []
         logger.debug(f"[{self.__class__.__name__}][create_by_schema]: {locals()=}")
 
@@ -49,7 +48,7 @@ class ViewFactory(FieldFactory, ABC):
             if model_views:
                 models_dialects[model] = model_views[0]
                 views.extend(model_views)
-        
+
         views.insert(0, ModelsView.create(field=field, models_dialects=models_dialects, **kwargs))
 
         return views
