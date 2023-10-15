@@ -112,9 +112,6 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
         return res
 
-    async def _get_current_step(self, state: FSMContext):
-        return (await state.get_data()).get('__step__')
-
     async def next(self, event: Event, state: FSMContext, current_step: Optional[str] = None):
         try:
             if not current_step:
@@ -139,6 +136,10 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
         schema = self.Schema(**data[self.Schema.__name__])
         return await self._finish_call(schema, event, state)
+
+    async def _get_current_step(self, state: FSMContext):
+        return (await state.get_data()).get('__step__')
+
 
     def register2router(self, router: Router) -> Router:
         router.callback_query(F.data == self.DIALECTS.BACK_BUTTON_DATA)(self.back)
