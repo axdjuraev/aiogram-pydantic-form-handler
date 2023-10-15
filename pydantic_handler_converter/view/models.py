@@ -19,6 +19,7 @@ class ModelsView(BaseView):
         self.model_list_dialects = tuple(self.models_dialects.values())
         self.item_callback_data = None 
         super().__init__(*args, **kwargs)
+        self.text = self.dialects.CHOOSE_FIELD_TYPE.format(field_name=self.field.name)
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
         if self.item_callback_data is None:
@@ -51,7 +52,7 @@ class ModelsView(BaseView):
         return res
 
     async def main(self, self_: THandler, event: Event, _: FSMContext):
-        await event.answer(self.dialects.CHOOSE_FIELD_TYPE, reply_markup=self.keyboard.as_markup())
+        await event.answer(self.text, reply_markup=self.keyboard.as_markup())
 
     def bind(self, elem):
         self.item_select_handler = MethodType(self.item_select_handler, elem)
