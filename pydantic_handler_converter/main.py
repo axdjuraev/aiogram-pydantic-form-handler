@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from pydantic_handler_converter.dialecsts import BaseDialects
 from pydantic_handler_converter.types import Event, CallableWithNext, BaseSingleHandler
 
-from .view import BaseView, ViewFactory
+from .view import ViewFactory
 from .controller import ControllerFactory
 from .field_factory import logger
 from .abstract_handler import AbstractPydanticFormHandlers
@@ -22,7 +22,6 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     __abstract__ = True
 
     DIALECTS: BaseDialects = BaseDialects()
-    start_point: BaseView
     views: dict[str, CallableWithNext]
     controllers: dict[str, CallableWithNext]
     fields_tree_tails: dict[str, list[CallableWithNext]] = {}
@@ -140,6 +139,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     async def _get_current_step(self, state: FSMContext):
         return (await state.get_data()).get('__step__')
 
+    async def _get_tree_index_choice(self, state: FSMContext, step_name: int):
+        return (await state.get_data()).get(f'__tree_choice_{step_name}__')
 
     def register2router(self, router: Router) -> Router:
         router.callback_query(F.data == self.DIALECTS.BACK_BUTTON_DATA)(self.back)
