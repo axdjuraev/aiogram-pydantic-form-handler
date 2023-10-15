@@ -24,7 +24,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     DIALECTS: BaseDialects = BaseDialects()
     views: dict[str, CallableWithNext]
     controllers: dict[str, CallableWithNext]
-    fields_tree_tails: dict[str, list[CallableWithNext]] = {}
+    step_tree_tails: dict[str, list[CallableWithNext]] = {}
 
     def __init__(self, finish_call: Callable[[TBaseSchema, Event, FSMContext], Awaitable], router: Optional[Router] = None) -> None:
         self._finish_call = finish_call
@@ -49,7 +49,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             'parents': (cls.Schema.__name__,)
         }
 
-        cls.views = cls._register_nextabls(ViewFactory().create_by_schema(**data), set_field_tree_heads=True)
+        cls.views = cls._register_nextabls(ViewFactory().create_by_schema(**data), set_step_tree_tails=True)
         cls.controllers = cls._register_nextabls(ControllerFactory().create_by_schema(**data))
 
         if not cls.views:
@@ -58,7 +58,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         cls.start_point = tuple(cls.views.values())[0].elem  # type: ignore
 
     @classmethod
-    def _register_nextabls(cls, nextabls: list[BaseSingleHandler], set_field_tree_heads = False) -> dict[str, CallableWithNext]:
+    def _register_nextabls(cls, nextabls: list[BaseSingleHandler], set_step_tree_tails = False) -> dict[str, CallableWithNext]:
         res = {}
         previous_elem: Optional[CallableWithNext] = None
         previous_tree_id: Optional[int] = None
@@ -89,12 +89,12 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
                 previous_elem.set_next(current)
 
             if current.elem.tree_id is None:
-                if previous_elem is not None:
+                if previous_elem and previous_elem.elem.tree_id:
                     tree_tails.append(previous_elem)
-                    
+
                     if tree_head:
-                        if set_field_tree_heads and tree_tails:
-                            cls.fields_tree_tails[tree_head.elem.step_name] = tree_tails.copy()
+                        if set_step_tree_tails and tree_tails:
+                            cls.step_tree_tails[tree_head.elem.step_name] = tree_tails.copy()
 
                         while tree_sub_heads and (head := tree_sub_heads.pop()):
                             head.set_previos(tree_head)
@@ -103,7 +103,11 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
                         tail.set_next(current)
 
                 tree_head = current
-            elif current.elem.tree_id != previous_tree_id and previous_elem is not None:
+            elif (
+                current.elem.tree_id != previous_tree_id 
+                and previous_tree_id is not None
+                and previous_elem is not None
+            ):
                 tree_tails.append(previous_elem)
 
             previous_elem = current
@@ -125,7 +129,19 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         try:
             if not current_step:
                 raise NotImplementedError
-            return await self.views[current_step].back(event, state)
+
+            current = self.views[current_step]
+
+            if (
+                current._previos
+                and (_s := current._previos.elem.tree_head_step_name)
+                and (tails := self.step_tree_tails.get(_s))
+                and (choice_index := await self._get_tree_index_choice(state, _s)) is not None
+            ):
+                await tails[choice_index].elem(self, event, state)
+            else:
+                await current.back(event, state)
+
         except NotImplementedError:
             return await self.start_point(self, event, state)
 
@@ -139,7 +155,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     async def _get_current_step(self, state: FSMContext):
         return (await state.get_data()).get('__step__')
 
-    async def _get_tree_index_choice(self, state: FSMContext, step_name: int):
+    async def _get_tree_index_choice(self, state: FSMContext, step_name: str):
         return (await state.get_data()).get(f'__tree_choice_{step_name}__')
 
     def register2router(self, router: Router) -> Router:

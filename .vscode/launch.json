@@ -15,10 +15,10 @@
       "justMyCode": true
     },
     {
-      "name": "Python: Current File",
+      "name": "file",
       "type": "python",
       "request": "launch",
-      "program": "${file}",
+      "program": ".env.example2.py",
       "console": "integratedTerminal",
       "justMyCode": true
     }
