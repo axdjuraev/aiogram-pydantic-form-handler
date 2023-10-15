@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from os import stat
 from typing import Any, Iterable, Optional, Protocol, Union, runtime_checkable
+from aiogram.fsm.context import FSMContext
 from pydantic.fields import ModelField
 from pydantic_handler_converter.utils.step import get_step_name
 from pydantic_handler_converter.dialecsts import BaseDialects
@@ -146,8 +148,35 @@ class Event:
         self._answer = event.message.edit_text if isinstance(event, EditAbleEvent) else event.answer
         self.default_parse_mode = 'Markdown'
 
-    async def answer(self, text: str, *, reply_markup = None, **kwargs):
-        kwargs['parse_mode'] = kwargs.get('parse_mode', self.default_parse_mode)
+    async def _get_stack(self, state: FSMContext):
+        return (await state.get_data()).get('__stack__', [])
 
-        return await self._answer(text, reply_markup=reply_markup, **kwargs)
+    async def _set_stack(self, state: FSMContext, val):
+        await state.update_data(__stack__=val)
+
+    async def add_stack_message(self, state: FSMContext, message_id: int):
+        stack = await self._get_stack(state)
+        stack.append(message_id)
+        await self._set_stack(state, stack)
+
+    async def clear_stack(self, state: FSMContext):
+        for message_id in await self._get_stack(state):
+            try:
+                await state.bot.edit_message_reply_markup(state.key.chat_id, message_id)
+            except Exception:
+                pass
+
+        await self._set_stack(state, [])
+
+    async def answer(self, text: str, state: Optional[FSMContext] = None, *, reply_markup = None, **kwargs):
+        if state:
+            await self.clear_stack(state)
+
+        kwargs['parse_mode'] = kwargs.get('parse_mode', self.default_parse_mode)
+        res = await self._answer(text, reply_markup=reply_markup, **kwargs)
+
+        if reply_markup and state:
+            await self.add_stack_message(state, res.message_id)
+
+        return res
 
