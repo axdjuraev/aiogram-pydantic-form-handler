@@ -50,7 +50,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             'parents': (cls.Schema.__name__,)
         }
 
-        cls.views = cls._register_nextabls(ViewFactory().create_by_schema(**data))
+        cls.views = cls._register_nextabls(ViewFactory().create_by_schema(**data), set_field_tree_heads=True)
         cls.controllers = cls._register_nextabls(ControllerFactory().create_by_schema(**data))
 
         if not cls.views:
