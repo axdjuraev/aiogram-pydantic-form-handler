@@ -13,9 +13,9 @@ class EnumView(BaseView):
     def __init__(self, field: ModelField, *args, is_string_allowed: bool = False, **kwargs) -> None:
         self.item_callback_data = None
         self.is_string_allowed = is_string_allowed
+        super().__init__(field=field, *args, **kwargs)
         self.text = self.dialects.CHOOSE_FROM_ENUM if not self.is_string_allowed else self.dialects.CHOOSE_FROM_ENUM_OR_INPUT
         self.text = self.text.format(field_name=self.field.name)
-        super().__init__(field=field, *args, **kwargs)
 
     def _enum2dict(self, enum: Type[Enum]) -> dict:
         res = {}
