@@ -50,6 +50,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         dialects: BaseDialects, 
         parents: Iterable[str], 
         tree_id: Optional[int] = None,
+        tree_head_step_name: Optional[str] = None,
         is_has_back: Optional[str] = None,
         **_,
     ) -> None:
@@ -59,6 +60,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         self.step_name = get_step_name(field, self.parents)
         self.is_custom = False
         self.tree_id = tree_id
+        self.tree_head_step_name = tree_head_step_name
         self.is_has_back = is_has_back
 
     @abstractmethod
