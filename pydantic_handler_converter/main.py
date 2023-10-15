@@ -150,6 +150,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
             if (
                 current._previos
+                and current.elem.tree_id != current._previos.elem.tree_id
                 and (_s := current._previos.elem.tree_head_step_name)
                 and (tails := self.step_tree_tails.get(_s))
                 and (choice_index := await self._get_tree_index_choice(state, _s)) is not None
