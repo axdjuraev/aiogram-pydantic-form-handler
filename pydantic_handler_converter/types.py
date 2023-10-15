@@ -87,12 +87,9 @@ class EditAbleEvent(Protocol):
         raise NotImplementedError
 
 
-TCallableElem = TypeVar('TCallableElem', bound=Callable)
-
-
-class CallableWithNext(Generic[TCallableElem]):
+class CallableWithNext:
     def __init__(
-        self, elem: TCallableElem, 
+        self, elem: BaseSingleHandler, 
         next: Optional['CallableWithNext'] = None,
         previos: Optional['CallableWithNext'] = None,
     ) -> None:
