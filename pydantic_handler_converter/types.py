@@ -52,16 +52,21 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         tree_id: Optional[int] = None,
         tree_head_step_name: Optional[str] = None,
         is_has_back: Optional[str] = None,
+        name_format: str = "{step_name}",
         **_,
     ) -> None:
         self.field = field
+        self.step_name = get_step_name(field, parents)
+        self.name = name_format.format(step_name=self.step_name)
         self.dialects = dialects
         self.parents = parents
-        self.step_name = get_step_name(field, self.parents)
         self.is_custom = False
         self.tree_id = tree_id
         self.tree_head_step_name = tree_head_step_name
         self.is_has_back = is_has_back
+        
+        if self.tree_id is not None:
+            self.name = f"{self.name}{self.tree_id}"
 
     @abstractmethod
     async def __call__(self, *args: Any, **kwds: Any) -> Any:

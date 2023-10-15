@@ -20,19 +20,15 @@ class BaseController(AbstractController):
         filters: Iterable = tuple(),
         **kwargs,
     ) -> None:
-        super().__init__(**kwargs)
+        super().__init__(**kwargs, name_format="{step_name}_ctrl")
         self.state = state
         self.filters = filters
         self.callback_data = self._get_callback_data()
-        self.name = self._get_name()
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_callback_data(self) -> str:
         top_levels = '.'.join(self.parents or tuple())
         return f"{top_levels}.{self.field.name}"
-
-    def _get_name(self) -> str:
-        return f"{self.step_name}_ctrl"
 
     async def _setvalue(self, value, state: FSMContext):
         data = await state.get_data()

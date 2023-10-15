@@ -20,10 +20,9 @@ class BaseView(AbstractView):
         filters: Iterable = tuple(),
         **kwargs,
     ) -> None:
-        super().__init__(**kwargs)
+        super().__init__(**kwargs, name_format="{step_name}_view")
         self.state = state
         self.filters = filters
-        self.name = self._get_name()
         self.callback_data = self._get_callback_data()
         self.keyboard = self._get_keyboard()
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
@@ -51,9 +50,6 @@ class BaseView(AbstractView):
             )
 
         return builder.adjust(1)
-
-    def _get_name(self) -> str:
-        return f"{self.step_name}_view"
 
     def _get_callback_data(self) -> str:
         top_levels = '.'.join(self.parents or tuple())
