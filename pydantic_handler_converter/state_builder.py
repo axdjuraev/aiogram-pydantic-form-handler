@@ -1,7 +1,6 @@
 from types import UnionType
 from typing import Union, Type, get_origin, get_args
 from aiogram.fsm.state import State, StatesGroup
-from axabc.logging import SimpleFileLogger
 from pydantic import BaseModel
 
 

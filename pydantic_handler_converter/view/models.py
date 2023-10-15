@@ -51,8 +51,8 @@ class ModelsView(BaseView):
         await self._save_tree_choice(state, index)
         return res
 
-    async def main(self, self_: THandler, event: Event, _: FSMContext):
-        await event.answer(self.text, reply_markup=self.keyboard.as_markup())
+    async def main(self, self_: THandler, event: Event, state: FSMContext):
+        await event.answer(self.text, state, reply_markup=self.keyboard.as_markup())
 
     def bind(self, elem):
         self.item_select_handler = MethodType(self.item_select_handler, elem)

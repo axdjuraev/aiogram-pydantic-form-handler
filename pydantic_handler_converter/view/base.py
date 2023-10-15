@@ -25,6 +25,7 @@ class BaseView(AbstractView):
         self.filters = filters
         self.callback_data = self._get_callback_data()
         self.keyboard = self._get_keyboard()
+        self.text = self.dialects.INPUT_STR.format(field_name=self.field.name)
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
@@ -70,9 +71,9 @@ class BaseView(AbstractView):
     async def _set_current_step(self, state: FSMContext):
         await state.update_data(__step__=self.step_name)
 
-    @abstractmethod
     async def main(self, self_: THandler, event: Event, state: FSMContext) -> Any:
-        raise NotImplementedError
+        await event.answer(self.text, state, reply_markup=self.keyboard.as_markup())
+        await state.set_state(self.state)
 
     @classmethod
     def create(cls, field: ModelField, **kwargs) -> 'BaseView':

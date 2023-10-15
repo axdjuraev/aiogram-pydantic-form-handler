@@ -13,7 +13,9 @@ class EnumView(BaseView):
     def __init__(self, field: ModelField, *args, is_string_allowed: bool = False, **kwargs) -> None:
         self.item_callback_data = None
         self.is_string_allowed = is_string_allowed
-        super().__init__(field, *args, **kwargs)
+        self.text = self.dialects.CHOOSE_FROM_ENUM if not self.is_string_allowed else self.dialects.CHOOSE_FROM_ENUM_OR_INPUT
+        self.text = self.text.format(field_name=self.field.name)
+        super().__init__(field=field, *args, **kwargs)
 
     def _enum2dict(self, enum: Type[Enum]) -> dict:
         res = {}
@@ -35,9 +37,4 @@ class EnumView(BaseView):
             builder.button(text=description, callback_data=f"{self.item_callback_data}:{name}")
 
         return super()._get_keyboard(builder)
-
-    async def main(self, _: THandler, event: Event, state: FSMContext):
-        text = self.dialects.CHOOSE_FROM_ENUM if not self.is_string_allowed else self.dialects.CHOOSE_FROM_ENUM_OR_INPUT
-        await event.answer(text.format(field_name=self.field.name), reply_markup=self.keyboard.as_markup())
-        await state.set_state(self.state)
 
