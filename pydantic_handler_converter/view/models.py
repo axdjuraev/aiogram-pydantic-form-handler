@@ -41,9 +41,13 @@ class ModelsView(BaseView):
 
         return super()._get_keyboard(builder) 
 
+
+    async def _save_tree_choice(self, state: FSMContext):
+        await state.update_data(__tree_choice__)
+
     async def item_select_handler(self, self_: THandler, event: CallbackQuery, state: FSMContext):
         _, index = str(event.data).split(':')
-        return await self.model_list_dialects[int(index)].__call__(event, state)  # type: ignore
+        await self.model_list_dialects[int(index)].__call__(event, state)  # type: ignore
 
     async def main(self, self_: THandler, event: Event, _: FSMContext):
         await event.answer(self.dialects.CHOOSE_FIELD_TYPE, reply_markup=self.keyboard.as_markup())

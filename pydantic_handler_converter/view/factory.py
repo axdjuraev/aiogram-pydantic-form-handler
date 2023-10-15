@@ -27,7 +27,7 @@ class ViewFactory(FieldFactory, ABC):
 
         for index, field in enumerate(schema.__fields__.values()):
             kwargs['is_has_back'] = bool(views) if index > 0 else kwargs.get('is_has_back', False)
-            res = self.create(field, **kwargs)
+            res = self.create(field=field, **kwargs)
 
             if isinstance(res, Iterable):
                 views.extend(res)
@@ -48,7 +48,7 @@ class ViewFactory(FieldFactory, ABC):
                 models_dialects[model] = model_views[0]
                 views.extend(model_views)
         
-        views.insert(0, ModelsView.create(field, models_dialects=models_dialects, **kwargs))
+        views.insert(0, ModelsView.create(field=field, models_dialects=models_dialects, **kwargs))
 
         return views
 

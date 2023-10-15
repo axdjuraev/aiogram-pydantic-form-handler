@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Generic, Optional, Protocol, TypeVar, Union, runtime_checkable
+from typing import Any, Iterable, Optional, Protocol, Union, runtime_checkable
+from pydantic.fields import ModelField
+from pydantic_handler_converter.utils.step import get_step_name
+from pydantic_handler_converter.dialecsts import BaseDialects
 from aiogram import Router
 
 
@@ -41,8 +44,22 @@ class BaseSingleHandler(ABC, BindAbleCallable):
     is_custom: bool
     tree_id: Optional[int] = None
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        field: ModelField, 
+        dialects: BaseDialects, 
+        parents: Iterable[str], 
+        tree_id: Optional[int] = None,
+        is_has_back: Optional[str] = None,
+        **_,
+    ) -> None:
+        self.field = field
+        self.dialects = dialects
+        self.parents = parents
+        self.step_name = get_step_name(field, self.parents)
         self.is_custom = False
+        self.tree_id = tree_id
+        self.is_has_back = is_has_back
 
     @abstractmethod
     async def __call__(self, *args: Any, **kwds: Any) -> Any:

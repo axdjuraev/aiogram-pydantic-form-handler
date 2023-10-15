@@ -18,7 +18,7 @@ class StrView(BaseView):
             is_extra_str = field.field_info.extra.get('is_extra_str', False)
             return CustomDataStrView(field=field, getter=getter, is_extra_str=is_extra_str, **kwargs)
 
-        return super().create(field, **kwargs)
+        return super().create(field=field, **kwargs)
 
 
 class CustomDataStrView(BaseView):

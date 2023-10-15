@@ -31,7 +31,7 @@ class ControllerFactory(FieldFactory, ABC):
         return res
 
     def create(self, field: ModelField, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
-        return super().create(field, states, parents, **kwargs)
+        return super().create(field=field, states=states, parents=parents, **kwargs)
 
     def create4type(self, field: ModelField, parents: Optional[Iterable[str]] = None, force_type: Optional[type] = None, **kwargs):
         if field.field_info.extra.get('getter'):

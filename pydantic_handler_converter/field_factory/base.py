@@ -28,5 +28,5 @@ class BaseFieldFactory(ABC):
         if view_cls is None:
             raise NotImplementedError(f'`{field.type_}` is not supported in {self.__class__.__name__}')
 
-        return view_cls.create(field, parents=parents, **kwargs)
+        return view_cls.create(field=field, parents=parents, **kwargs)
 

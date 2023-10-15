@@ -11,7 +11,7 @@ class ModelFieldFactory(BaseFieldFactory):
         views = []
 
         for field in schema.__fields__.values():
-            res = self.create(field, **kwargs)
+            res = self.create(field=field, **kwargs)
 
             if isinstance(res, Iterable):
                 views.extend(res)

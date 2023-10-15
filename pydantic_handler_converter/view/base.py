@@ -9,7 +9,6 @@ from aiogram.fsm.state import State
 
 from pydantic_handler_converter.types import Event
 from pydantic_handler_converter.abstract_handler import AbstractPydanticFormHandlers as THandler
-from pydantic_handler_converter.dialecsts import BaseDialects
 from pydantic_handler_converter.field_factory import logger
 from .abstract import AbstractView
 
@@ -17,29 +16,16 @@ from .abstract import AbstractView
 class BaseView(AbstractView):
     def __init__(
         self, 
-        field: ModelField, 
         state: State,
-        dialects: BaseDialects, 
-        parents: Iterable[str],
         filters: Iterable = tuple(),
-        is_has_back: Optional[str] = None,
-        tree_head_field: Optional[ModelField] = None,
-        tree_id: Optional[int] = None,
-        **_,
+        **kwargs,
     ) -> None:
-        self.field = field
+        super().__init__(**kwargs)
         self.state = state
-        self.dialects = dialects
-        self.parents = parents
         self.filters = filters
-        self.is_has_back = is_has_back
-        self.step_name = self._get_step_name()
         self.name = self._get_name()
         self.callback_data = self._get_callback_data()
         self.keyboard = self._get_keyboard()
-        self.tree_id = tree_id
-        self.tree_head_field = tree_head_field
-        super().__init__()
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
@@ -65,12 +51,6 @@ class BaseView(AbstractView):
             )
 
         return builder.adjust(1)
-
-    def _get_step_name(self) -> str:
-        if len(tuple(self.parents)) < 2:
-            return f"{self.field.name}"
-
-        return f'{"".join(tuple(self.parents)[1:])}_{self.field.name}'
 
     def _get_name(self) -> str:
         return f"{self.step_name}_view"
