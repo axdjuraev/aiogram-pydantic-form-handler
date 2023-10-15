@@ -23,8 +23,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
     DIALECTS: BaseDialects = BaseDialects()
     start_point: BaseView
-    views: dict[str, CallableWithNext[BaseView]]
-    controllers: dict[str, CallableWithNext[BaseView]]
+    views: dict[str, CallableWithNext]
+    controllers: dict[str, CallableWithNext]
     fields_tree_tails: dict[str, list[CallableWithNext]] = {}
 
     def __init__(self, finish_call: Callable[[TBaseSchema, Event, FSMContext], Awaitable], router: Optional[Router] = None) -> None:
@@ -33,7 +33,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         self._register_bindabls(tuple(self.views.values()))  # type: ignore
         self._register_bindabls(tuple(self.controllers.values()))  # type: ignore
 
-    def _register_bindabls(self, elems: Iterable[CallableWithNext[BaseSingleHandler]]) -> None:
+    def _register_bindabls(self, elems: Iterable[CallableWithNext]) -> None:
         for item in elems:
             if not item.elem.is_custom:
                 item.elem.bind(self)
@@ -56,10 +56,10 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         if not cls.views:
             raise ValueError(f'Could not create views for schema `{cls.Schema}`')
 
-        cls.start_point = tuple(cls.views.values())[0].elem
+        cls.start_point = tuple(cls.views.values())[0].elem  # type: ignore
 
     @classmethod
-    def _register_nextabls(cls, nextabls: list[BaseSingleHandler]) -> dict[str, CallableWithNext]:
+    def _register_nextabls(cls, nextabls: list[BaseSingleHandler], set_field_tree_heads = False) -> dict[str, CallableWithNext]:
         res = {}
         previous_elem: Optional[CallableWithNext] = None
         previous_tree_id: Optional[int] = None
@@ -92,12 +92,16 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             if current.elem.tree_id is None:
                 if previous_elem is not None:
                     tree_tails.append(previous_elem)
+                    
+                    if tree_head:
+                        if set_field_tree_heads and tree_tails:
+                            cls.fields_tree_tails[tree_head.elem.step_name] = tree_tails.copy()
+
+                        while tree_sub_heads and (head := tree_sub_heads.pop()):
+                            head.set_previos(tree_head)
 
                     while tree_tails and (tail := tree_tails.pop()):
                         tail.set_next(current)
-
-                    while tree_head and tree_sub_heads and (head := tree_sub_heads.pop()):
-                        head.set_previos(tree_head)
 
                 tree_head = current
             elif current.elem.tree_id != previous_tree_id and previous_elem is not None:
