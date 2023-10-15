@@ -25,6 +25,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     start_point: BaseView
     views: dict[str, CallableWithNext[BaseView]]
     controllers: dict[str, CallableWithNext[BaseView]]
+    fields_tree_tails: dict[str, list[CallableWithNext]] = {}
 
     def __init__(self, finish_call: Callable[[TBaseSchema, Event, FSMContext], Awaitable], router: Optional[Router] = None) -> None:
         self._finish_call = finish_call
