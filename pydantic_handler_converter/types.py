@@ -64,9 +64,6 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         self.tree_id = tree_id
         self.tree_head_step_name = tree_head_step_name
         self.is_has_back = is_has_back
-        
-        if self.tree_id is not None:
-            self.name = f"{self.name}{self.tree_id}"
 
     @abstractmethod
     async def __call__(self, *args: Any, **kwds: Any) -> Any:

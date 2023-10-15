@@ -65,6 +65,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         tree_head: Optional[CallableWithNext] = None
         tree_sub_heads: list[CallableWithNext] = []
         tree_tails: list[CallableWithNext] = []
+        _last_dublicates_tree_indexes = {}
 
         for elem in nextabls:
             elem_name = elem.name
@@ -73,12 +74,17 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
                 val = getattr(cls, elem_name)
 
                 if isinstance(val, MethodType) and isinstance(val.__self__, BaseSingleHandler):
-                    logger.info(f"[{cls.__name__}][_register_nextabls][dublicate]: {elem_name=}")
-                    continue
+                    pix = _last_dublicates_tree_indexes.get(elem.step_name, 0) + 1
+                    _last_dublicates_tree_indexes[elem.step_name] = pix
 
-                elem.__call__ = val
-                elem.is_custom = True
-                logger.info(f"[{cls.__name__}][_register_nextabls][skip]: {elem_name=}")
+                    elem.name = f"{elem.name}{pix}"
+                    elem.step_name = f"{elem.step_name}{pix}"
+
+                    logger.info(f"[{cls.__name__}][_register_nextabls][dublicate]: {elem_name=}")
+                else:
+                    elem.__call__ = val
+                    elem.is_custom = True
+                    logger.info(f"[{cls.__name__}][_register_nextabls][skip]: {elem_name=}")
             except AttributeError:
                 setattr(cls, elem_name, elem.__call__)
 
@@ -120,7 +126,17 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             if not current_step:
                 return await self.start_point(self, event, state)
 
-            return await self.views[current_step].next(event, state)
+            current = self.views[current_step]
+            
+            if (
+                not self.views.get(f"{current_step}1") 
+                or not (_s := current.elem.tree_head_step_name)
+                or not (choice_index := await self._get_tree_index_choice(state, _s))
+            ):  # possibity of alternative branches
+                return await current.next(event, state)
+
+            return await self.views[f"{current_step}{choice_index}"].next(event, state)
+
         except NotImplementedError:
             return await self.finish(event, state)
 
