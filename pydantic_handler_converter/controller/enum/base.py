@@ -12,7 +12,7 @@ from ..base import BaseController
 
 class BaseEnumController(BaseController):
     def __init__(self, field: ModelField, *args, is_string_allowed: bool = False, **kwargs) -> None:
-        super().__init__(field, *args, **kwargs)
+        super().__init__(field=field, *args, **kwargs)
         self.item_callback_data = f"elem_{self.callback_data}"
         self.is_string_allowed = is_string_allowed
 
