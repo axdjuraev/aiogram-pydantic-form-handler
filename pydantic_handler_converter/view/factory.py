@@ -30,6 +30,9 @@ class ViewFactory(FieldFactory, ABC):
             res = self.create(field=field, **kwargs)
 
             if isinstance(res, Iterable):
+                if (ignore_list := kwargs.get('_except_steps')) is not None:
+                    res = filter(lambda x: x.step_name not in ignore_list, res)
+
                 views.extend(res)
             else:
                 views.append(res)

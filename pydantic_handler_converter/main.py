@@ -48,7 +48,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             'schema': cls.Schema,
             'states': cls.states,
             'dialects': cls.DIALECTS,
-            'parents': (cls.Schema.__name__,)
+            'parents': (cls.Schema.__name__,),
+            '_except_steps': cls._except_steps,
         }
 
         cls.views = cls._register_nextabls(ViewFactory().create_by_schema(**data), set_step_tree_tails=True)
@@ -70,10 +71,12 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         _last_dublicates_tree_indexes = {}
 
         for elem in nextabls:
-            elem_name = elem.name
+            logger.info(f"[{cls.__name__}][_register_nextabls][step_process]: {elem=}")
 
-            if elem.step_name in cls._except_steps:
+            if elem is None or elem.step_name in cls._except_steps:
                 continue
+
+            elem_name = elem.name
 
             try:
                 val = getattr(cls, elem_name)
