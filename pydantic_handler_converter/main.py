@@ -42,7 +42,9 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             item.elem.register2router(self.router)
 
     def __init_subclass__(cls) -> None:
-        super().__init_subclass__()
+        if not super().__init_subclass__():
+            return 
+
         cls.states = SchemaStates.create(cls.Schema)
         data = {
             'schema': cls.Schema,

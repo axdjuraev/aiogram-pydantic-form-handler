@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Type, TypeVar, Generic
+from typing import Optional, Type, TypeVar, Generic, Union
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from pydantic import BaseModel
@@ -18,7 +18,7 @@ class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
     states: StatesGroup
 
     __abstract__ = True
-    def __init_subclass__(cls) -> None:
+    def __init_subclass__(cls) -> Union[bool, None]:
         if cls.__abstract__ and '__abstract__' in cls.__dict__:
             return
 
@@ -34,6 +34,8 @@ class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
 
         if not issubclass(cls.Schema, BaseModel):
             raise e
+
+        return True
 
     @abstractmethod
     async def next(self, event: Event, state: FSMContext, current_step: Optional[str] = None):

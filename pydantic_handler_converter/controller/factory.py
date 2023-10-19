@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Iterable, Optional, Type, Union
+from datetime import date
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 from aiogram.fsm.state import StatesGroup
@@ -12,6 +13,7 @@ from .int import IntController
 from .enum import EnumController
 from .custom_data_str import CustomDataStrController
 from .bool import BoolController
+from .date import DateController
 
 
 class ControllerFactory(FieldFactory, ABC):
@@ -22,6 +24,7 @@ class ControllerFactory(FieldFactory, ABC):
         Enum: EnumController,
         Union[str, Enum]: CustomDataStrController,
         bool: BoolController,
+        date: DateController,
     }
 
     def create4models(self, _: ModelField, models: list[Type[BaseModel]], kwargs: dict):
