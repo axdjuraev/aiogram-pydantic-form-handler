@@ -21,10 +21,10 @@ class BaseController(AbstractController):
         **kwargs,
     ) -> None:
         super().__init__(**kwargs, name_format="{step_name}_ctrl")
+        self.item_callback_data = "ielem"
         self.state = state
         self.filters = filters
         self.callback_data = self._get_callback_data()
-        self.item_callback_data = "ielem"
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_callback_data(self) -> str:
