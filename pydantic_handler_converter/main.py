@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from types import MethodType
 from typing import Awaitable, Callable, Generic, Iterable, Optional, TypeVar
 from aiogram import F, Router
@@ -25,6 +26,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     views: dict[str, CallableWithNext]
     controllers: dict[str, CallableWithNext]
     step_tree_tails: dict[str, list[CallableWithNext]] = {}
+    _except_steps: list = []
 
     def __init__(self, finish_call: Callable[[TBaseSchema, Event, FSMContext], Awaitable], router: Optional[Router] = None) -> None:
         self._finish_call = finish_call
@@ -69,6 +71,9 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
         for elem in nextabls:
             elem_name = elem.name
+
+            if elem.step_name in cls._except_steps:
+                continue
 
             try:
                 val = getattr(cls, elem_name)
