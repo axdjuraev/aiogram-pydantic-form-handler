@@ -10,7 +10,7 @@ from .base import BaseView
 class StrView(BaseView):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.text = self.dialects.INPUT_STR.format(field_name=self.field.name)
+        self.text = self.dialects.INPUT_STR.format(field_name=self.field_name)
     
     @classmethod
     def create(cls, field, **kwargs) -> 'BaseView':
@@ -27,7 +27,7 @@ class CustomDataStrView(BaseView):
         self.getter = getter
         self.is_extra_str = is_extra_str
         self.text = self.dialects.CHOOSE_FROM_LIST_OR_INPUT if is_extra_str else self.dialects.CHOOSE_FROM_LIST
-        self.text = self.text.format(field_name=self.field.name)
+        self.text = self.text.format(field_name=self.field_name)
 
     async def _get_keyboard(self, state: Optional[FSMContext] = None, builder: Optional[InlineKeyboardBuilder] = None):
         if not state:
