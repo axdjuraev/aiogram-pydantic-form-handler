@@ -31,6 +31,9 @@ class CustomDataStrView(BaseView):
         self.text = self.text.format(field_name=self.field.name)
 
     async def _get_keyboard(self, state: FSMContext, builder: Optional[InlineKeyboardBuilder] = None):
+        if not state:
+            return
+
         builder = builder or InlineKeyboardBuilder()
         elems = await self.getter(state)
 
