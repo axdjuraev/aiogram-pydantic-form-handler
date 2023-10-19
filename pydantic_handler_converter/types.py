@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from os import stat
 from typing import Any, Iterable, Optional, Protocol, Union, runtime_checkable
 from aiogram.fsm.context import FSMContext
 from pydantic.fields import ModelField
@@ -13,6 +12,13 @@ class KeyboardItem(dict):
         key: callback_data
         value: text
     """
+
+
+@runtime_checkable
+class DescriptiveSchema(Protocol):
+    @property
+    def __NAME__(self):
+        raise NotImplementedError
 
 
 @runtime_checkable

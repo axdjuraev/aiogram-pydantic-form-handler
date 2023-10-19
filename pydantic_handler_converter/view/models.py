@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from pydantic_handler_converter.abstract_handler import (
     AbstractPydanticFormHandlers as THandler 
 )
-from pydantic_handler_converter.types import Event
+from pydantic_handler_converter.types import Event, DescriptiveSchema
 from .base import BaseView
 
 
@@ -29,11 +29,10 @@ class ModelsView(BaseView):
 
         for index, model in enumerate(self.models_dialects.keys()):
             model_cls_name = model.__name__
+            model_name = model_cls_name
 
-            try:
-                model_name = getattr(model, 'name')
-            except AttributeError:
-                model_name = model_cls_name
+            if isinstance(model, DescriptiveSchema):
+                model_name = model.__NAME__
 
             builder.button(
                 text=model_name,
