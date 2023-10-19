@@ -13,6 +13,8 @@ class BaseDialects(ABC):
     CONTENT_TYPE_NOT_ALLOWED = 'Invalid content type, please select from the available options'
     CHOOSE_FROM_ENUM_OR_INPUT = 'Select or input a value for `{field_name}`'
     CHOOSE_FIELD_TYPE = 'Select type of `{field_name}`'
+    BOOL_CHOICE_YES = 'Yes'
+    BOOL_CHOICE_NO = 'No'
     BACK_BUTTON = 'Back'
     READY_BUTTON = 'Ready'
     SKIP_BUTTON = 'Skip'
@@ -34,6 +36,8 @@ class RuDialects(BaseDialects):
     CHOOSE_FROM_ENUM = 'Выберите из доступных вариантов для `{field_name}`',
     CONTENT_TYPE_NOT_ALLOWED = 'Недопустимый тип контента, выберите из доступных вариантов',
     CHOOSE_FROM_ENUM_OR_INPUT = 'Выберите или введите значение для `{field_name}`',
+    BOOL_CHOICE_YES = 'Да'
+    BOOL_CHOICE_NO = 'Нет'
     BACK_BUTTON = 'Назад',
     READY_BUTTON = 'Готово',
     SKIP_BUTTON = 'Пропустить',

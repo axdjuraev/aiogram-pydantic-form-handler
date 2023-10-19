@@ -11,6 +11,7 @@ from .float import FloatView
 from .int import IntView
 from .enum import EnumView
 from .models import ModelsView
+from .bool import BoolView
 
 
 class ViewFactory(FieldFactory, ABC):
@@ -19,6 +20,7 @@ class ViewFactory(FieldFactory, ABC):
         int: IntView,
         float: FloatView,
         Enum: EnumView,
+        bool: BoolView,
     }
 
     def create_by_schema(self, schema: Type[BaseModel], **kwargs):

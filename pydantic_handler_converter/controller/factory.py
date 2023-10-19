@@ -11,6 +11,7 @@ from .float import FloatController
 from .int import IntController
 from .enum import EnumController
 from .custom_data_str import CustomDataStrController
+from .bool import BoolController
 
 
 class ControllerFactory(FieldFactory, ABC):
@@ -20,6 +21,7 @@ class ControllerFactory(FieldFactory, ABC):
         float: FloatController,
         Enum: EnumController,
         Union[str, Enum]: CustomDataStrController,
+        bool: BoolController,
     }
 
     def create4models(self, _: ModelField, models: list[Type[BaseModel]], kwargs: dict):
