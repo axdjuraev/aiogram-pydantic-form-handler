@@ -1,5 +1,6 @@
 from types import MethodType
 from typing import Optional, Type
+from uuid import uuid4
 from aiogram import F, Router
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
@@ -16,6 +17,7 @@ from .base import BaseView
 
 class ModelsView(BaseView):
     def __init__(self, *args, models_dialects: dict[Type[BaseModel], BaseView], **kwargs) -> None:
+        self.item_callback_data_ = str(uuid4())
         self.models_dialects = models_dialects
         self.model_list_dialects = tuple(self.models_dialects.values())
         super().__init__(*args, **kwargs)
@@ -33,7 +35,7 @@ class ModelsView(BaseView):
 
             builder.button(
                 text=model_name,
-                callback_data=f"{self.item_callback_data}:{index}"
+                callback_data=f"{self.item_callback_data_}:{index}"
             )
 
         return super()._get_keyboard(builder) 
@@ -55,6 +57,6 @@ class ModelsView(BaseView):
         return super().bind(elem)
 
     def register2router(self, router: Router) -> Router:
-        router.callback_query(F.data.startswith(self.item_callback_data), StateFilter(self.state))(self.item_select_handler)
+        router.callback_query(F.data.startswith(self.item_callback_data_))(self.item_select_handler)
         return super().register2router(router)
 
