@@ -30,7 +30,7 @@ class CustomDataStrView(BaseView):
         self.text = self.dialects.CHOOSE_FROM_LIST_OR_INPUT if is_extra_str else self.dialects.CHOOSE_FROM_LIST
         self.text = self.text.format(field_name=self.field.name)
 
-    async def _get_keyboard(self, state: FSMContext, builder: Optional[InlineKeyboardBuilder] = None):
+    async def _get_keyboard(self, state: Optional[FSMContext], builder: Optional[InlineKeyboardBuilder] = None):
         if not state:
             return
 
