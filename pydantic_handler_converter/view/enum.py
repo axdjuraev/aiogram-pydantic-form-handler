@@ -11,7 +11,6 @@ from .base import BaseView
 
 class EnumView(BaseView):
     def __init__(self, field: ModelField, *args, is_string_allowed: bool = False, **kwargs) -> None:
-        self.item_callback_data = None
         self.is_string_allowed = is_string_allowed
         super().__init__(field=field, *args, **kwargs)
         self.text = self.dialects.CHOOSE_FROM_ENUM if not self.is_string_allowed else self.dialects.CHOOSE_FROM_ENUM_OR_INPUT
@@ -28,9 +27,6 @@ class EnumView(BaseView):
         return res
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
-        if self.item_callback_data is None:
-            self.item_callback_data = f"elem_{self.callback_data}"
-
         builder = builder or InlineKeyboardBuilder()
 
         for name, description in self._enum2dict(self.field.type_).items():

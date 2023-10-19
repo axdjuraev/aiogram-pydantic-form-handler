@@ -24,7 +24,6 @@ class StrView(BaseView):
 class CustomDataStrView(BaseView):
     def __init__(self, *args, getter: DataGetterCallable, is_extra_str: bool = False, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.item_callback_data = "ielem"
         self.getter = getter
         self.is_extra_str = is_extra_str
         self.text = self.dialects.CHOOSE_FROM_LIST_OR_INPUT if is_extra_str else self.dialects.CHOOSE_FROM_LIST

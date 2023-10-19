@@ -24,6 +24,7 @@ class BaseController(AbstractController):
         self.state = state
         self.filters = filters
         self.callback_data = self._get_callback_data()
+        self.item_callback_data = "ielem"
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_callback_data(self) -> str:
