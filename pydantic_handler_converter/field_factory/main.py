@@ -25,7 +25,7 @@ class FieldFactory(Model, Enum, Union, Base, ABC):
         logger.debug(f"[{self.__class__.__name__}][create]: {field.name=}; {type_=}; {base_type_name=}")
 
         try: 
-            creator = getattr(self, f'create4{base_type_name}')
+            creator = getattr(self, f'create4{base_type_name}', self.create4type)
         except AttributeError as e:
             logger.error(str(e))
             raise NotImplementedError(f'`{base_type_name}` is not supported metatype in {self.__class__.__name__}')

@@ -23,7 +23,7 @@ class BaseFieldFactory(ABC):
     def create4type(self, field: ModelField, parents: Optional[Iterable[str]] = None, force_type: Optional[type] = None, **kwargs):
         logger.debug(f"[{self.__class__.__name__}][_create_type]: {field.name=}; {parents=};")
 
-        view_cls = self.CONVERT_DIALECTS.get(force_type or field.type_)
+        view_cls = self.CONVERT_DIALECTS.get(force_type or field.type_, self.CONVERT_DIALECTS.get(str))
 
         if view_cls is None:
             raise NotImplementedError(f'`{field.type_}` is not supported in {self.__class__.__name__}')
