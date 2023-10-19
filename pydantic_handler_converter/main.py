@@ -113,6 +113,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
                         while tree_sub_heads and (head := tree_sub_heads.pop()):
                             head.set_previos(tree_head)
 
+                        tree_head = None
+
                     while tree_tails and (tail := tree_tails.pop()):
                         tail.set_next(current)
 
@@ -126,6 +128,12 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
 
             previous_elem = current
             previous_tree_id = current.elem.tree_id
+
+        if tree_head and previous_elem:
+            tree_tails.append(previous_elem)
+
+            for tail in tree_tails:
+                tail._next = None
 
         return res
 
