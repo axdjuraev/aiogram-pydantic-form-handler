@@ -30,9 +30,9 @@ class CustomDataStrView(BaseView):
         self.text = self.dialects.CHOOSE_FROM_LIST_OR_INPUT if is_extra_str else self.dialects.CHOOSE_FROM_LIST
         self.text = self.text.format(field_name=self.field.name)
 
-    async def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
+    async def _get_keyboard(self, state: FSMContext, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()
-        elems = await self.getter()
+        elems = await self.getter(state)
 
         for data, text in elems.items():
             builder.button(
@@ -43,6 +43,6 @@ class CustomDataStrView(BaseView):
         return super()._get_keyboard(builder)
 
     async def main(self, _: THandler, event: Event, state: FSMContext):
-        await event.answer(self.text, reply_markup=(await self._get_keyboard()).as_markup())
+        await event.answer(self.text, reply_markup=(await self._get_keyboard(state)).as_markup())
         await state.set_state(self.state)
 
