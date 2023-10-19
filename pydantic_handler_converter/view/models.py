@@ -1,6 +1,7 @@
 from types import MethodType
 from typing import Optional, Type
 from aiogram import F, Router
+from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -54,6 +55,6 @@ class ModelsView(BaseView):
         return super().bind(elem)
 
     def register2router(self, router: Router) -> Router:
-        router.callback_query(F.data.startswith(self.item_callback_data), *self.filters)(self.item_select_handler)
+        router.callback_query(F.data.startswith(self.item_callback_data), StateFilter(self.state))(self.item_select_handler)
         return super().register2router(router)
 
