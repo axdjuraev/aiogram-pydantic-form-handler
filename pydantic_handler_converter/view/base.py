@@ -18,6 +18,7 @@ class BaseView(AbstractView):
         self, 
         state: State,
         filters: Iterable = tuple(),
+        back_allowed: bool = True,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs, name_format="{step_name}_view")
@@ -28,6 +29,7 @@ class BaseView(AbstractView):
         self.keyboard = self._get_keyboard()
         self.field_name = self.field.field_info.extra.get('short_name') or self.field.name
         self.text = self.dialects.INPUT_STR.format(field_name=self.field_name)
+        self.back_allowed = back_allowed
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
@@ -40,7 +42,7 @@ class BaseView(AbstractView):
             )
 
         logger.debug(f"[{self.__class__.__name__}][_get_keyboard]: {self.is_has_back=}; {locals()=};")
-        if self.is_has_back:
+        if self.is_has_back and self.back_allowed:
             builder.button(
                 text=self.dialects.BACK_BUTTON, 
                 callback_data=self.dialects.BACK_BUTTON_DATA,
