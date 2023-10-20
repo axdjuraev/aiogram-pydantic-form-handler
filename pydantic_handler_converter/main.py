@@ -23,6 +23,8 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
     __abstract__ = True
 
     DIALECTS: BaseDialects = BaseDialects()
+    BACK_ALLOWED = True
+
     views: dict[str, CallableWithNext]
     controllers: dict[str, CallableWithNext]
     step_tree_tails: dict[str, list[CallableWithNext]] = {}
@@ -52,6 +54,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             'dialects': cls.DIALECTS,
             'parents': (cls.Schema.__name__,),
             '_except_steps': cls._except_steps,
+            'back_allowed': cls.BACK_ALLOWED,
         }
 
         cls.views = cls._register_nextabls(ViewFactory().create_by_schema(**data), set_step_tree_tails=True)
