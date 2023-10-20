@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from typing import Any, Iterable, Optional, Union
 from typing import _GenericAlias, GenericAlias  # type: ignore
 from pydantic.fields import ModelField
@@ -27,7 +26,10 @@ class BaseView(AbstractView):
         self.callback_data = self._get_callback_data()
         self.keyboard = self._get_keyboard()
         self.field_name = self.field.field_info.extra.get('short_name') or self.field.name
-        self.text = self.dialects.INPUT_STR.format(field_name=self.field_name)
+        self.text = (
+            self.field.field_info.extra.get('view_text') 
+            or self.dialects.INPUT_STR.format(field_name=self.field_name)
+        )
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):

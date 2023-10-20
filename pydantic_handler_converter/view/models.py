@@ -21,7 +21,10 @@ class ModelsView(BaseView):
         self.models_dialects = models_dialects
         self.model_list_dialects = tuple(self.models_dialects.values())
         super().__init__(*args, **kwargs)
-        self.text = self.dialects.CHOOSE_FIELD_TYPE.format(field_name=self.field_name)
+        self.text = (
+            self.field.field_info.extra.get('view_text') 
+            or self.dialects.CHOOSE_FIELD_TYPE.format(field_name=self.field_name)
+        )
 
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()

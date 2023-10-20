@@ -14,7 +14,11 @@ class EnumView(BaseView):
         self.is_string_allowed = is_string_allowed
         super().__init__(field=field, *args, **kwargs)
         self.text = self.dialects.CHOOSE_FROM_ENUM if not self.is_string_allowed else self.dialects.CHOOSE_FROM_ENUM_OR_INPUT
-        self.text = self.text.format(field_name=self.field_name)
+        self.text = (
+            self.field.field_info.extra.get('view_text') 
+            or self.text.format(field_name=self.field_name)
+        )
+
 
     def _enum2dict(self, enum: Type[Enum]) -> dict:
         res = {}
