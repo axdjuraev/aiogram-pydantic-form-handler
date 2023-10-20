@@ -61,6 +61,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         tree_head_step_name: Optional[str] = None,
         is_has_back: Optional[str] = None,
         name_format: str = "{step_name}",
+        back_allowed: bool = True,
         **_,
     ) -> None:
         self.field = field
@@ -72,6 +73,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         self.tree_id = tree_id
         self.tree_head_step_name = tree_head_step_name
         self.is_has_back = is_has_back
+        self.back_allowed = back_allowed
 
     @abstractmethod
     async def __call__(self, *args: Any, **kwds: Any) -> Any:
