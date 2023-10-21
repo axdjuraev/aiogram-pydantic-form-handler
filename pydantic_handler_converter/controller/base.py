@@ -11,7 +11,7 @@ from aiogram.filters.state import StateFilter
 from pydantic_handler_converter.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_handler_converter.field_factory import logger
 from pydantic_handler_converter.types import Event
-from pydantic_handler_converter.exceptions import DataValidationError
+from pydantic_handler_converter.exceptions import DataValidationError, RequireMultipleError
 
 from .abstract import AbstractController
 
@@ -76,6 +76,8 @@ class BaseController(AbstractController, ABC):
             res = await self.format_data(self_, event, state)
         except DataValidationError as e:
             return await event.answer(e.detail)
+        except RequireMultipleError as e:
+            return await self._setvalue(e.value, state)
 
         await self._setvalue(res, state)
         await self_.next(Event(event), state, self.step_name)  # type: ignore
