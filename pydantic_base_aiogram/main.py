@@ -25,6 +25,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
     BACK_ALLOWED = True
 
     base_cq_prefix: str
+    back_data: Optional[str] = None
     views: dict[str, CallableWithNext]
     controllers: dict[str, CallableWithNext]
     step_tree_tails: dict[str, list[CallableWithNext]] = {}
@@ -43,12 +44,13 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
             item.elem.register2router(self.router)
 
-    def __init_subclass__(cls) -> None:
+    def __init_subclass__(cls, back_data: Optional[str] = None) -> None:
         if not super().__init_subclass__():
             return 
 
         cls.states = SchemaStates.create(cls.Schema)
         cls.base_cq_prefix = cls.Schema.__name__.lower()
+        cls.back_data = back_data
 
         data = {
             'schema': cls.Schema,
@@ -58,6 +60,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
             '_except_steps': cls._except_steps,
             'back_allowed': cls.BACK_ALLOWED,
             'base_cq_prefix': cls.base_cq_prefix,
+            'back_data': cls.back_data,
         }
 
         cls.views = cls._register_nextabls(ViewFactory().create_by_schema(**data), set_step_tree_tails=True)

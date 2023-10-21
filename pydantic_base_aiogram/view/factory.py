@@ -28,7 +28,12 @@ class ViewFactory(FieldFactory, ABC):
         logger.debug(f"[{self.__class__.__name__}][create_by_schema]: {locals()=}")
 
         for index, field in enumerate(schema.__fields__.values()):
-            kwargs['is_has_back'] = bool(views) if index > 0 else kwargs.get('is_has_back', False)
+            if index > 0:
+                kwargs['back_data'] = None
+                kwargs['is_has_back'] = bool(views)  
+            else: 
+                kwargs.get('is_has_back', False)
+
             res = self.create(field=field, **kwargs)
 
             if isinstance(res, Iterable):

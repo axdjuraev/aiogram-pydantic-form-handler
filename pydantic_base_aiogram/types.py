@@ -61,6 +61,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         tree_id: Optional[int] = None,
         tree_head_step_name: Optional[str] = None,
         is_has_back: Optional[str] = None,
+        back_data: Optional[str] = None,
         name_format: str = "{step_name}",
         back_allowed: bool = True,
         base_cq_prefix: str = "_",
@@ -75,6 +76,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         self.tree_id = tree_id
         self.tree_head_step_name = tree_head_step_name
         self.is_has_back = is_has_back
+        self.back_data = back_data
         self.back_allowed = back_allowed
         self.base_cq_prefix = base_cq_prefix
 

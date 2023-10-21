@@ -72,10 +72,13 @@ class BaseView(AbstractView):
                 callback_data=f"{self.base_cq_prefix}_{self.dialects.SKIP_STEP_DATA}",
             )
 
-        if self.is_has_back and self.back_allowed:
+        if (self.is_has_back or self.back_data) and self.back_allowed:
             builder.button(
                 text=self.dialects.BACK_BUTTON, 
-                callback_data=f"{self.base_cq_prefix}_{self.dialects.BACK_BUTTON_DATA}",
+                callback_data=(
+                    self.back_data
+                    or f"{self.base_cq_prefix}_{self.dialects.BACK_BUTTON_DATA}"
+                )
             )
 
         if isinstance(self.field.outer_type_, Union[_GenericAlias, GenericAlias]):
