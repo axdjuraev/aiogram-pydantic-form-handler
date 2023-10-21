@@ -43,8 +43,8 @@ class BaseView(AbstractView):
         return self.dialects.INPUT_STR
 
     @property
-    def extra_keys(self) -> Optional[dict[str, str]]:
-        return self._extra_keys
+    def extra_keys(self) -> dict[str, str]:
+        return (self._extra_keys and self._extra_keys.copy()) or {}
 
     async def get_dynamic_keyboard(self, state: FSMContext, page: int = 1, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()
@@ -62,9 +62,8 @@ class BaseView(AbstractView):
     def _build_base_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()
 
-        if self.extra_keys:
-            for data, text in self.extra_keys.items():
-                builder.button(text=text, callback_data=data)
+        for data, text in self.extra_keys.items():
+            builder.button(text=text, callback_data=data)
 
         if not self.field.required:
             builder.button(

@@ -1,11 +1,9 @@
 from enum import Enum
 from typing import Optional, Type
-from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from pydantic.fields import ModelField
 
-from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
-from pydantic_base_aiogram.types import Event, DescriptiveEnum
+from pydantic_base_aiogram.types import DescriptiveEnum
 from .base import BaseView
 
 
@@ -13,15 +11,15 @@ class EnumView(BaseView):
     def __init__(self, field: ModelField, *args, is_string_allowed: bool = False, **kwargs) -> None:
         self.is_string_allowed = is_string_allowed
         super().__init__(field=field, *args, **kwargs)
-        self.text = self.dialects.CHOOSE_FROM_ENUM if not self.is_string_allowed else self.dialects.CHOOSE_FROM_ENUM_OR_INPUT
-        self.text = (
-            self.field.field_info.extra.get('view_text') 
-            or self.text.format(field_name=self.field_name)
-        )
 
+    @property
+    def view_text_format(self):
+        return self.dialects.CHOOSE_FROM_ENUM if not self.is_string_allowed else self.dialects.CHOOSE_FROM_ENUM_OR_INPUT
 
-    def _enum2dict(self, enum: Type[Enum]) -> dict:
+    @property
+    def _enum2dict(self) -> dict:
         res = {}
+
         for item in enum._member_map_.values():
             res[item.name] = (
                 item.value if not isinstance(item, DescriptiveEnum) 
