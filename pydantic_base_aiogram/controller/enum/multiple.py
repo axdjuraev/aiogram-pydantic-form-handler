@@ -7,10 +7,10 @@ from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
 from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_base_aiogram.types import Event
 
-from .base import BaseEnumController
+from .base import BaseCQCheckboxController
 
 
-class MultipleValueEnumController(BaseEnumController):
+class MultipleCQCheckboxController(BaseCQCheckboxController):
     async def item_selected_handler(self, _: THandler, event: Event[types.CallbackQuery], state: FSMContext):
         key = self._get_pressed_key_by_data(event._event.data, event._event.message.reply_markup)  # type: ignore
 
