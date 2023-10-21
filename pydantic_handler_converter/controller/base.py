@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from types import MethodType
 from typing import Any, Iterable, Union
 from typing import _GenericAlias, GenericAlias  # type: ignore
 from pydantic.fields import ModelField
