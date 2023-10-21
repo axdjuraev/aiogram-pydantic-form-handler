@@ -10,3 +10,7 @@ class DataValidationError(BasePydanticBaseAiogramException):
         super().__init__(*args)
         self.detail = detail
 
+
+class RequireMultipleError(BasePydanticBaseAiogramException):
+    pass
+
