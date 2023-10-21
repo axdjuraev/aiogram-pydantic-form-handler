@@ -2,6 +2,7 @@ from abc import ABC
 
 
 class BaseDialects(ABC):
+    INVALID_TYPE_DATA = 'invalid type of data'
     INPUT = 'Enter a valuef for `{field_name}`'
     CHOOSE_FROM_LIST = 'Choose value for `{field_name}`'
     CHOOSE_FROM_LIST_OR_INPUT = 'Choose or enter value for `{field_name}`'
@@ -28,6 +29,7 @@ class EnDialects(BaseDialects):
 
 
 class RuDialects(BaseDialects):
+    INVALID_TYPE_DATA = 'Неправилный тип данных'
     INPUT = 'Введите значение для `{field_name}`'
     INPUT_STR = 'Введите строку для `{field_name}`'
     INPUT_INT = 'Введите число для `{field_name}`'

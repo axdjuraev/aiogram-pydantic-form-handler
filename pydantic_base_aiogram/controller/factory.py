@@ -7,9 +7,7 @@ from aiogram.fsm.state import StatesGroup
 from enum import Enum
 
 from pydantic_base_aiogram.field_factory import FieldFactory
-from .string import StrController
-from .float import FloatController
-from .int import IntController
+from .type_base_message_text import TypeBaseMessageTextController
 from .enum import EnumController
 from .custom_data_str import CustomDataStrController
 from .bool import BoolController
@@ -18,9 +16,7 @@ from .date import DateController
 
 class ControllerFactory(FieldFactory, ABC):
     CONVERT_DIALECTS = {
-        str: StrController,
-        int: IntController,
-        float: FloatController,
+        str: TypeBaseMessageTextController,
         Enum: EnumController,
         Union[str, Enum]: CustomDataStrController,
         bool: BoolController,
