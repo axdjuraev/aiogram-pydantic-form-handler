@@ -70,6 +70,8 @@ class BaseController(AbstractController, ABC):
     async def main(self, self_: THandler, event: Event, state: FSMContext) -> Any:
         try:
             res = await self.format_data(self_, event, state)
+        except ValueError:
+            return await event.answer(self.dialects.INVALID_TYPE_DATA)
         except DataValidationError as e:
             return await event.answer(e.detail)
         except RequireMultipleError as e:
