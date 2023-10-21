@@ -1,9 +1,9 @@
 from types import MethodType
+from typing import Optional
 from aiogram import F, Router, types
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types.inline_keyboard_button import InlineKeyboardButton
-from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_base_aiogram.types import Event
 
@@ -11,19 +11,26 @@ from .base import BaseCQCheckboxController
 
 
 class MultipleCQCheckboxController(BaseCQCheckboxController):
+    SELECTION_SYMBOL = '+'
+
+    def __init__(self, field, *args, selection_symbol: Optional[str] = None, **kwargs) -> None:
+        super().__init__(field, *args, **kwargs)
+        self.selection_symbol = selection_symbol or self.SELECTION_SYMBOL
+        self.selection_symbol_length = len(self.selection_symbol)
+
     async def item_selected_handler(self, _: THandler, event: Event[types.CallbackQuery], state: FSMContext):
         key = self._get_pressed_key_by_data(event._event.data, event._event.message.reply_markup)  # type: ignore
 
-        if key.text.startswith('+'):
-            key.text = key.text[2:]
+        if key.text.startswith(self.selection_symbol):
+            key.text = key.text[(self.selection_symbol_length + 1):]
         else:
-            key.text = f"+ {key.text}"
+            key.text = f"{self.selection_symbol_length} {key.text}"
 
         await event._event.message.edit_reply_markup(reply_markup=event._event.message.reply_markup)  # type: ignore
         return ...
 
     async def ready(self, self_: THandler, cq: types.CallbackQuery, state: FSMContext):
-        selected_keys = self._get_selections_by_text_symbol(cq.message.reply_markup, '+')  # type: ignore
+        selected_keys = self._get_selections_by_text_symbol(cq.message.reply_markup, self.selection_symbol_length)  # type: ignore
         selections = tuple(map(lambda key: self._validate_data(str(key.callback_data).split(':')[1]), selected_keys))
 
         await self._setvalue(selections, state)
