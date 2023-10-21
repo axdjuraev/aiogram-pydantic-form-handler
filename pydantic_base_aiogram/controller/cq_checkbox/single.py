@@ -10,7 +10,7 @@ from .base import BaseCQCheckboxController
 class SingleCQCheckboxController(BaseCQCheckboxController):
     async def item_selected_handler(self, _: THandler, event: Event[types.CallbackQuery], state: FSMContext):
         try:
-             return str(event._event.data).split(":")[1]
+             return str(event._event.data).split(self.data_split_symbol)[-1]
         except IndexError:
             raise DataValidationError(self.dialects.INVALID_TYPE_DATA)
 

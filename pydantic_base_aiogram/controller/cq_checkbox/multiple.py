@@ -31,7 +31,7 @@ class MultipleCQCheckboxController(BaseCQCheckboxController):
 
     async def ready(self, self_: THandler, cq: types.CallbackQuery, state: FSMContext):
         selected_keys = self._get_selections_by_text_symbol(cq.message.reply_markup, self.selection_symbol_length)  # type: ignore
-        selections = tuple(map(lambda key: self._validate_data(str(key.callback_data).split(':')[1]), selected_keys))
+        selections = tuple(map(lambda key: self._validate_data(str(key.callback_data).split(self.data_split_symbol)[1]), selected_keys))
 
         await self._setvalue(selections, state)
         return await self_.next(Event(cq), state, self.step_name)  # type: ignore

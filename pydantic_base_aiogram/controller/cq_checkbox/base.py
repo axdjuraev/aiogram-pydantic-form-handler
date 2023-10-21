@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import Optional
 from aiogram import F, Router, types
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
@@ -10,9 +11,12 @@ from ..base import BaseController
 
 
 class BaseCQCheckboxController(BaseController):
-    def __init__(self, field: ModelField, *args, is_string_allowed: bool = False, **kwargs) -> None:
+    DATA_SPLIT_SYMBOL = ':'
+
+    def __init__(self, field: ModelField, *args, is_string_allowed: bool = False, data_split_symbol: Optional[str] = None, **kwargs) -> None:
         super().__init__(field=field, *args, **kwargs)
         self.is_string_allowed = is_string_allowed
+        self.data_split_symbol = data_split_symbol or self.DATA_SPLIT_SYMBOL
 
     async def format_data(self, self_: THandler, event: Event, state: FSMContext):
         if isinstance(event._event, types.Message):
