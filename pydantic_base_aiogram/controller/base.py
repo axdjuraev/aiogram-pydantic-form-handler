@@ -77,6 +77,9 @@ class BaseController(AbstractController, ABC):
         except RequireMultipleError as e:
             return await self._setvalue(e.value, state)
 
+        if res is ...:
+            return
+
         await self._setvalue(res, state)
         await self_.next(Event(event), state, self.step_name)  # type: ignore
 
