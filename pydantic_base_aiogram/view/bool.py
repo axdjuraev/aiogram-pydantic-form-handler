@@ -7,12 +7,8 @@ from .base import BaseView
 class BoolView(BaseView):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.text = (
-            self.field.field_info.extra.get('view_text') 
-            or self.dialects.CHOOSE_FROM_LIST.format(field_name=self.field_name)
-        )
 
-    def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
+    def _choice_keys(self, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()
 
         builder.button(

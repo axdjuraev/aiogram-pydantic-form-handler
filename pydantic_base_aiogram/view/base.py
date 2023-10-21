@@ -26,7 +26,7 @@ class BaseView(AbstractView):
         self.state = state
         self.filters = filters
         self.callback_data = self._get_callback_data()
-        self.extra_keys = extra_keys
+        self._extra_keys = extra_keys
         self.getter = getter
         self.is_static_keyboard = self.getter is None
         self.keyboard_page_size = 10
@@ -41,6 +41,10 @@ class BaseView(AbstractView):
     @property
     def view_text_format(self):
         return self.dialects.INPUT_STR
+
+    @property
+    def extra_keys(self) -> Optional[dict[str, str]]:
+        return self._extra_keys
 
     async def get_dynamic_keyboard(self, state: FSMContext, page: int = 1, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()
