@@ -10,10 +10,7 @@ class BoolView(BaseView):
 
     @property
     def extra_keys(self) -> Optional[dict[str, str]]:
-        keys = {}
-        
-        if self._extra_keys:
-            self._extra_keys.update(self._extra_keys)
+        keys = super().extra_keys
 
         keys[f"{self.item_callback_data}:1"] = self.dialects.BOOL_CHOICE_YES
         keys[f"{self.item_callback_data}:0"] = self.dialects.BOOL_CHOICE_NO
