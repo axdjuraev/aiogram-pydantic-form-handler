@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+from types import MethodType
 from typing import Any, Iterable, Union
 from typing import _GenericAlias, GenericAlias  # type: ignore
 from pydantic.fields import ModelField
@@ -9,11 +11,12 @@ from aiogram.filters.state import StateFilter
 from pydantic_handler_converter.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_handler_converter.field_factory import logger
 from pydantic_handler_converter.types import Event
+from pydantic_handler_converter.exceptions import DataValidationError
 
 from .abstract import AbstractController
 
 
-class BaseController(AbstractController):
+class BaseController(AbstractController, ABC):
     def __init__(
         self, 
         state: State,
@@ -64,11 +67,16 @@ class BaseController(AbstractController):
 
         return await self.main(self_, event, state)
 
+    @abstractmethod
+    async def format_data(self, self_: THandler, event: types.Message, state: FSMContext):
+        raise NotImplementedError
+
     async def main(self, self_: THandler, event: types.Message, state: FSMContext) -> Any:
         try:
-            res = self.field.type_(event.text)
-        except ValueError:
-            return await event.delete()
+            res = await self.format_data(self_, event, state)
+        except DataValidationError as e:
+            return await event.answer(e.detail)
+
         await self._setvalue(res, state)
         await self_.next(Event(event), state, self.step_name)  # type: ignore
 
