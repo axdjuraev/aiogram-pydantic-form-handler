@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterable, Optional, Union
+from typing import Any, Iterable, Optional, Union
 from typing import _GenericAlias, GenericAlias  # type: ignore
 from pydantic.fields import ModelField
 from aiogram import F, Router
@@ -29,6 +29,7 @@ class BaseView(AbstractView):
         self.extra_keys = extra_keys
         self.getter = getter
         self.is_static_keyboard = self.getter is None
+        self.keyboard_page_size = 10
         self.keyboard = self._build_base_keyboard() if self.is_static_keyboard else None
         self.field_name = self.field.field_info.extra.get('short_name') or self.field.name
         self.text = (
@@ -40,6 +41,19 @@ class BaseView(AbstractView):
     @property
     def view_text_format(self):
         return self.dialects.INPUT_STR
+
+    async def get_dynamic_keyboard(self, state: FSMContext, page: int = 1, builder: Optional[InlineKeyboardBuilder] = None):
+        builder = builder or InlineKeyboardBuilder()
+
+        if self.getter is not None:
+            for data, text in await self.getter(state, page, self.keyboard_page_size):
+                cd = f"{self.item_callback_data}:{data}"
+                builder.button(
+                    text=text, 
+                    callback_data=cd,
+                )
+
+        return self._build_base_keyboard(builder)
 
     def _build_base_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()
@@ -54,7 +68,6 @@ class BaseView(AbstractView):
                 callback_data=f"{self.base_cq_prefix}_{self.dialects.SKIP_STEP_DATA}",
             )
 
-        logger.debug(f"[{self.__class__.__name__}][_get_keyboard]: {self.is_has_back=}; {locals()=};")
         if self.is_has_back and self.back_allowed:
             builder.button(
                 text=self.dialects.BACK_BUTTON, 
@@ -89,7 +102,14 @@ class BaseView(AbstractView):
         await state.update_data(__step__=self.step_name)
 
     async def main(self, self_: THandler, event: Event, state: FSMContext) -> Any:
-        await event.answer(self.text, state, reply_markup=self.keyboard.as_markup())
+        await event.answer(
+            text=self.text, 
+            state=state, 
+            reply_markup=(
+                self.keyboard if self.keyboard
+                else await self.get_dynamic_keyboard(state)
+            ).as_markup()
+        )
         await state.set_state(self.state)
 
     @classmethod

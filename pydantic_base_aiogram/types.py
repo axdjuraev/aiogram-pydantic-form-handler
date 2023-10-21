@@ -30,7 +30,7 @@ class GetterField(Protocol):
 
 @runtime_checkable
 class DataGetterCallable(Protocol):
-    async def __call__(self, state: FSMContext) -> KeyboardItem:
+    async def __call__(self, state: FSMContext, page: int = 1, page_size: int = 10) -> KeyboardItem:
         raise NotImplementedError
 
 
@@ -64,7 +64,6 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         name_format: str = "{step_name}",
         back_allowed: bool = True,
         base_cq_prefix: str = "_",
-        extra_keys: Optional[str] = None,
         **_,
     ) -> None:
         self.field = field
