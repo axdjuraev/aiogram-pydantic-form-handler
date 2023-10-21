@@ -1,7 +1,7 @@
-from pydantic_base_aiogram.controller.enum.multiple import MultipleValueEnumController
+from pydantic_base_aiogram.controller.cq_checkbox.multiple import MultipleCQCheckboxController
 from .base import BaseCustomDataController
 
 
-class MultipleValueCustomDataController(MultipleValueEnumController, BaseCustomDataController):
+class MultipleValueCustomDataController(MultipleCQCheckboxController, BaseCustomDataController):
     pass
 

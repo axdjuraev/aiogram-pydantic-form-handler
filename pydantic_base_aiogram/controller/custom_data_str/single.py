@@ -1,8 +1,8 @@
-from pydantic_base_aiogram.controller.enum.single import SingleValueEnumController
+from pydantic_base_aiogram.controller.cq_checkbox.single import SingleCQCheckboxController
 
 from .base import BaseCustomDataController
 
 
-class SingleValueCustomDataController(SingleValueEnumController, BaseCustomDataController):
+class SingleValueCustomDataController(SingleCQCheckboxController, BaseCustomDataController):
     pass
 
