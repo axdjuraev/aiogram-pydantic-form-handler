@@ -1,7 +1,7 @@
-from .main import BasePydanticFormHandlers
+from .main import SchemaBaseHandlersGroup
 
 
 __all__ = [
-    'BasePydanticFormHandlers',
+    'SchemaBaseHandlersGroup',
 ]
 

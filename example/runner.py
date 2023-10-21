@@ -5,7 +5,7 @@ from aiogram.filters.command import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from pydantic import BaseSettings
-from pydantic_base_aiogram import BasePydanticFormHandlers
+from pydantic_base_aiogram import SchemaBaseHandlersGroup
 
 
 class Settings(BaseSettings):
@@ -15,7 +15,7 @@ class Settings(BaseSettings):
         env_file = '.env'
 
 
-async def _main(handler_group: BasePydanticFormHandlers, settings: Optional[Settings] = None):
+async def _main(handler_group: SchemaBaseHandlersGroup, settings: Optional[Settings] = None):
     router = Router()
     handler_group.register2router(router)
 
@@ -31,7 +31,7 @@ async def _main(handler_group: BasePydanticFormHandlers, settings: Optional[Sett
         await dp.start_polling(bot)
 
 
-def main(handler_group: BasePydanticFormHandlers, settings: Optional[Settings] = None):
+def main(handler_group: SchemaBaseHandlersGroup, settings: Optional[Settings] = None):
     import sys
     import logging
     import asyncio

@@ -19,7 +19,7 @@ from .state_builder import SchemaStates
 TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
 
 
-class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generic[TBaseSchema]):
+class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic[TBaseSchema]):
     __abstract__ = True
 
     DIALECTS: BaseDialects = BaseDialects()
