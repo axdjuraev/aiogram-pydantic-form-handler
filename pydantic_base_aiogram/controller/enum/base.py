@@ -9,7 +9,7 @@ from pydantic_base_aiogram.types import Event
 from ..base import BaseController
 
 
-class BaseEnumController(BaseController):
+class BaseCQCheckboxController(BaseController):
     def __init__(self, field: ModelField, *args, is_string_allowed: bool = False, **kwargs) -> None:
         super().__init__(field=field, *args, **kwargs)
         self.is_string_allowed = is_string_allowed
