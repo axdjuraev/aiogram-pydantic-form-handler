@@ -1,9 +1,3 @@
-from typing import Optional
-from aiogram.fsm.context import FSMContext
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-
-from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
-from pydantic_base_aiogram.types import Event, DataGetterCallable
 from .base import BaseView
 
 
@@ -18,34 +12,14 @@ class StrView(BaseView):
 
 
 class CustomDataStrView(BaseView):
-    def __init__(self, *args, getter: DataGetterCallable, is_extra_str: bool = False, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.getter = getter
+    def __init__(self, *args, is_extra_str: bool = False, **kwargs) -> None:
         self.is_extra_str = is_extra_str
-        self.text = self.dialects.CHOOSE_FROM_LIST_OR_INPUT if is_extra_str else self.dialects.CHOOSE_FROM_LIST
-        self.text = (
-            self.field.field_info.extra.get('view_text') 
-            or self.text.format(field_name=self.field_name)
+        super().__init__(*args, **kwargs)
+
+    @property
+    def view_text_format(self):
+        return (
+            self.dialects.CHOOSE_FROM_LIST_OR_INPUT if self.is_extra_str 
+            else self.dialects.CHOOSE_FROM_LIST
         )
-
-    async def _get_keyboard(self, state: Optional[FSMContext] = None, builder: Optional[InlineKeyboardBuilder] = None):
-        if not state:
-            return
-
-        builder = builder or InlineKeyboardBuilder()
-        elems = await self.getter(state)
-
-        for data, text in elems.items():
-            cd = f"{self.item_callback_data}:{data}"
-
-            builder.button(
-                text=text, 
-                callback_data=cd,
-            )
-
-        return super()._get_keyboard(builder)
-
-    async def main(self, _: THandler, event: Event, state: FSMContext):
-        await event.answer(self.text, reply_markup=(await self._get_keyboard(state)).as_markup())
-        await state.set_state(self.state)
 
