@@ -93,7 +93,7 @@ class BaseController(AbstractController, ABC):
             return
 
         await self._setvalue(res, state)
-        await self_.next(Event(event), state, self.step_name)  # type: ignore
+        await self_.next(event, state, self.step_name)
 
     def register2router(self, router: Router) -> Router:
         router.message(StateFilter(self.state))(self.__call__)
