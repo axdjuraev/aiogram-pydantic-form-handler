@@ -27,8 +27,8 @@ class BaseView(AbstractView):
         self.state = state
         self.filters = filters
         self.callback_data = self._get_callback_data()
-        self._extra_keys = extra_keys
-        self.getter = getter
+        self._extra_keys = extra_keys or self.field.field_info.extra.get('extra_keys')
+        self.getter = getter or self.field.field_info.extra.get('getter')
         self.is_static_keyboard = self.getter is None
         self.keyboard_page_size = 10
         self.keyboard = self._build_base_keyboard() if self.is_static_keyboard else None
