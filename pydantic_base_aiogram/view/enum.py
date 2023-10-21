@@ -18,7 +18,7 @@ class EnumView(BaseView):
         res = super().extra_keys
 
         for item in self.field.type_._member_map_.values():
-            res[item.name] = (
+            res[f"{self.item_callback_data}:{item.name}"] = (
                 str(item.value) if not isinstance(item, DescriptiveEnum) 
                 else item.description
             )
