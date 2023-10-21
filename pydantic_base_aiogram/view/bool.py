@@ -1,5 +1,3 @@
-from typing import Optional
-
 from .base import BaseView 
 
 
@@ -9,7 +7,7 @@ class BoolView(BaseView):
         return self.dialects.CHOOSE_FROM_LIST
 
     @property
-    def extra_keys(self) -> Optional[dict[str, str]]:
+    def extra_keys(self) -> dict[str, str]:
         keys = super().extra_keys
 
         keys[f"{self.item_callback_data}:1"] = self.dialects.BOOL_CHOICE_YES
