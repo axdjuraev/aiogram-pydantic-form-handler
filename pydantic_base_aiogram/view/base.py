@@ -13,6 +13,8 @@ from .abstract import AbstractView
 
 
 class BaseView(AbstractView):
+    VIEW_TEXT_FORMAT_KEY = 'INPUT_STR' 
+
     def __init__(
         self, 
         state: State,
@@ -33,7 +35,7 @@ class BaseView(AbstractView):
         self.field_name = self.field.field_info.extra.get('short_name') or self.field.name
         self.text = (
             self.field.field_info.extra.get('view_text') 
-            or self.dialects.INPUT_STR.format(field_name=self.field_name)
+            or getattr(self.dialects, 'INPUT_STR').format(field_name=self.field_name)
         )
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
