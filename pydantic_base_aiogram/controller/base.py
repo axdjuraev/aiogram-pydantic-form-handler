@@ -61,16 +61,13 @@ class BaseController(AbstractController, ABC):
         await state.update_data(**data)
 
     async def __call__(self, self_: THandler, event: types.Message, state: FSMContext) -> Any:
-        if not event.text:
-            return await event.delete()
-
-        return await self.main(self_, event, state)
+        return await self.main(self_, Event(event), state)  # type: ignore
 
     @abstractmethod
-    async def format_data(self, self_: THandler, event: types.Message, state: FSMContext):
+    async def format_data(self, self_: THandler, event: Event, state: FSMContext):
         raise NotImplementedError
 
-    async def main(self, self_: THandler, event: types.Message, state: FSMContext) -> Any:
+    async def main(self, self_: THandler, event: Event, state: FSMContext) -> Any:
         try:
             res = await self.format_data(self_, event, state)
         except DataValidationError as e:
