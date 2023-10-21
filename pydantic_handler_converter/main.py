@@ -187,6 +187,9 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         except NotImplementedError:
             return await self.start_point(self, event, state)
 
+    async def skip(self, event: CallbackQuery, state: FSMContext):
+        return await self.back(event, state)
+
     async def finish(self, event: Event, state: FSMContext):
         data = await state.get_data()
         logger.debug(f"[{self.__class__.__name__}][finish]: {locals()=}")
@@ -201,6 +204,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
         return (await state.get_data()).get(f'__tree_choice_{step_name}__')
 
     def register2router(self, router: Router) -> Router:
-        router.callback_query(F.data == self.DIALECTS.BACK_BUTTON_DATA)(self.back)
+        router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.BACK_BUTTON_DATA}")(self.back)
+        router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.SKIP_STEP_DATA}")(self.skip)
         return router.include_router(self.router)
 
