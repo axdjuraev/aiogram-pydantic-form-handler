@@ -1,24 +1,22 @@
 from typing import Optional
 
-from aiogram.utils.keyboard import InlineKeyboardBuilder
 from .base import BaseView 
 
 
 class BoolView(BaseView):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    @property
+    def view_text_format(self):
+        return self.dialects.CHOOSE_FROM_LIST
 
-    def _choice_keys(self, builder: Optional[InlineKeyboardBuilder] = None):
-        builder = builder or InlineKeyboardBuilder()
+    @property
+    def extra_keys(self) -> Optional[dict[str, str]]:
+        keys = {}
+        
+        if self._extra_keys:
+            self._extra_keys.update(self._extra_keys)
 
-        builder.button(
-            text=self.dialects.BOOL_CHOICE_YES,
-            callback_data=f"{self.item_callback_data}:1",
-        )
-        builder.button(
-            text=self.dialects.BOOL_CHOICE_NO,
-            callback_data=f"{self.item_callback_data}:0",
-        )
+        keys[f"{self.item_callback_data}:1"] = self.dialects.BOOL_CHOICE_YES
+        keys[f"{self.item_callback_data}:0"] = self.dialects.BOOL_CHOICE_NO
 
-        return super()._get_keyboard(builder)
+        return keys
 
