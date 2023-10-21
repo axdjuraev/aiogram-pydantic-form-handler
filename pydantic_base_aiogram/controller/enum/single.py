@@ -4,10 +4,10 @@ from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers 
 from pydantic_base_aiogram.exceptions import DataValidationError
 from pydantic_base_aiogram.types import Event
 
-from .base import BaseEnumController
+from .base import BaseCQCheckboxController
 
 
-class SingleValueEnumController(BaseEnumController):
+class SingleCQCheckboxController(BaseCQCheckboxController):
     async def item_selected_handler(self, _: THandler, event: Event[types.CallbackQuery], state: FSMContext):
         try:
              return str(event._event.data).split(":")[1]
