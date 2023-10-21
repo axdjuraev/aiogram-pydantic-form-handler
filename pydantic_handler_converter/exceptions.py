@@ -1,5 +1,11 @@
+from abc import ABC
 
-class DataValidationError(Exception):
+
+class BasePydanticBaseAiogramException(Exception, ABC):
+    pass
+
+
+class DataValidationError(BasePydanticBaseAiogramException):
     def __init__(self, detail: str, *args: object) -> None:
         super().__init__(*args)
         self.detail = detail
