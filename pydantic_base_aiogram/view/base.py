@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Callable, Iterable, Optional, Union
 from typing import _GenericAlias, GenericAlias  # type: ignore
 from pydantic.fields import ModelField
 from aiogram import F, Router
@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.state import State
 
-from pydantic_base_aiogram.types import Event
+from pydantic_base_aiogram.types import DataGetterCallable, Event
 from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_base_aiogram.field_factory import logger
 from .abstract import AbstractView
@@ -17,6 +17,8 @@ class BaseView(AbstractView):
         self, 
         state: State,
         filters: Iterable = tuple(),
+        extra_keys: Optional[dict[str, str]] = None,
+        getter: Optional[DataGetterCallable] = None,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs, name_format="{step_name}_view")
@@ -24,7 +26,10 @@ class BaseView(AbstractView):
         self.state = state
         self.filters = filters
         self.callback_data = self._get_callback_data()
-        self.keyboard = self._get_keyboard()
+        self.extra_keys = extra_keys
+        self.getter = getter
+        self.is_static_keyboard = self.getter is None
+        self.keyboard = self._build_base_keyboard() if self.is_static_keyboard else None
         self.field_name = self.field.field_info.extra.get('short_name') or self.field.name
         self.text = (
             self.field.field_info.extra.get('view_text') 
@@ -32,13 +37,12 @@ class BaseView(AbstractView):
         )
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
-    def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
+    def _build_base_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()
 
-        skip_data = f'{self.base_cq_prefix}_{self.dialects.SKIP_STEP_DATA}'
-        logger.debug(f"[{self.__class__.__name__}][__init__]: {skip_data=}")
-
-        # raise NotImplementedError
+        if self.extra_keys:
+            for data, text in self.extra_keys.items():
+                builder.button(text=text, callback_data=data)
 
         if not self.field.required:
             builder.button(

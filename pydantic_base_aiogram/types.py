@@ -64,6 +64,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         name_format: str = "{step_name}",
         back_allowed: bool = True,
         base_cq_prefix: str = "_",
+        extra_keys: Optional[str] = None,
         **_,
     ) -> None:
         self.field = field
