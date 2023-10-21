@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any, Iterable, Optional, Protocol, Union, runtime_checkable
+from typing import Any, Generic, Iterable, Optional, Protocol, TypeVar, Union, runtime_checkable
 from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery, Message
 from pydantic.fields import ModelField
 from pydantic_base_aiogram.utils.step import get_step_name
 from pydantic_base_aiogram.dialecsts import BaseDialects
@@ -149,11 +150,11 @@ class CallableWithNext:
         return await self._move(self._next, args, kwargs)
 
 
-TEvent = Union[EditAbleEvent, AnswerAbleEvent]
+TEvent = TypeVar('TEvent', bound=Union[EditAbleEvent, AnswerAbleEvent, Message, CallbackQuery])
 
 
-class Event:
-    def __init__(self, event: Union[AnswerAbleEvent, EditAbleEvent]) -> None:
+class Event(Generic[TEvent]):
+    def __init__(self, event: TEvent) -> None:
         self._event = event
         self._answer = event.message.edit_text if isinstance(event, EditAbleEvent) else event.answer
         self.default_parse_mode = 'Markdown'
@@ -179,14 +180,14 @@ class Event:
         await self._set_stack(state, [])
 
     async def answer(self, text: str, state: Optional[FSMContext] = None, *, reply_markup = None, **kwargs):
-        if state:
+        if state and isinstance(self._event, AnswerAbleEvent):
             await self.clear_stack(state)
 
         kwargs['parse_mode'] = kwargs.get('parse_mode', self.default_parse_mode)
         res = await self._answer(text, reply_markup=reply_markup, **kwargs)
 
-        if reply_markup and state:
-            await self.add_stack_message(state, res.message_id)
+        if reply_markup and state and hasattr(res, 'message_id'):
+            await self.add_stack_message(state, getattr(res, 'message_id'))
 
         return res
 
