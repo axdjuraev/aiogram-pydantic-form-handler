@@ -60,7 +60,7 @@ class BaseController(AbstractController, ABC):
 
         await state.update_data(**data)
 
-    async def __call__(self, self_: THandler, event: types.Message, state: FSMContext) -> Any:
+    async def __call__(self, self_: THandler, event: Union[types.Message, types.CallbackQuery], state: FSMContext) -> Any:
         return await self.main(self_, Event(event), state)  # type: ignore
 
     @abstractmethod
