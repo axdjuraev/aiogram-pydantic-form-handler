@@ -19,10 +19,11 @@ class BaseView(AbstractView):
         filters: Iterable = tuple(),
         extra_keys: Optional[dict[str, str]] = None,
         getter: Optional[DataGetterCallable] = None,
+        item_callback_data: Optional[str] = None,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs, name_format="{step_name}_view")
-        self.item_callback_data = "ielem"
+        self.item_callback_data = item_callback_data or "ielem"
         self.state = state
         self.filters = filters
         self.callback_data = self._get_callback_data()
