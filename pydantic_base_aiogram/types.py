@@ -182,7 +182,7 @@ class Event(Generic[TEvent]):
         await self._set_stack(state, [])
 
     async def answer(self, text: str, state: Optional[FSMContext] = None, *, reply_markup = None, **kwargs):
-        if state and isinstance(self._event, AnswerAbleEvent):
+        if state and not isinstance(self._event, EditAbleEvent):
             await self.clear_stack(state)
 
         kwargs['parse_mode'] = kwargs.get('parse_mode', self.default_parse_mode)
