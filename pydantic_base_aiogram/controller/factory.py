@@ -8,10 +8,10 @@ from enum import Enum
 
 from pydantic_base_aiogram.field_factory import FieldFactory
 from .type_base_message_text import TypeBaseMessageTextController
+from .date_message_text import DateMessageTextController
 from .enum import EnumController
 from .custom_data_str import CustomDataStrController
 from .bool import BoolController
-from .date import DateController
 
 
 class ControllerFactory(FieldFactory, ABC):
@@ -20,7 +20,7 @@ class ControllerFactory(FieldFactory, ABC):
         Enum: EnumController,
         Union[str, Enum]: CustomDataStrController,
         bool: BoolController,
-        date: DateController,
+        date: DateMessageTextController,
     }
 
     def create4models(self, _: ModelField, models: list[Type[BaseModel]], kwargs: dict):
