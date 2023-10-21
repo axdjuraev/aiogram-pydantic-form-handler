@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Iterable, Union
+from typing import Any, Awaitable, Callable, Iterable, Optional, Union
 from typing import _GenericAlias, GenericAlias  # type: ignore
 from pydantic.fields import ModelField
 from aiogram import Router, types
@@ -20,6 +20,8 @@ class BaseController(AbstractController, ABC):
         self, 
         state: State,
         filters: Iterable = tuple(),
+        async_data_validator: Optional[Callable[[Event, FSMContext], Awaitable[Any]]] = None,
+        data_validator: Optional[Callable[[Event, FSMContext], Any]] = None,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs, name_format="{step_name}_ctrl")
@@ -27,6 +29,8 @@ class BaseController(AbstractController, ABC):
         self.state = state
         self.filters = filters
         self.callback_data = self._get_callback_data()
+        self._async_data_validator = async_data_validator or self.field.field_info.extra.get('async_data_validator')
+        self._data_validator = data_validator or self.field.field_info.extra.get('data_validator')
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_callback_data(self) -> str:
@@ -66,10 +70,18 @@ class BaseController(AbstractController, ABC):
     @abstractmethod
     async def format_data(self, self_: THandler, event: Event, state: FSMContext):
         raise NotImplementedError
+    
+    async def validate_data_format(self, self_, event, state):
+        if self._async_data_validator:
+            return await self._async_data_validator(event, state)
+        if self._data_validator:
+            return self._data_validator(event, state)
+
+        return await self.format_data(self_, event, state)
 
     async def main(self, self_: THandler, event: Event, state: FSMContext) -> Any:
         try:
-            res = await self.format_data(self_, event, state)
+            res = await self.validate_data_format(self_, event, state)
         except ValueError:
             return await event.answer(self.dialects.INVALID_TYPE_DATA)
         except DataValidationError as e:
