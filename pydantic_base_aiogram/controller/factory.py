@@ -9,7 +9,7 @@ from enum import Enum
 from pydantic_base_aiogram.field_factory import FieldFactory
 from .type_base_message_text import TypeBaseMessageTextController
 from .date_message_text import DateMessageTextController
-from .enum import EnumController
+from .cq_checkbox import CQCheckboxController
 from .custom_data_str import CustomDataStrController
 from .bool import BoolController
 
@@ -17,7 +17,7 @@ from .bool import BoolController
 class ControllerFactory(FieldFactory, ABC):
     CONVERT_DIALECTS = {
         str: TypeBaseMessageTextController,
-        Enum: EnumController,
+        Enum: CQCheckboxController,
         Union[str, Enum]: CustomDataStrController,
         bool: BoolController,
         date: DateMessageTextController,
