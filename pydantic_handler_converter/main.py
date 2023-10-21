@@ -188,7 +188,7 @@ class BasePydanticFormHandlers(AbstractPydanticFormHandlers[TBaseSchema], Generi
             return await self.start_point(self, event, state)
 
     async def skip(self, event: CallbackQuery, state: FSMContext):
-        return await self.back(event, state)
+        return await self.next(Event(event), state)  # type: ignore
 
     async def finish(self, event: Event, state: FSMContext):
         data = await state.get_data()

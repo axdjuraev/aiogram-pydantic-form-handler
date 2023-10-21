@@ -35,6 +35,11 @@ class BaseView(AbstractView):
     def _get_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
         builder = builder or InlineKeyboardBuilder()
 
+        skip_data = f'{self.base_cq_prefix}_{self.dialects.SKIP_STEP_DATA}'
+        logger.debug(f"[{self.__class__.__name__}][__init__]: {skip_data=}")
+
+        # raise NotImplementedError
+
         if not self.field.required:
             builder.button(
                 text=self.dialects.SKIP_BUTTON,
