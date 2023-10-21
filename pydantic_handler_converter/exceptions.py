@@ -12,5 +12,7 @@ class DataValidationError(BasePydanticBaseAiogramException):
 
 
 class RequireMultipleError(BasePydanticBaseAiogramException):
-    pass
+    def __init__(self, value, *args: object) -> None:
+        super().__init__(*args)
+        self.value = value
 
