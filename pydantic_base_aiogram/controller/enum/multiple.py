@@ -11,15 +11,16 @@ from .base import BaseEnumController
 
 
 class MultipleValueEnumController(BaseEnumController):
-    async def item_selected_handler(self, self_: THandler, cq: types.CallbackQuery, state: FSMContext):
-        key = self._get_pressed_key_by_data(cq.data, cq.message.reply_markup)  # type: ignore
+    async def item_selected_handler(self, _: THandler, event: Event[types.CallbackQuery], state: FSMContext):
+        key = self._get_pressed_key_by_data(event._event.data, event._event.message.reply_markup)  # type: ignore
 
         if key.text.startswith('+'):
             key.text = key.text[2:]
         else:
             key.text = f"+ {key.text}"
 
-        await cq.message.edit_reply_markup(reply_markup=cq.message.reply_markup)  # type: ignore
+        await event._event.message.edit_reply_markup(reply_markup=event._event.message.reply_markup)  # type: ignore
+        return ...
 
     async def ready(self, self_: THandler, cq: types.CallbackQuery, state: FSMContext):
         selected_keys = self._get_selections_by_text_symbol(cq.message.reply_markup, '+')  # type: ignore
