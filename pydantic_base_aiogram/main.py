@@ -1,4 +1,3 @@
-from contextlib import contextmanager
 from types import MethodType
 from typing import Awaitable, Callable, Generic, Iterable, Optional, TypeVar
 from aiogram import F, Router
