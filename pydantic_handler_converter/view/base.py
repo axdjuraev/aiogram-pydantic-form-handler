@@ -38,14 +38,14 @@ class BaseView(AbstractView):
         if not self.field.required:
             builder.button(
                 text=self.dialects.SKIP_BUTTON,
-                callback_data=self.dialects.SKIP_STEP_DATA,
+                callback_data=f"{self.base_cq_prefix}_{self.dialects.SKIP_STEP_DATA}",
             )
 
         logger.debug(f"[{self.__class__.__name__}][_get_keyboard]: {self.is_has_back=}; {locals()=};")
         if self.is_has_back and self.back_allowed:
             builder.button(
                 text=self.dialects.BACK_BUTTON, 
-                callback_data=self.dialects.BACK_BUTTON_DATA,
+                callback_data=f"{self.base_cq_prefix}_{self.dialects.BACK_BUTTON_DATA}",
             )
 
         if isinstance(self.field.outer_type_, Union[_GenericAlias, GenericAlias]):
