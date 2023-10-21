@@ -2,8 +2,8 @@ from typing import Optional
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from pydantic_handler_converter.abstract_handler import AbstractPydanticFormHandlers as THandler
-from pydantic_handler_converter.types import Event, DataGetterCallable
+from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
+from pydantic_base_aiogram.types import Event, DataGetterCallable
 from .base import BaseView
 
 

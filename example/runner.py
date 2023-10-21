@@ -5,7 +5,7 @@ from aiogram.filters.command import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from pydantic import BaseSettings
-from pydantic_handler_converter import BasePydanticFormHandlers
+from pydantic_base_aiogram import BasePydanticFormHandlers
 
 
 class Settings(BaseSettings):

@@ -5,7 +5,7 @@ making it easy to create form-filling handlers.
 
 ## Installation
 ```bash
-    pip install pydantic_handler_converter
+    pip install pydantic_base_aiogram
 ```
 
 ## Usage:
@@ -14,7 +14,7 @@ making it easy to create form-filling handlers.
 >>> from enum import Enum
 >>> from typing import Union
 >>> from pydantic import BaseModel
->>> from pydantic_handler_converter import BasePydanticFormHandlers
+>>> from pydantic_base_aiogram import BasePydanticFormHandlers
 
 # ----------------------------------------Simple datatypes schema--------------------------------------
 

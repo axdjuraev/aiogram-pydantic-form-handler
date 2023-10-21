@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Iterable, Optional, Protocol, Union, runtime_checkable
 from aiogram.fsm.context import FSMContext
 from pydantic.fields import ModelField
-from pydantic_handler_converter.utils.step import get_step_name
-from pydantic_handler_converter.dialecsts import BaseDialects
+from pydantic_base_aiogram.utils.step import get_step_name
+from pydantic_base_aiogram.dialecsts import BaseDialects
 from aiogram import Router
 
 

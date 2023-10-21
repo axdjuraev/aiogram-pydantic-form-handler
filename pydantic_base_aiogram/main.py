@@ -6,8 +6,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from pydantic import BaseModel
 
-from pydantic_handler_converter.dialecsts import BaseDialects
-from pydantic_handler_converter.types import Event, CallableWithNext, BaseSingleHandler
+from pydantic_base_aiogram.dialecsts import BaseDialects
+from pydantic_base_aiogram.types import Event, CallableWithNext, BaseSingleHandler
 
 from .view import ViewFactory
 from .controller import ControllerFactory

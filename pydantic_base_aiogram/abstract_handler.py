@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from pydantic import BaseModel
 
-from pydantic_handler_converter.types import Event
+from pydantic_base_aiogram.types import Event
 
 from .view.abstract import AbstractView
 

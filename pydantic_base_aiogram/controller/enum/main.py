@@ -1,4 +1,4 @@
-from pydantic_handler_converter.field_factory import MultiSingeSplitter
+from pydantic_base_aiogram.field_factory import MultiSingeSplitter
 
 from .single import SingleValueEnumController as Single
 from .multiple import MultipleValueEnumController as Multiple

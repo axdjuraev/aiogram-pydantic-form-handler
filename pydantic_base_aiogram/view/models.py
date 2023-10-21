@@ -8,10 +8,10 @@ from aiogram.types import CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from pydantic import BaseModel
 
-from pydantic_handler_converter.abstract_handler import (
+from pydantic_base_aiogram.abstract_handler import (
     AbstractPydanticFormHandlers as THandler 
 )
-from pydantic_handler_converter.types import Event, DescriptiveSchema
+from pydantic_base_aiogram.types import Event, DescriptiveSchema
 from .base import BaseView
 
 

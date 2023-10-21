@@ -4,8 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from pydantic.fields import ModelField
 
-from pydantic_handler_converter.abstract_handler import AbstractPydanticFormHandlers as THandler
-from pydantic_handler_converter.types import Event, DescriptiveEnum
+from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
+from pydantic_base_aiogram.types import Event, DescriptiveEnum
 from .base import BaseView
 
 

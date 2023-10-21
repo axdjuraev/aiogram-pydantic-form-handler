@@ -6,7 +6,7 @@ from pydantic.fields import ModelField
 from aiogram.fsm.state import StatesGroup
 from enum import Enum
 
-from pydantic_handler_converter.field_factory import FieldFactory
+from pydantic_base_aiogram.field_factory import FieldFactory
 from .string import StrController
 from .float import FloatController
 from .int import IntController

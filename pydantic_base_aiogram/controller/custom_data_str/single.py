@@ -1,4 +1,4 @@
-from pydantic_handler_converter.controller.enum.single import SingleValueEnumController
+from pydantic_base_aiogram.controller.enum.single import SingleValueEnumController
 
 from .base import BaseCustomDataController
 

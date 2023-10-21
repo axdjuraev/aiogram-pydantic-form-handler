@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pydantic-handler-converter"
+name = "pydantic-base-aiogram"
 version = "0.1.112"
 description = "This code simplifies the conversion of Pydantic schemas into Aiogram handler groups, making it easy to create form-filling handlers."
 authors = ["axdjuraev <axdjuraev@gmail.com>"]

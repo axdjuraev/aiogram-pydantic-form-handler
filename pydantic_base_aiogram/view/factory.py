@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from pydantic.fields import ModelField
 from enum import Enum
 
-from pydantic_handler_converter.field_factory import FieldFactory, logger
-from pydantic_handler_converter.utils.step import get_step_name
+from pydantic_base_aiogram.field_factory import FieldFactory, logger
+from pydantic_base_aiogram.utils.step import get_step_name
 from .string import StrView
 from .float import FloatView
 from .int import IntView

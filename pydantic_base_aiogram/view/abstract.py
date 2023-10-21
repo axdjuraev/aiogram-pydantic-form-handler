@@ -4,15 +4,15 @@ from typing import Any
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 
-from pydantic_handler_converter.field_factory import logger
+from pydantic_base_aiogram.field_factory import logger
 from ..types import TEvent, BaseSingleHandler
 
 
-class AbstractController(BaseSingleHandler):
-    def bind(self, elem):
+class AbstractView(BaseSingleHandler):
+    def bind(self, elem) -> 'BaseSingleHandler':
         self.__call__ = MethodType(self.__call__, elem)
-        logger.debug(f"[{self.__class__.__name__}][{self.name}][bind]: {locals()=};")
-
+        logger.debug(f"[{self.__class__.__name__}][bind]: {locals()=};")
+        
         return self
 
     @abstractmethod

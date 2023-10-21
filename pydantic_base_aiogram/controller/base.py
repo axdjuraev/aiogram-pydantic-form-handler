@@ -7,10 +7,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
 from aiogram.filters.state import StateFilter
 
-from pydantic_handler_converter.abstract_handler import AbstractPydanticFormHandlers as THandler
-from pydantic_handler_converter.field_factory import logger
-from pydantic_handler_converter.types import Event
-from pydantic_handler_converter.exceptions import DataValidationError, RequireMultipleError
+from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
+from pydantic_base_aiogram.field_factory import logger
+from pydantic_base_aiogram.types import Event
+from pydantic_base_aiogram.exceptions import DataValidationError, RequireMultipleError
 
 from .abstract import AbstractController
 

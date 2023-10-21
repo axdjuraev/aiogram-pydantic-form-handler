@@ -69,7 +69,7 @@
 ... 
 ... 
 >>> #--------------------------------using-converter---------------------------------
->>> from pydantic_handler_converter import BasePydanticFormHandlers
+>>> from pydantic_base_aiogram import BasePydanticFormHandlers
 >>>
 >>>
 >>> class TicketHandlers(BasePydanticFormHandlers[TicketSchema]):
@@ -79,7 +79,7 @@
 >>> #-----------------method-that-will-run-after-schema-filling-out------------------
 >>> from aiogram.fsm.context import FSMContext
 >>> from aiogram.types import Message
->>> from pydantic_handler_converter.types import Event
+>>> from pydantic_base_aiogram.types import Event
 >>>
 >>>
 >>> async def final_callable(data: TicketSchema, event: Event, _: FSMContext):
