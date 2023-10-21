@@ -9,11 +9,14 @@ from .base import BaseController
 
 
 class TypeBaseMessageTextController(BaseController):
-    async def format_data(self, self_: THandler, event: Event, state: FSMContext):
-        try:
-            if not isinstance(event._event, Message):
-                raise DataValidationError(self.dialects.INVALID_TYPE_DATA)
+    async def __call__(self, self_: THandler, event, state: FSMContext):
+        if not isinstance(event, Message):
+            raise DataValidationError(self.dialects.INVALID_TYPE_DATA)
 
+        return await self.main(self_, Event(event), state)
+
+    async def format_data(self, self_: THandler, event: Event[Message], state: FSMContext):
+        try:
             return self.field.type_(event._event.text)
         except ValueError:
             raise DataValidationError(self.dialects.INVALID_TYPE_DATA)
