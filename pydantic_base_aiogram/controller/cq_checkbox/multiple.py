@@ -24,13 +24,13 @@ class MultipleCQCheckboxController(BaseCQCheckboxController):
         if key.text.startswith(self.selection_symbol):
             key.text = key.text[(self.selection_symbol_length + 1):]
         else:
-            key.text = f"{self.selection_symbol_length} {key.text}"
+            key.text = f"{self.selection_symbol} {key.text}"
 
         await event._event.message.edit_reply_markup(reply_markup=event._event.message.reply_markup)  # type: ignore
         return ...
 
     async def ready(self, self_: THandler, cq: types.CallbackQuery, state: FSMContext):
-        selected_keys = self._get_selections_by_text_symbol(cq.message.reply_markup, self.selection_symbol_length)  # type: ignore
+        selected_keys = self._get_selections_by_text_symbol(cq.message.reply_markup, self.selection_symbol)  # type: ignore
         selections = tuple(map(lambda key: self._validate_data(str(key.callback_data).split(self.data_split_symbol)[1]), selected_keys))
 
         await self._setvalue(selections, state)
