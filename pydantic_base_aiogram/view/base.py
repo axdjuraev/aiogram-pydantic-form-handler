@@ -51,7 +51,7 @@ class BaseView(AbstractView):
         builder = builder or InlineKeyboardBuilder()
 
         if self.getter is not None:
-            for data, text in await self.getter(state, page, self.keyboard_page_size):
+            for data, text in (await self.getter(state, page, self.keyboard_page_size)).items():
                 cd = f"{self.item_callback_data}:{data}"
                 builder.button(
                     text=text, 
