@@ -1,13 +1,12 @@
+from axabc.logging import SimpleStreamLogger
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import Any, Optional
 from aiogram.fsm.state import StatesGroup
-from axabc.logging import SimpleFileLogger
-from logging import Logger
 from pydantic.fields import ModelField
 
 
-logger = Logger('aiogram-pydantic-handler')
+logger = SimpleStreamLogger.create('aiogram-pydantic-handler')
 
 
 class BaseFieldFactory(ABC):
