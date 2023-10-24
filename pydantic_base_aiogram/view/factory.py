@@ -46,12 +46,10 @@ class ViewFactory(FieldFactory, ABC):
         views = []
         models_dialects = {}
         tree_head_step_name = get_step_name(field, kwargs['parents'])
-        ignore_list = kwargs.get('_except_steps', tuple())
 
         for tree_id, model in enumerate(models, start=1):
             logger.debug(f"[{self.__class__.__name__}][create4models]: {locals()=}")
             model_views = self.create_by_schema(model, tree_id=tree_id, tree_head_step_name=tree_head_step_name, **kwargs)
-            model_views = tuple(filter(lambda x: x.step_name not in ignore_list, model_views))
 
             if model_views:
                 models_dialects[model] = model_views[0]

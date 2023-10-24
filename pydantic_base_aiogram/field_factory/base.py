@@ -3,10 +3,11 @@ from collections.abc import Iterable
 from typing import Any, Optional
 from aiogram.fsm.state import StatesGroup
 from axabc.logging import SimpleFileLogger
+from logging import Logger
 from pydantic.fields import ModelField
 
 
-logger = SimpleFileLogger('aiogram-pydantic-handler')
+logger = Logger('aiogram-pydantic-handler')
 
 
 class BaseFieldFactory(ABC):

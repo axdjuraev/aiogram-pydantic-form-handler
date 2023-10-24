@@ -55,9 +55,9 @@ class BaseSingleHandler(ABC, BindAbleCallable):
 
     def __init__(
         self,
-        field: ModelField, 
-        dialects: BaseDialects, 
-        parents: Iterable[str], 
+        field: ModelField,
+        dialects: BaseDialects,
+        parents: Iterable[str],
         tree_id: Optional[int] = None,
         tree_head_step_name: Optional[str] = None,
         is_has_back: Optional[str] = None,
@@ -125,7 +125,7 @@ class EditAbleEvent(Protocol):
 
 class CallableWithNext:
     def __init__(
-        self, elem: BaseSingleHandler, 
+        self, elem: BaseSingleHandler,
         next: Optional['CallableWithNext'] = None,
         previos: Optional['CallableWithNext'] = None,
     ) -> None:
