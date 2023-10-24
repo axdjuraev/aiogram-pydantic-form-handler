@@ -96,7 +96,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
 @runtime_checkable
 class DescriptiveEnum(Protocol):
     @property
-    def name(self):
+    def short_name(self):
         raise NotImplementedError
 
     @property
