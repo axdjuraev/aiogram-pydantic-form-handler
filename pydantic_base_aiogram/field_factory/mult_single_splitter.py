@@ -10,7 +10,7 @@ class MultiSingeSplitter:
 
     def create(self, field: ModelField, **kwargs):
         logger.debug(f"[{self.__class__.__name__}][create]: {field.name=};")
-        if is_list_type(self.field.outer_type_):
+        if is_list_type(field.outer_type_):
             return self.multiple_cls.create(field=field, **kwargs)
 
         return self.single_cls.create(field=field, **kwargs)

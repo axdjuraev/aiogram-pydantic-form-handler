@@ -1,4 +1,5 @@
 from typing import get_origin
+from inspect import isclass
 
 
 def is_list_type(obj):
@@ -7,5 +8,5 @@ def is_list_type(obj):
     if (type_ := get_origin(obj)):
         type = type_
         
-    return issubclass(type, list)
+    return isclass(obj) and issubclass(type, list)
 
