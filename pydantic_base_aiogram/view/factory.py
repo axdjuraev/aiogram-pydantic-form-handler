@@ -28,7 +28,7 @@ class ViewFactory(FieldFactory, ABC):
         logger.debug(f"[{self.__class__.__name__}][create_by_schema]: {locals()=}")
 
         for field in schema.__fields__.values():
-            kwargs['is_has_back'] = bool(len(views))
+            kwargs['is_has_back'] = bool(len(views)) or kwargs.get('is_has_back', False)
 
             if kwargs['is_has_back']:
                 kwargs['back_data'] = None
