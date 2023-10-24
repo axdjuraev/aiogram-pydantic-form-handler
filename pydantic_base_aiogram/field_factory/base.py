@@ -21,7 +21,14 @@ class BaseFieldFactory(ABC):
     def _create(self, field: ModelField, type_: type, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
         raise NotImplementedError
 
-    def create4type(self, field: ModelField, parents: Optional[Iterable[str]] = None, force_type: Optional[type] = None, **kwargs):
+    def create4type(
+        self, 
+        field: ModelField, 
+        parents: Optional[Iterable[str]] = None, 
+        force_type: Optional[type] = None, 
+        _except_steps: Optional[Iterable] = None,
+        **kwargs
+    ):
         logger.debug(f"[{self.__class__.__name__}][_create_type]: {field.name=}; {parents=};")
 
         view_cls = self.CONVERT_DIALECTS.get(force_type or field.type_, self.CONVERT_DIALECTS.get(str))
@@ -29,5 +36,14 @@ class BaseFieldFactory(ABC):
         if view_cls is None:
             raise NotImplementedError(f'`{field.type_}` is not supported in {self.__class__.__name__}')
 
-        return view_cls.create(field=field, parents=parents, **kwargs)
+        res = view_cls.create(field=field, parents=parents, **kwargs)
+
+        if (
+            hasattr(res, 'step_name') 
+            and _except_steps 
+            and getattr(res, 'step_name') in _except_steps
+        ):
+            return None
+
+        return res
 

@@ -41,6 +41,8 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         for item in elems:
             if not item.elem.is_custom:
                 item.elem.bind(self)
+            else:
+                print(f"{item.elem.step_name=}")
 
             item.elem.register2router(self.router)
 
@@ -83,10 +85,6 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
         for elem in nextabls:
             logger.info(f"[{cls.__name__}][_register_nextabls][step_process]: {elem=}")
-
-            if elem is None or elem.step_name in cls._except_steps:
-                continue
-
             elem_name = elem.name
 
             try:

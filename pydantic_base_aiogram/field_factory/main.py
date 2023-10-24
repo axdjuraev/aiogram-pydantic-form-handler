@@ -16,15 +16,7 @@ class FieldFactory(Model, Enum, Union, Base, ABC):
         type_ = field.type_
         return self._create(field, type_, states, parents, **kwargs)
     
-    def _create(
-        self, 
-        field: ModelField, 
-        type_: type, 
-        states: StatesGroup, 
-        parents: Optional[Iterable[str]] = None, 
-        _except_steps: Optional[Iterable] = None,
-        **kwargs,
-    ):
+    def _create(self, field: ModelField, type_: type, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
         if type_ != field.type_:
             field = deepcopy(field)
             field.type_ = type_
@@ -39,16 +31,6 @@ class FieldFactory(Model, Enum, Union, Base, ABC):
             raise NotImplementedError(f'`{base_type_name}` is not supported metatype in {self.__class__.__name__}')
 
         logger.debug(f"[{self.__class__.__name__}][create]: {dir(states)=}")
-        state = getattr(states, field.name)
-        kwargs['state'] = state
-        res = creator(field, states=states, **kwargs, parents=parents)
-
-        if (
-            hasattr(res, 'step_name') 
-            and _except_steps 
-            and getattr(res, 'step_name') in _except_steps
-        ):
-            return None
-
-        return res
+        kwargs['state'] = getattr(states, field.name)
+        return creator(field, states=states, **kwargs, parents=parents)
 
