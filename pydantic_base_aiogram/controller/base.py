@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Any, Awaitable, Callable, Iterable, Optional, Union
-from typing import _GenericAlias, GenericAlias  # type: ignore
 from pydantic.fields import ModelField
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
@@ -11,6 +10,7 @@ from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers 
 from pydantic_base_aiogram.field_factory import logger
 from pydantic_base_aiogram.types import Event
 from pydantic_base_aiogram.exceptions import DataValidationError, RequireMultipleError
+from pydantic_base_aiogram.utils.abstractions import is_list_type
 
 from .abstract import AbstractController
 
@@ -50,7 +50,7 @@ class BaseController(AbstractController, ABC):
 
             parent_elem = parent
 
-        if not isinstance(self.field.outer_type_, Union[_GenericAlias, GenericAlias]):
+        if not is_list_type(self.field.outer_type_):
             parent_elem[self.field.name] = value
         else:
             elems = parent_elem.get(self.field.name, [])

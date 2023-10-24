@@ -1,5 +1,4 @@
-from typing import Any, Iterable, Optional, Union
-from typing import _GenericAlias, GenericAlias  # type: ignore
+from typing import Any, Iterable, Optional
 from pydantic.fields import ModelField
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
@@ -9,6 +8,7 @@ from aiogram.fsm.state import State
 from pydantic_base_aiogram.types import DataGetterCallable, Event
 from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_base_aiogram.field_factory import logger
+from pydantic_base_aiogram.utils.abstractions import is_list_type
 from .abstract import AbstractView
 
 
@@ -81,7 +81,7 @@ class BaseView(AbstractView):
                 )
             )
 
-        if isinstance(self.field.outer_type_, Union[_GenericAlias, GenericAlias]):
+        if is_list_type(self.field.outer_type_):
             builder.button(
                 text=self.dialects.READY_BUTTON, 
                 callback_data=self.dialects.READY_BUTTON_DATA, 

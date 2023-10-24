@@ -1,6 +1,5 @@
-from typing import Union
-from typing import _GenericAlias, GenericAlias  # type: ignore
 from pydantic.fields import ModelField
+from pydantic_base_aiogram.utils.abstractions import is_list_type
 from .base import logger
 
 
@@ -11,7 +10,7 @@ class MultiSingeSplitter:
 
     def create(self, field: ModelField, **kwargs):
         logger.debug(f"[{self.__class__.__name__}][create]: {field.name=};")
-        if isinstance(field.outer_type_, Union[_GenericAlias, GenericAlias]):
+        if is_list_type(self.field.outer_type_):
             return self.multiple_cls.create(field=field, **kwargs)
 
         return self.single_cls.create(field=field, **kwargs)
