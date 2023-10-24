@@ -37,7 +37,7 @@ class ViewFactory(FieldFactory, ABC):
 
             if isinstance(res, Iterable):
                 views.extend(res)
-            elif not _except_steps or res.step_name not in _except_steps:
+            elif res is not None:
                 views.append(res)
 
         return views

@@ -16,7 +16,15 @@ class FieldFactory(Model, Enum, Union, Base, ABC):
         type_ = field.type_
         return self._create(field, type_, states, parents, **kwargs)
     
-    def _create(self, field: ModelField, type_: type, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
+    def _create(
+        self, 
+        field: ModelField, 
+        type_: type, 
+        states: StatesGroup, 
+        parents: Optional[Iterable[str]] = None, 
+        _except_steps: Optional[Iterable] = None,
+        **kwargs,
+    ):
         if type_ != field.type_:
             field = deepcopy(field)
             field.type_ = type_
@@ -34,5 +42,13 @@ class FieldFactory(Model, Enum, Union, Base, ABC):
         state = getattr(states, field.name)
         kwargs['state'] = state
         res = creator(field, states=states, **kwargs, parents=parents)
-        return res
+
+        if (
+            not hasattr(res, 'step_name') 
+            or not _except_steps 
+            or not getattr(res, 'step_name') in _except_steps
+        ):
+            return res
+
+        return None
 
