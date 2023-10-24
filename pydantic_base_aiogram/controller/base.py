@@ -22,6 +22,7 @@ class BaseController(AbstractController, ABC):
         filters: Iterable = tuple(),
         async_data_validator: Optional[Callable[[Event, FSMContext], Awaitable[Any]]] = None,
         data_validator: Optional[Callable[[Event, FSMContext], Any]] = None,
+        validator_method: Optional[str] = None,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs, name_format="{step_name}_ctrl")
@@ -31,6 +32,7 @@ class BaseController(AbstractController, ABC):
         self.callback_data = self._get_callback_data()
         self._async_data_validator = async_data_validator or self.field.field_info.extra.get('async_data_validator')
         self._data_validator = data_validator or self.field.field_info.extra.get('data_validator')
+        self._validator_method = validator_method
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_callback_data(self) -> str:
@@ -74,6 +76,8 @@ class BaseController(AbstractController, ABC):
     async def validate_data_format(self, self_, event, state):
         if self._async_data_validator:
             return await self._async_data_validator(event, state)
+        if self._validator_method:
+            return await getattr(self_, self._validator_method)(event, state)
         if self._data_validator:
             return self._data_validator(event, state)
 
@@ -95,6 +99,11 @@ class BaseController(AbstractController, ABC):
         await self._setvalue(res, state)
         await self_.next(event, state, self.step_name)
 
+    def bind(self, elem):
+        if self._validator_method and not hasattr(elem, self._validator_method):
+            raise NotImplementedError(f"`{elem.__class__.__name__}` has not validator_method `{self._validator_method}`")
+        return super().bind(elem)
+    
     def register2router(self, router: Router) -> Router:
         router.message(StateFilter(self.state))(self.__call__)
         
