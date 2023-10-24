@@ -72,6 +72,12 @@ class BaseView(AbstractView):
                 callback_data=f"{self.base_cq_prefix}_{self.dialects.SKIP_STEP_DATA}",
             )
 
+        if is_list_type(self.field.outer_type_):
+            builder.button(
+                text=self.dialects.READY_BUTTON, 
+                callback_data=self.dialects.READY_BUTTON_DATA, 
+            )
+
         if (self.is_has_back or self.back_data) and self.back_allowed:
             builder.button(
                 text=self.dialects.BACK_BUTTON, 
@@ -79,12 +85,6 @@ class BaseView(AbstractView):
                     self.back_data
                     or f"{self.base_cq_prefix}_{self.dialects.BACK_BUTTON_DATA}"
                 )
-            )
-
-        if is_list_type(self.field.outer_type_):
-            builder.button(
-                text=self.dialects.READY_BUTTON, 
-                callback_data=self.dialects.READY_BUTTON_DATA, 
             )
 
         return builder.adjust(1)
