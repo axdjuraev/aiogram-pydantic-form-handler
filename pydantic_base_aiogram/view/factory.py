@@ -23,7 +23,7 @@ class ViewFactory(FieldFactory, ABC):
         bool: BoolView,
     }
 
-    def create_by_schema(self, schema: Type[BaseModel], _except_steps: Optional[Iterable] = None, **kwargs):
+    def create_by_schema(self, schema: Type[BaseModel], **kwargs):
         views = []
         logger.debug(f"[{self.__class__.__name__}][create_by_schema]: {locals()=}")
 

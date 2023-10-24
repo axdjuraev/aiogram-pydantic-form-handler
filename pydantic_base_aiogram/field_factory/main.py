@@ -44,11 +44,11 @@ class FieldFactory(Model, Enum, Union, Base, ABC):
         res = creator(field, states=states, **kwargs, parents=parents)
 
         if (
-            not hasattr(res, 'step_name') 
-            or not _except_steps 
-            or not getattr(res, 'step_name') in _except_steps
+            hasattr(res, 'step_name') 
+            and _except_steps 
+            and getattr(res, 'step_name') in _except_steps
         ):
-            return res
+            return None
 
-        return None
+        return res
 
