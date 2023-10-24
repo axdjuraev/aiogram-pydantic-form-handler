@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Iterable, Type
+from typing import Iterable, Optional, Type
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 from enum import Enum
@@ -23,21 +23,21 @@ class ViewFactory(FieldFactory, ABC):
         bool: BoolView,
     }
 
-    def create_by_schema(self, schema: Type[BaseModel], **kwargs):
+    def create_by_schema(self, schema: Type[BaseModel], _except_steps: Optional[Iterable] = None, **kwargs):
         views = []
         logger.debug(f"[{self.__class__.__name__}][create_by_schema]: {locals()=}")
 
         for field in schema.__fields__.values():
             kwargs['is_has_back'] = bool(len(views))
 
-            if kwargs['is_has_back']: 
+            if kwargs['is_has_back']:
                 kwargs['back_data'] = None
 
             res = self.create(field=field, **kwargs)
 
             if isinstance(res, Iterable):
                 views.extend(res)
-            else:
+            elif not _except_steps or res.step_name not in _except_steps:
                 views.append(res)
 
         return views
