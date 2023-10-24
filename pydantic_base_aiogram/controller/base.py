@@ -32,7 +32,7 @@ class BaseController(AbstractController, ABC):
         self.callback_data = self._get_callback_data()
         self._async_data_validator = async_data_validator or self.field.field_info.extra.get('async_data_validator')
         self._data_validator = data_validator or self.field.field_info.extra.get('data_validator')
-        self._validator_method = validator_method
+        self._validator_method = validator_method or self.field.field_info.extra.get('data_validator')
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_callback_data(self) -> str:
