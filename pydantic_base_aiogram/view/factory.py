@@ -1,11 +1,10 @@
 from abc import ABC
-from typing import Iterable, Optional, Type
-from pydantic import BaseModel
+from typing import Iterable, Type
+from pydantic import BaseModel, SubclassError
 from pydantic.fields import ModelField
 from enum import Enum
 
 from pydantic_base_aiogram.field_factory import FieldFactory, logger
-from pydantic_base_aiogram.utils.step import get_step_name
 from .string import StrView
 from .float import FloatView
 from .int import IntView
@@ -43,19 +42,7 @@ class ViewFactory(FieldFactory, ABC):
         return views
 
     def create4models(self, field: ModelField, models: list[Type[BaseModel]], kwargs: dict):
-        views = []
-        models_dialects = {}
-        tree_head_step_name = get_step_name(field, kwargs['parents'])
-
-        for tree_id, model in enumerate(models, start=1):
-            logger.debug(f"[{self.__class__.__name__}][create4models]: {locals()=}")
-            model_views = self.create_by_schema(model, tree_id=tree_id, tree_head_step_name=tree_head_step_name, **kwargs)
-
-            if model_views:
-                models_dialects[model] = model_views[0]
-                views.extend(model_views)
-
+        views, models_dialects = super().create4models(field, models, kwargs)
         views.insert(0, ModelsView.create(field=field, models_dialects=models_dialects, **kwargs))
-
         return views
 

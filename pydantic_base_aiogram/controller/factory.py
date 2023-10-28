@@ -22,12 +22,8 @@ class ControllerFactory(FieldFactory, ABC):
         date: DateMessageTextController,
     }
 
-    def create4models(self, _: ModelField, models: list[Type[BaseModel]], kwargs: dict):
-        res = []
-        
-        for model in models:
-            res.extend(self.create_by_schema(model, **kwargs))
-
+    def create4models(self, field: ModelField, models: list[Type[BaseModel]], kwargs: dict):
+        res, _ = super().create4models(field, models, kwargs)
         return res
 
     def create4type(self, field: ModelField, parents: Optional[Iterable[str]] = None, force_type: Optional[type] = None, **kwargs):

@@ -1,13 +1,16 @@
 from abc import abstractmethod
 from enum import Enum
 from itertools import chain
-from typing import Type, Union
+from typing import Callable, Type, Union
 from pydantic import BaseModel
 from pydantic.fields import ModelField
-from .base import BaseFieldFactory
+from pydantic_base_aiogram.utils.step import get_step_name
+from .base import BaseFieldFactory, logger
 
 
 class UnionFieldFactory(BaseFieldFactory):
+    create_by_schema: Callable 
+    
     def _countup_things(self, field, things: list):
         strs_count = 0
         enums = []
@@ -27,7 +30,19 @@ class UnionFieldFactory(BaseFieldFactory):
 
     @abstractmethod
     def create4models(self, field: ModelField, models: list[Type[BaseModel]], kwargs: dict):
-        raise NotImplementedError
+        elems = []
+        models_dialects = {}
+        tree_head_step_name = get_step_name(field, kwargs['parents'])
+
+        for tree_id, model in enumerate(models, start=1):
+            logger.debug(f"[{self.__class__.__name__}][create4models]: {locals()=}")
+            model_views = self.create_by_schema(model, tree_id=tree_id, tree_head_step_name=tree_head_step_name, **kwargs)
+
+            if model_views:
+                models_dialects[model] = model_views[0]
+                elems.extend(model_views)
+
+        return elems, models_dialects
 
     def create4uniontype(self, field: ModelField, parents, **kwargs):
         return self.create4_uniongenericalias(field, parents, **kwargs)

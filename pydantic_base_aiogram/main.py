@@ -48,7 +48,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
     def __init_subclass__(cls, back_data: Optional[str] = None) -> None:
         if not super().__init_subclass__():
-            return 
+            return
 
         cls.states = SchemaStates.create(cls.Schema)
         cls.base_cq_prefix = cls.Schema.__name__.lower()
@@ -127,7 +127,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
                 tree_head = current
             elif (
-                current.elem.tree_id != previous_tree_id 
+                current.elem.tree_id != previous_tree_id
                 and previous_tree_id is not None
                 and previous_elem is not None
             ):
@@ -150,15 +150,16 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
                 return await self.start_point(self, event, state)
 
             current = self.views[current_step]
-            
-            if (
-                not self.views.get(f"{current_step}1") 
-                or not (_s := current.elem.tree_head_step_name)
-                or not (choice_index := await self._get_tree_index_choice(state, _s))
-            ):  # possibity of alternative branches
-                return await current.next(event, state)
 
-            return await self.views[f"{current_step}{choice_index}"].next(event, state)
+            if (
+                current.elem.tree_id
+                and (_s := current.elem.tree_head_step_name)
+                and (choice_index := await self._get_tree_index_choice(state, _s))
+                and (new_branch := self.views.get(f"{current_step}{choice_index}"))
+            ):  # possibity of alternative branches
+                current = new_branch
+
+            return await current.next(event, state)
 
         except NotImplementedError:
             return await self.finish(event, state)
