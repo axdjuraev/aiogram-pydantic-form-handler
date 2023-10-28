@@ -133,10 +133,10 @@ class CallableWithNext:
         self._next = next
         self._previos = previos
 
-    def set_next(self, next: 'CallableWithNext'):
+    def set_next(self, next: Optional['CallableWithNext']):
         self._next = next
 
-    def set_previos(self, previos: 'CallableWithNext'):
+    def set_previos(self, previos: Optional['CallableWithNext']):
         self._previos = previos
 
     async def _move(self, move: Optional['CallableWithNext'], args, kwargs):

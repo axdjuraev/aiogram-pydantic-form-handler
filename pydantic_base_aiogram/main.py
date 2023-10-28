@@ -81,8 +81,9 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         tree_head: Optional[CallableWithNext] = None
         tree_sub_heads: list[CallableWithNext] = []
         tree_tails: list[CallableWithNext] = []
+        last_index = len(nextabls) - 1
 
-        for elem in nextabls:
+        for index, elem in enumerate(nextabls):
             logger.info(f"[{cls.__name__}][_register_nextabls][step_process]: {elem=}")
             elem_name = elem.name
 
@@ -109,8 +110,12 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
             if previous_elem is not None:
                 previous_elem.set_next(current)
 
-            if current.elem.tree_id is None:
-                if previous_elem and previous_elem.elem.tree_id:
+            if current.elem.tree_id is None or last_index == index:
+                if last_index == index:
+                    previous_elem = current
+                    current = None
+
+                if previous_elem and previous_elem.elem.tree_id is not None:
                     tree_tails.append(previous_elem)
 
                     if tree_head:
@@ -126,21 +131,16 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
                         tail.set_next(current)
 
                 tree_head = current
-            elif (
-                current.elem.tree_id != previous_tree_id
-                and previous_tree_id is not None
-                and previous_elem is not None
-            ):
-                tree_tails.append(previous_elem)
+            elif current.elem.tree_id != previous_tree_id and previous_elem is not None:
+                if previous_tree_id is not None:
+                    tree_tails.append(previous_elem)
+
+                tree_sub_heads.append(current)
 
             previous_elem = current
-            previous_tree_id = current.elem.tree_id
 
-        if tree_head and previous_elem:
-            tree_tails.append(previous_elem)
-
-            for tail in tree_tails:
-                tail._next = None
+            if current:
+                previous_tree_id = current.elem.tree_id
 
         return res
 
@@ -174,7 +174,8 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
             if (
                 current._previos
-                and current.elem.tree_id != current._previos.elem.tree_id
+                and current._previos.elem.tree_id
+                and current._previos.elem.tree_id != current.elem.tree_id
                 and (_s := current._previos.elem.tree_head_step_name)
                 and (tails := self.step_tree_tails.get(_s))
                 and (choice_index := await self._get_tree_index_choice(state, _s)) is not None
