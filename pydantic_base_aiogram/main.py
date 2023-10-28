@@ -81,7 +81,6 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         tree_head: Optional[CallableWithNext] = None
         tree_sub_heads: list[CallableWithNext] = []
         tree_tails: list[CallableWithNext] = []
-        _last_dublicates_tree_indexes = {}
 
         for elem in nextabls:
             logger.info(f"[{cls.__name__}][_register_nextabls][step_process]: {elem=}")
@@ -90,9 +89,8 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
             try:
                 val = getattr(cls, elem_name)
 
-                if isinstance(val, MethodType) and isinstance(val.__self__, BaseSingleHandler):
-                    pix = _last_dublicates_tree_indexes.get(elem.step_name, 0) + 1
-                    _last_dublicates_tree_indexes[elem.step_name] = pix
+                if isinstance(val, MethodType) and isinstance(val.__self__, BaseSingleHandler) and elem.tree_id:
+                    pix = elem.tree_id - 1
 
                     elem.name = f"{elem.name}{pix}"
                     elem.step_name = f"{elem.step_name}{pix}"
