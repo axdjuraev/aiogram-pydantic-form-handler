@@ -195,8 +195,11 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         data = await state.get_data()
         logger.debug(f"[{self.__class__.__name__}][finish]: {locals()=}")
 
-        schema = self.Schema(**data[self.Schema.__name__])
+        schema = await self.convert_final_data(data)
         return await self._finish_call(schema, event, state)
+
+    async def convert_final_data(self, data: dict):
+        return self.Schema(**data[self.Schema.__name__])
 
     async def _get_current_step(self, state: FSMContext):
         return (await state.get_data()).get('__step__')
