@@ -5,6 +5,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from pydantic import BaseModel
+from pydantic.fields import ModelField
 
 from pydantic_base_aiogram.abstract_handler import (
     AbstractPydanticFormHandlers as THandler 
@@ -16,10 +17,15 @@ from .base import BaseView
 class ModelsView(BaseView):
     DATA_SPLIT_SYMBOL = ':'
 
-    def __init__(self, *args, models_dialects: dict[Type[BaseModel], BaseView], **kwargs) -> None:
+    def __init__(self, field: ModelField, *args, models_dialects: dict[Type[BaseModel], BaseView], **kwargs) -> None:
         self.models_dialects = models_dialects
         self.model_list_dialects = tuple(self.models_dialects.values())
-        super().__init__(*args, item_callback_data=str(uuid4()), **kwargs)
+        super().__init__(
+            *args, 
+            data_key=field.field_info.extra.get('data_key') or field.name.capitalize(),
+            item_callback_data=str(uuid4()), 
+            **kwargs
+        )
 
     @property
     def view_text_format(self):
@@ -47,6 +53,7 @@ class ModelsView(BaseView):
         index = int(str(event.data).split(self.DATA_SPLIT_SYMBOL)[1])
         res = await self.model_list_dialects[index].__call__(event, state)  # type: ignore
         await self._save_tree_choice(state, index)
+        await self._setvalue(tuple(self.models_dialects.keys())[index].__name__, state)
         return res
 
     def bind(self, elem):
