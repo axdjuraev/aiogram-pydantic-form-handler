@@ -23,7 +23,7 @@ class ModelsView(BaseView):
         super().__init__(
             *args, 
             field=field,
-            data_key=field.field_info.extra.get('data_key') or field.name.capitalize(),
+            data_key=field.field_info.extra.get('data_key') or '__Type__',
             item_callback_data=str(uuid4()), 
             **kwargs
         )
