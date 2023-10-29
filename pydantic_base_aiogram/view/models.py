@@ -54,7 +54,7 @@ class ModelsView(BaseView):
         index = int(str(event.data).split(self.DATA_SPLIT_SYMBOL)[1])
         res = await self.model_list_dialects[index].__call__(event, state)  # type: ignore
         await self._save_tree_choice(state, index)
-        await self._setvalue(tuple(self.models_dialects.keys())[index].__name__, state)
+        await self._setvalue(tuple(self.models_dialects.keys())[index], state)
         return res
 
     def bind(self, elem):
