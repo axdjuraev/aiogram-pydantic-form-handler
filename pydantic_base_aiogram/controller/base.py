@@ -39,32 +39,6 @@ class BaseController(AbstractController, ABC):
         top_levels = '.'.join(self.parents or tuple())
         return f"{top_levels}.{self.field.name}"
 
-    async def _setvalue(self, value, state: FSMContext):
-        data = await state.get_data()
-        parent_elem = data
-
-        for parent_name in self.parents:
-            parent = parent_elem.get(parent_name)
-
-            if parent is None:
-                parent = {}
-                parent_elem[parent_name] = parent
-
-            parent_elem = parent
-
-        if not is_list_type(self.field.outer_type_):
-            parent_elem[self.field.name] = value
-        else:
-            elems = parent_elem.get(self.field.name, [])
-
-            if isinstance(value, Iterable):
-                elems.extend(value)
-            else:
-                elems.append(value)
-
-            parent_elem[self.field.name] = elems
-
-        await state.update_data(**data)
 
     async def __call__(self, self_: THandler, event: Union[types.Message, types.CallbackQuery], state: FSMContext) -> Any:
         return await self.main(self_, Event(event), state)  # type: ignore

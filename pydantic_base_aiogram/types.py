@@ -3,6 +3,7 @@ from typing import Any, Generic, Iterable, Optional, Protocol, TypeVar, Union, r
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from pydantic.fields import ModelField
+from pydantic_base_aiogram.utils.abstractions import is_list_type
 from pydantic_base_aiogram.utils.step import get_step_name
 from pydantic_base_aiogram.dialecsts import BaseDialects
 from aiogram import Router
@@ -65,6 +66,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         name_format: str = "{step_name}",
         back_allowed: bool = True,
         base_cq_prefix: str = "_",
+        data_key: Optional[str] = None,
         **_,
     ) -> None:
         self.field = field
@@ -79,6 +81,38 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         self.back_data = back_data
         self.back_allowed = back_allowed
         self.base_cq_prefix = base_cq_prefix
+        self.data_key = (
+            data_key
+            or field.field_info.extra.get('data_key')
+            or self.field.name
+        )
+
+    async def _setvalue(self, value, state: FSMContext):
+        data = await state.get_data()
+        parent_elem = data
+
+        for parent_name in self.parents:
+            parent = parent_elem.get(parent_name)
+
+            if parent is None:
+                parent = {}
+                parent_elem[parent_name] = parent
+
+            parent_elem = parent
+
+        if not is_list_type(self.field.outer_type_):
+            parent_elem[self.data_key] = value
+        else:
+            elems = parent_elem.get(self.data_key, [])
+
+            if isinstance(value, Iterable):
+                elems.extend(value)
+            else:
+                elems.append(value)
+
+            parent_elem[self.data_key] = elems
+
+        await state.update_data(**data)
 
     @abstractmethod
     async def __call__(self, *args: Any, **kwds: Any) -> Any:
