@@ -22,6 +22,7 @@ class ModelsView(BaseView):
         self.model_list_dialects = tuple(self.models_dialects.values())
         super().__init__(
             *args, 
+            field=field,
             data_key=field.field_info.extra.get('data_key') or field.name.capitalize(),
             item_callback_data=str(uuid4()), 
             **kwargs
