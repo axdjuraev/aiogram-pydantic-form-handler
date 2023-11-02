@@ -64,8 +64,8 @@ class BaseView(AbstractView):
         builder = builder or InlineKeyboardBuilder()
 
         for data, text in self.extra_keys.items():
-            if str(data).startswith('http'):
-                builder.button(text=text, url=data)
+            if str(data).lower().startswith(f'{self.item_callback_data}:http') and (ls := str(text).split('*')) and len(ls) > 1:
+                builder.button(text=ls[0], url=ls[-1])
             else:
                 builder.button(text=text, callback_data=data)
 
