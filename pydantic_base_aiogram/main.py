@@ -195,7 +195,11 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         data = await state.get_data()
         logger.debug(f"[{self.__class__.__name__}][finish]: {locals()=}")
 
-        schema = await self.convert_final_data(data)
+        try:
+            schema = await self.convert_final_data(data)
+        except Exception as e:
+            return print(f"{e=}")
+
         return await self._finish_call(schema, event, state)
 
     async def convert_final_data(self, data: dict):
