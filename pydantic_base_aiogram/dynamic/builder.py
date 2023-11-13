@@ -32,11 +32,16 @@ class DynamicHandlersGroupBuilder:
             ), f"Getter `{meta._getter_name}` not found!"
             assert self._load_type(meta._type) is not None, f"Type `{meta._type}` not found!"
 
-    def build(self, name: Optional[str] = None) -> Type[SchemaBaseHandlersGroup]:
+    def build(
+        self, 
+        name: Optional[str] = None
+    ) -> tuple[Type[BaseModel], Type[SchemaBaseHandlersGroup]]:
         name = name or str(uuid4())
         schema_name = f"{name}{self._schema_name_postfix}"
         TSchema = self._build_schema(schema_name)
-        return new_class(name, (SchemaBaseHandlersGroup[TSchema],), {}) 
+        TRes = new_class(name, (SchemaBaseHandlersGroup[TSchema],), {}) 
+
+        return (TSchema, TRes)
 
     def _build_schema(self, schema_name: Optional[str] = None) -> Type[BaseModel]:
         schema_name = schema_name or str(uuid4())
