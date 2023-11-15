@@ -16,14 +16,15 @@ from .base import BaseView
 
 class ModelsView(BaseView):
     DATA_SPLIT_SYMBOL = ':'
+    _DEFAULT_DATA_TYPE_KEY = '__Type__'
 
     def __init__(self, field: ModelField, *args, models_dialects: dict[Type[BaseModel], BaseView], **kwargs) -> None:
         self.models_dialects = models_dialects
         self.model_list_dialects = tuple(self.models_dialects.values())
+        self._data_type_key = kwargs.get('data_type_key', self._DEFAULT_DATA_TYPE_KEY)
         super().__init__(
             *args, 
             field=field,
-            data_key=field.field_info.extra.get('data_key') or '__Type__',
             item_callback_data=str(uuid4()), 
             **kwargs
         )
@@ -54,7 +55,8 @@ class ModelsView(BaseView):
         index = int(str(event.data).split(self.DATA_SPLIT_SYMBOL)[1])
         res = await self.model_list_dialects[index].__call__(event, state)  # type: ignore
         await self._save_tree_choice(state, index)
-        await self._setvalue(tuple(self.models_dialects.keys())[index], state)
+        await self._setvalue(tuple(self.models_dialects.keys())[index], state, key=self._data_type_key)
+        await self._setvalue([], state)
         return res
 
     def bind(self, elem):
