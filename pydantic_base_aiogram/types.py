@@ -87,7 +87,8 @@ class BaseSingleHandler(ABC, BindAbleCallable):
             or self.field.name
         )
 
-    async def _setvalue(self, value, state: FSMContext):
+    async def _setvalue(self, value, state: FSMContext, *, key: Optional[str] = None):
+        data_key = key or self.data_key
         data = await state.get_data()
         parent_elem = data
 
@@ -101,16 +102,16 @@ class BaseSingleHandler(ABC, BindAbleCallable):
             parent_elem = parent
 
         if not is_list_type(self.field.outer_type_):
-            parent_elem[self.data_key] = value
+            parent_elem[data_key] = value
         else:
-            elems = parent_elem.get(self.data_key, [])
+            elems = parent_elem.get(data_key, [])
 
             if isinstance(value, Iterable):
                 elems.extend(value)
             else:
                 elems.append(value)
 
-            parent_elem[self.data_key] = elems
+            parent_elem[data_key] = elems
 
         await state.update_data(**data)
 
