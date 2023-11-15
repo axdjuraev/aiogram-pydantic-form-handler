@@ -34,17 +34,20 @@ class UnionFieldFactory(BaseFieldFactory):
         elems = []
         models_dialects = {}
         tree_head_step_name = get_step_name(field, kwargs['parents'])
+        is_list_item = is_list_type(field.outer_type_)
+
+        if 'is_list_item' in kwargs:
+            del kwargs['is_list_item']
 
         for tree_id, model in enumerate(models, start=1):
             logger.debug(f"[{self.__class__.__name__}][create4models]: {locals()=}")
-            kwargs['is_list_item'] = is_list_type(field.outer_type_)
             model_views = self.create_by_schema(
                 model, 
                 tree_id=tree_id, 
                 tree_head_step_name=tree_head_step_name, 
+                is_list_item=is_list_item,
                 **kwargs,
             )
-            kwargs['is_list_item'] = False
 
             if model_views:
                 models_dialects[model] = model_views[0]

@@ -13,6 +13,7 @@ from .controller import ControllerFactory
 from .field_factory import logger
 from .abstract_handler import AbstractPydanticFormHandlers
 from .state_builder import SchemaStates
+from .utils.add_more_handlers import create_add_more_handlers
 
 
 TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
@@ -36,6 +37,8 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         self.router = router or Router()
         self._register_bindabls(tuple(self.views.values()))  # type: ignore
         self._register_bindabls(tuple(self.controllers.values()))  # type: ignore
+        self._add_more_handlers = create_add_more_handlers(self)
+        self.router.include_router(self._add_more_handlers.router)
 
     def _register_bindabls(self, elems: Iterable[CallableWithNext]) -> None:
         for item in elems:
@@ -144,7 +147,18 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
         return res
 
-    async def next(self, event: Event, state: FSMContext, current_step: Optional[str] = None):
+    async def show_add_more_view(self, event: Event, state: FSMContext):
+        return await self._add_more_handlers.next(event, state)
+
+    async def next(
+        self, 
+        event: Event, 
+        state: FSMContext, 
+        current_step: Optional[str] = None,
+        *,
+        skip_loop_prompt: bool = False,
+        restart_loop: bool = False,
+    ):
         try:
             if not current_step:
                 return await self.start_point(self, event, state)
@@ -158,6 +172,18 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
                 and (new_branch := self.views.get(f"{current_step}{choice_index}"))
             ):  # possibity of alternative branches
                 current = new_branch
+
+            if (
+                not skip_loop_prompt
+                and (parent_name := current.elem.tree_head_step_name)
+                and (parent_view := self.views.get(parent_name))
+                and (parent_tails := self.step_tree_tails.get(parent_name))
+                and current in parent_tails 
+            ):
+                if restart_loop:
+                    return await parent_view.elem.__call__(event, state) 
+
+                return await self.show_add_more_view(event, state)
 
             return await current.next(event, state)
 

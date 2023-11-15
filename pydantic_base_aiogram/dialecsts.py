@@ -23,6 +23,7 @@ class BaseDialects(ABC):
     BACK_BUTTON_DATA = 'back'
     READY_BUTTON_DATA = 'ready'
     SKIP_STEP_DATA = 'skip_step'
+    ADD_MORE = 'Add more?'
 
 
 class EnDialects(BaseDialects):
@@ -45,4 +46,5 @@ class RuDialects(BaseDialects):
     BACK_BUTTON = 'Назад'
     READY_BUTTON = 'Готово'
     SKIP_BUTTON = 'Пропустить'
+    ADD_MORE = 'Добавить еще?'
 

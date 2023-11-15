@@ -5,6 +5,7 @@ from aiogram.fsm.state import StatesGroup
 from pydantic import BaseModel
 
 from pydantic_base_aiogram.types import Event
+from pydantic_base_aiogram.dialecsts import BaseDialects
 
 from .view.abstract import AbstractView
 
@@ -16,6 +17,7 @@ class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
     Schema: Type[TBaseSchema]
     views: list[AbstractView]
     states: StatesGroup
+    DIALECTS: BaseDialects
 
     __abstract__ = True
     def __init_subclass__(cls) -> Union[bool, None]:
@@ -38,7 +40,15 @@ class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
         return True
 
     @abstractmethod
-    async def next(self, event: Event, state: FSMContext, current_step: Optional[str] = None):
+    async def next(
+        self, 
+        event: Event, 
+        state: FSMContext, 
+        current_step: Optional[str] = None,
+        *,
+        skip_loop_prompt: bool = False,
+        restart_loop: bool = False,
+    ):
         raise NotImplementedError
 
     @abstractmethod
