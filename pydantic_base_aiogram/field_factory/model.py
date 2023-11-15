@@ -30,11 +30,16 @@ class ModelFieldFactory(BaseFieldFactory):
         states = getattr(kwargs.pop('states'), field.name)
         logger.debug(f"[{self.__class__.__name__}][_create_modelmetaclass_view]: {field.name=}; {parents=}; {kwargs=};")
         parents = (*parents, field.name) if parents else (field.name,)
-        return self.create_by_schema(
+        kwargs['is_list_item'] = is_list_type(field.outer_type_)
+
+        res = self.create_by_schema(
             field.type_, 
             parents=parents, 
-            **kwargs, 
             states=states,
-            is_list_item=is_list_type(field.outer_type_),
+            **kwargs, 
         ) 
+
+        kwargs['is_list_item'] = False
+
+        return res
 
