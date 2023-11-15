@@ -4,6 +4,7 @@ from itertools import chain
 from typing import Callable, Type, Union
 from pydantic import BaseModel
 from pydantic.fields import ModelField
+from pydantic_base_aiogram.utils.abstractions import is_list_type
 from pydantic_base_aiogram.utils.step import get_step_name
 from .base import BaseFieldFactory, logger
 
@@ -36,7 +37,13 @@ class UnionFieldFactory(BaseFieldFactory):
 
         for tree_id, model in enumerate(models, start=1):
             logger.debug(f"[{self.__class__.__name__}][create4models]: {locals()=}")
-            model_views = self.create_by_schema(model, tree_id=tree_id, tree_head_step_name=tree_head_step_name, **kwargs)
+            model_views = self.create_by_schema(
+                model, 
+                tree_id=tree_id, 
+                tree_head_step_name=tree_head_step_name, 
+                is_list_item=is_list_type(field.outer_type_),
+                **kwargs,
+            )
 
             if model_views:
                 models_dialects[model] = model_views[0]

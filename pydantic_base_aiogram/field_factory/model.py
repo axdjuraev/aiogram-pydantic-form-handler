@@ -3,15 +3,17 @@ from typing import Optional, Type
 
 from pydantic import BaseModel
 from pydantic.fields import ModelField
+
+from pydantic_base_aiogram.utils.abstractions import is_list_type
 from .base import BaseFieldFactory, logger
 
 
 class ModelFieldFactory(BaseFieldFactory):
-    def create_by_schema(self, schema: Type[BaseModel], **kwargs):
+    def create_by_schema(self, schema: Type[BaseModel], *, is_list_item: bool = False, **kwargs):
         views = []
 
         for field in schema.__fields__.values():
-            res = self.create(field=field, **kwargs)
+            res = self.create(field=field, is_list_item=is_list_item, **kwargs)
 
             if isinstance(res, Iterable):
                 if (ignore_list := kwargs.get('_except_steps')) is not None:
@@ -28,5 +30,11 @@ class ModelFieldFactory(BaseFieldFactory):
         states = getattr(kwargs.pop('states'), field.name)
         logger.debug(f"[{self.__class__.__name__}][_create_modelmetaclass_view]: {field.name=}; {parents=}; {kwargs=};")
         parents = (*parents, field.name) if parents else (field.name,)
-        return self.create_by_schema(field.type_, parents=parents, **kwargs, states=states) 
+        return self.create_by_schema(
+            field.type_, 
+            parents=parents, 
+            **kwargs, 
+            states=states,
+            is_list_item=is_list_type(field.outer_type_),
+        ) 
 
