@@ -98,6 +98,11 @@ class BaseSingleHandler(ABC, BindAbleCallable):
             if parent is None:
                 parent = {}
                 parent_elem[parent_name] = parent
+            elif isinstance(parent, list):
+                if len(parent) < 1:
+                    parent.append({})
+
+                parent = parent[-1]
 
             parent_elem = parent
 
