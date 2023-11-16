@@ -62,6 +62,6 @@ class DynamicHandlersGroupBuilder:
     def _load_type(self, name: str) -> type:
         try:
             return eval(name)
-        except NameError:
+        except (NameError, TypeError):
             return self._extra_types.get(name)  # type: ignore
 
