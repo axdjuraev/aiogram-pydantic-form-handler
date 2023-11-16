@@ -21,6 +21,7 @@ TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
 
 class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic[TBaseSchema]):
     __abstract__ = True
+    __full_laad__ = True
 
     DIALECTS: BaseDialects = BaseDialects()
     BACK_ALLOWED = True
@@ -31,14 +32,17 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
     controllers: dict[str, CallableWithNext]
     step_tree_tails: dict[str, list[CallableWithNext]] = {}
     _except_steps: list = []
+    _add_more_handlers = None
 
     def __init__(self, finish_call: Callable[[TBaseSchema, Event, FSMContext], Awaitable], router: Optional[Router] = None) -> None:
         self._finish_call = finish_call
         self.router = router or Router()
         self._register_bindabls(tuple(self.views.values()))  # type: ignore
         self._register_bindabls(tuple(self.controllers.values()))  # type: ignore
-        self._add_more_handlers = create_add_more_handlers(self)
-        self.router.include_router(self._add_more_handlers.router)
+        
+        if getattr(self.__class__, '__full_load__', True):
+            self._add_more_handlers = create_add_more_handlers(self)
+            self.router.include_router(self._add_more_handlers.router)
 
     def _register_bindabls(self, elems: Iterable[CallableWithNext]) -> None:
         for item in elems:
