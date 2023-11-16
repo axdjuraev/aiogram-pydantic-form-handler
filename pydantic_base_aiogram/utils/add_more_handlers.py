@@ -21,5 +21,11 @@ def create_add_more_handlers(self: BaseType) -> BaseType:
         
         return await self.next(event, state, skip_loop_prompt=True)
 
-    return type('AddMoreHandlers', (self.__class__,), {})(finish_call=final_call)  # type: ignore
+    return type(
+        'AddMoreHandlers', 
+        (self.__class__,), 
+        {
+            '__full_load__': False,
+        }
+    )(finish_call=final_call)  # type: ignore
 
