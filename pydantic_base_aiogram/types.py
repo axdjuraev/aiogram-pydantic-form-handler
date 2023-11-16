@@ -67,6 +67,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         back_allowed: bool = True,
         base_cq_prefix: str = "_",
         data_key: Optional[str] = None,
+        is_list_item: bool = False,
         **_,
     ) -> None:
         self.field = field
@@ -81,6 +82,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         self.back_data = back_data
         self.back_allowed = back_allowed
         self.base_cq_prefix = base_cq_prefix
+        self.is_list_item = is_list_item
         self.data_key = (
             data_key
             or field.field_info.extra.get('data_key')
@@ -96,9 +98,14 @@ class BaseSingleHandler(ABC, BindAbleCallable):
             parent = parent_elem.get(parent_name)
 
             if parent is None:
-                parent = {}
+                if self.is_list_item:
+                    parent = []
+                else:
+                    parent = {}
+
                 parent_elem[parent_name] = parent
-            elif isinstance(parent, list):
+
+            if isinstance(parent, list):
                 if len(parent) < 1:
                     parent.append({})
 
