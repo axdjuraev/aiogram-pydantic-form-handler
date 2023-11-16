@@ -48,8 +48,6 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         for item in elems:
             if not item.elem.is_custom:
                 item.elem.bind(self)
-            else:
-                print(f"{item.elem.step_name=}")
 
             item.elem.register2router(self.router)
 
@@ -176,7 +174,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
                 and (new_branch := self.views.get(f"{current_step}{choice_index}"))
             ):  # possibity of alternative branches
                 current = new_branch
-
+            
             if (
                 not skip_loop_prompt
                 and (parent_name := current.elem.tree_head_step_name)
