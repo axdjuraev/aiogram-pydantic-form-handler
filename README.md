@@ -16,6 +16,13 @@ making it easy to create form-filling handlers.
 >>> from pydantic import BaseModel
 >>> from pydantic_base_aiogram import SchemaBaseHandlersGroup
 
+# ----------------------------------------utils-methods--------------------------------------
+
+>>> def check_for_properties_existense(cls, properties: list[str]):
+...     dirs = dir(cls)
+...     assert len(tuple(filter(lambda x: not x in dirs, properties))) == 0
+...     assert cls(finish_call=None)
+
 # ----------------------------------------Simple datatypes schema--------------------------------------
 
 >>> class PersonPydanticFormSchema(BaseModel):
@@ -28,9 +35,7 @@ making it easy to create form-filling handlers.
 ...     pass
 ...
 ...
->>> dirs = dir(PersonFormHanlders)
->>> assert len(tuple(filter(lambda x: not x in dirs, ['name_view', 'age_view', 'height_view']))) == 0
->>> assert PersonFormHanlders(finish_call=None)
+>>> check_for_properties_existense(PersonFormHanlders, ['name_view', 'age_view', 'height_view'])
 
 # ----------------------------------------Enum datatype schema-----------------------------------------
 
@@ -50,9 +55,7 @@ making it easy to create form-filling handlers.
 ...     pass
 ...
 ...
->>> dirs = dir(PersonMoodFormHanlders)
->>> assert len(tuple(filter(lambda x: not x in dirs, ['name_view', 'current_mood_view']))) == 0
->>> assert PersonMoodFormHanlders(finish_call=None)
+>>> check_for_properties_existense(PersonMoodFormHanlders, ['name_view', 'current_mood_view'])
 
 # ----------------------------------------Complex schema-----------------------------------------------
 
@@ -71,12 +74,16 @@ making it easy to create form-filling handlers.
 ...     pass
 ...
 ...
->>> dirs = dir(PersonFormHanlders)
->>> assert len(tuple(filter(lambda x: not x in dirs, 
-...     ['name_view', 'address_street_view', 'address_city_view', 'address_postal_code_view']
-... ))) == 0
+>>> check_for_properties_existense(
+...     PersonFormHanlders, 
+...     [
+...         'name_view', 
+...         'address_street_view', 
+...         'address_city_view', 
+...         'address_postal_code_view'
+...     ]
+... )
 ...
->>> assert PersonFormHanlders(finish_call=None)
 
 # ------------------------------------Combined Enum datatype schema------------------------------------
 
@@ -103,8 +110,7 @@ making it easy to create form-filling handlers.
 ...     pass
 ...
 ...
->>> dirs = dir(PersonMoodFormHanlders)
->>> assert len(tuple(filter(lambda x: not x in dirs, ['name_view', 'current_mood_view']))) == 0
->>> assert PersonMoodFormHanlders(finish_call=None)
+>>> check_for_properties_existense(PersonMoodFormHanlders, ['name_view', 'current_mood_view'])
 
 ```
+
