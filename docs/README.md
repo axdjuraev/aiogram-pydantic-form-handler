@@ -6,4 +6,5 @@
 
 * [Abstractions](abstraction/README.md)
     * [Field-Normalization](abstraction/field-normalization.md)
+    * [Schema-states](abstraction/schema-states.md)
 
