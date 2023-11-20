@@ -177,10 +177,13 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
             
             if (
                 not skip_loop_prompt
+                and current.elem.is_list_item
                 and (parent_name := current.elem.tree_head_step_name)
                 and (parent_view := self.views.get(parent_name))
-                and (parent_tails := self.step_tree_tails.get(parent_name))
-                and current in parent_tails 
+                and (
+                    not current._next 
+                    or current._next.elem.parents != current.elem.parents
+                )
             ):
                 if restart_loop:
                     return await parent_view.elem.__call__(event, state) 
