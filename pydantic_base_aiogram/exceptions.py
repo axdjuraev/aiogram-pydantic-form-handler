@@ -16,7 +16,3 @@ class RequireMultipleError(BasePydanticBaseAiogramException):
         super().__init__(*args)
         self.value = value
 
-
-class TooNestedType(BasePydanticBaseAiogramException):
-    pass
-
