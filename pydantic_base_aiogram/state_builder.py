@@ -1,3 +1,4 @@
+from enum import Enum
 from inspect import isclass
 from types import UnionType
 from typing import Union, Type, get_origin, get_args
