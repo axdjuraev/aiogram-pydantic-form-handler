@@ -12,8 +12,8 @@ from .view import ViewFactory
 from .controller import ControllerFactory
 from .field_factory import logger
 from .abstract_handler import AbstractPydanticFormHandlers
+from .state_builder import SchemaStates
 from .utils.add_more_handlers import create_add_more_handlers
-from .utils.schema_states import SchemaStates
 
 
 TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
