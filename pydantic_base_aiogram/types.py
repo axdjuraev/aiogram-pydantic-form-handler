@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Any, Generic, Iterable, Optional, Protocol, TypeVar, Union, runtime_checkable
-from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from pydantic.fields import ModelField
 from pydantic_base_aiogram.utils.abstractions import is_list_type
-from pydantic_base_aiogram.utils.field_normalization.normilized_model_field import NormalizedModelField
 from pydantic_base_aiogram.utils.step import get_step_name
 from pydantic_base_aiogram.dialecsts import BaseDialects
+from aiogram import Router
 
 
 class KeyboardItem(dict):
@@ -15,17 +14,6 @@ class KeyboardItem(dict):
         key: callback_data
         value: text
     """
-
-
-class BaseFieldFactory(ABC):
-    pass
-
-
-class BaseFactory(ABC):
-    @classmethod
-    @abstractmethod
-    def create(cls, field: NormalizedModelField, **kwargs):
-        raise NotImplementedError
 
 
 @runtime_checkable
