@@ -20,3 +20,7 @@ class RequireMultipleError(BasePydanticBaseAiogramException):
 class TooNestedType(BasePydanticBaseAiogramException):
     pass
 
+
+class TypeFactoryNotFound(BasePydanticBaseAiogramException):
+    pass
+
