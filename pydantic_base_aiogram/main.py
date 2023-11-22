@@ -205,7 +205,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
                 if restart_loop:
                     return await parent_view.elem.__call__(update, state) 
 
-                return await self.show_add_more_view(update, state)
+                return await self.show_add_more_view(event, state)
 
             return await current.next(update, state)
 
