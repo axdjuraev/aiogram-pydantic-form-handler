@@ -118,13 +118,18 @@ class BaseView(AbstractView):
         await state.update_data(__step__=self.step_name)
 
     async def main(self, self_: THandler, event: Event, state: FSMContext) -> Any:
+        reply_markup=(  # type: ignore
+            self.keyboard if self.keyboard
+            else await self.get_dynamic_keyboard(state)
+        ).as_markup()
+
+        if not reply_markup or not reply_markup.inline_keyboard:  # type: ignore
+            reply_markup = None
+
         await event.answer(
             text=self.text, 
             state=state, 
-            reply_markup=(
-                self.keyboard if self.keyboard
-                else await self.get_dynamic_keyboard(state)
-            ).as_markup()
+            reply_markup=reply_markup,  # type: ignore
         )
         await state.set_state(self.state)
 

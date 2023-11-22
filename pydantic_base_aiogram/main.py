@@ -172,8 +172,15 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         restart_loop: bool = False,
     ):
         try:
+            update = event
+
+            if isinstance(event, Event):
+                update = event._event
+            else:
+                event = Event(event)
+            
             if not current_step:
-                return await self.start_point(self, event._event, state)
+                return await self.start_point(self, update, state)
 
             current = self.views[current_step]
 
@@ -196,11 +203,11 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
                 )
             ):
                 if restart_loop:
-                    return await parent_view.elem.__call__(event, state) 
+                    return await parent_view.elem.__call__(update, state) 
 
-                return await self.show_add_more_view(event, state)
+                return await self.show_add_more_view(update, state)
 
-            return await current.next(event, state)
+            return await current.next(update, state)
 
         except NotImplementedError:
             return await self.finish(event, state)

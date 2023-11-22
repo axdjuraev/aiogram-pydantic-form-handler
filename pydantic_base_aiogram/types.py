@@ -232,7 +232,7 @@ class Event(Generic[TEvent]):
         if state and not isinstance(self._event, EditAbleEvent):
             await self.clear_stack(state)
 
-        if reply_markup and not reply_markup.inline_keyboard:
+        if not reply_markup or not reply_markup.inline_keyboard:
             reply_markup = None
 
         kwargs['parse_mode'] = kwargs.get('parse_mode', self.default_parse_mode)
