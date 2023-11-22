@@ -11,7 +11,7 @@ from pydantic_base_aiogram.types import Event
 class AddMoreHandlers:
     def __init__(
         self, 
-        next_handler: Callable[[Union[types.Message, types.CallbackQuery], FSMContext, int], Awaitable],
+        next_handler: Callable[[Event, FSMContext, int], Awaitable],
         dialects: BaseDialects,
         cb_data_prefix: Optional[str] = None,
         default_back_data: Optional[str] = None,
@@ -45,7 +45,7 @@ class AddMoreHandlers:
 
     async def contorller(self, cq: types.CallbackQuery, state: FSMContext) -> None:
         choice = int(str(cq.data).split(":")[-1])
-        await self._next_handler(cq, state, choice)
+        await self._next_handler(Event(cq), state, choice)
 
     def register2router(self, router: Router) -> Router:
         router.callback_query(F.data.startswith(self._cb_data_prefix))(self.contorller)

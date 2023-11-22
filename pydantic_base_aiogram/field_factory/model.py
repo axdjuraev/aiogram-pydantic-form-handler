@@ -44,6 +44,9 @@ class ModelFieldFactory(BaseFieldFactory):
         if 'is_list_item' in kwargs:
             del kwargs['is_list_item']
 
+        kwargs = kwargs.copy()
+        kwargs['tree_head_step_name'] = None
+
         res = self.create_by_schema(
             field.type_, 
             parents=parents, 

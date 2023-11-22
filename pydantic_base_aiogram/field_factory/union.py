@@ -44,7 +44,6 @@ class UnionFieldFactory(BaseFieldFactory):
             model_views = self.create_by_schema(
                 model, 
                 tree_id=tree_id, 
-                tree_head_step_name=tree_head_step_name, 
                 is_list_item=is_list_item,
                 **kwargs,
             )

@@ -47,10 +47,12 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         )
 
     async def add_more_final_call(self, event, state, choice: int):
+        step_name = await self._get_current_step(state)
+
         if choice:
-            return await self.next(event, state, restart_loop=True)
+            return await self.next(event, state, step_name, restart_loop=True)
         
-        return await self.next(event, state, skip_loop_prompt=True)
+        return await self.next(event, state, step_name, skip_loop_prompt=True)
 
     def _register_bindabls(self, elems: Iterable[CallableWithNext]) -> None:
         for item in elems:
