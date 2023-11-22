@@ -37,6 +37,12 @@ class BaseView(AbstractView):
             self.field.field_info.extra.get('view_text') 
             or self.view_text_format.format(field_name=self.field_name)
         )
+
+        # TODO(ax): remove this debug thing 
+        if self.name == 'fields_is_list_view':
+            print(1)
+        # TODO(ax): remove this debug thing
+
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     @property

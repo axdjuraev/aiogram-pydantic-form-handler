@@ -9,11 +9,20 @@ from .base import BaseFieldFactory, logger
 
 
 class ModelFieldFactory(BaseFieldFactory):
-    def create_by_schema(self, schema: Type[BaseModel], *, is_list_item: bool = False, **kwargs):
+    def create_by_schema(
+        self, 
+        schema: Type[BaseModel], 
+        *, 
+        is_list_item: bool = False, 
+        **kwargs,
+    ):
         views = []
-
+        
         for field in schema.__fields__.values():
             res = self.create(field=field, is_list_item=is_list_item, **kwargs)
+
+            if not kwargs.get('tree_head_step_name') and views:
+                kwargs['tree_head_step_name'] = views[-1].step_name
 
             if isinstance(res, Iterable):
                 if (ignore_list := kwargs.get('_except_steps')) is not None:

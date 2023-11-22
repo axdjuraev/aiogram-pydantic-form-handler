@@ -32,6 +32,9 @@ class ViewFactory(FieldFactory, ABC):
             if kwargs['is_has_back']:
                 kwargs['back_data'] = None
 
+            if not kwargs.get('tree_head_step_name') and views:
+                kwargs['tree_head_step_name'] = views[-1].step_name
+
             res = self.create(field=field, **kwargs)
 
             if isinstance(res, Iterable):

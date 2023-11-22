@@ -13,7 +13,7 @@ from .controller import ControllerFactory
 from .field_factory import logger
 from .abstract_handler import AbstractPydanticFormHandlers
 from .state_builder import SchemaStates
-from .utils.add_more_handlers import create_add_more_handlers
+from .utils.add_more_handlers import AddMoreHandlers
 
 
 TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
@@ -39,10 +39,18 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         self.router = router or Router()
         self._register_bindabls(tuple(self.views.values()))  # type: ignore
         self._register_bindabls(tuple(self.controllers.values()))  # type: ignore
+        self._add_more_handlers = AddMoreHandlers(
+            self.add_more_final_call, 
+            self.DIALECTS, 
+            self.base_cq_prefix,
+            self.DIALECTS.BACK_BUTTON_DATA,
+        )
+
+    async def add_more_final_call(self, event, state, choice: int):
+        if choice:
+            return await self.next(event, state, restart_loop=True)
         
-        if getattr(self.__class__, '__full_load__', True):
-            self._add_more_handlers = create_add_more_handlers(self)
-            self.router.include_router(self._add_more_handlers.router)
+        return await self.next(event, state, skip_loop_prompt=True)
 
     def _register_bindabls(self, elems: Iterable[CallableWithNext]) -> None:
         for item in elems:
@@ -149,8 +157,8 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
         return res
 
-    async def show_add_more_view(self, event: Event, state: FSMContext):
-        return await self._add_more_handlers.next(event, state)
+    async def show_add_more_view(self, event: Event, _: FSMContext):
+        return await self._add_more_handlers.view(event._event)
 
     async def next(
         self, 
@@ -245,5 +253,11 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
     def register2router(self, router: Router) -> Router:
         router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.BACK_BUTTON_DATA}")(self.back)
         router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.SKIP_STEP_DATA}")(self.skip)
-        return router.include_router(self.router)
 
+        router.include_router(self.router)
+
+        if self._add_more_handlers:
+            self._add_more_handlers.register2router(router)
+
+        return router
+ 
