@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Generic, Iterable, Optional, Protocol, TypeVar, Union, runtime_checkable
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 from pydantic.fields import ModelField
 from pydantic_base_aiogram.utils.abstractions import is_list_type
 from pydantic_base_aiogram.utils.step import get_step_name
@@ -228,9 +228,12 @@ class Event(Generic[TEvent]):
 
         await self._set_stack(state, [])
 
-    async def answer(self, text: str, state: Optional[FSMContext] = None, *, reply_markup = None, **kwargs):
+    async def answer(self, text: str, state: Optional[FSMContext] = None, *, reply_markup: Optional[InlineKeyboardMarkup] = None, **kwargs):
         if state and not isinstance(self._event, EditAbleEvent):
             await self.clear_stack(state)
+
+        if reply_markup and not reply_markup.inline_keyboard:
+            reply_markup = None
 
         kwargs['parse_mode'] = kwargs.get('parse_mode', self.default_parse_mode)
         res = await self._answer(text, reply_markup=reply_markup, **kwargs)
