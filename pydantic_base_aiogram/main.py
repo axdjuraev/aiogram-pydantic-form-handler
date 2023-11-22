@@ -173,7 +173,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
     ):
         try:
             if not current_step:
-                return await self.start_point(self, event, state)
+                return await self.start_point(self, event._event, state)
 
             current = self.views[current_step]
 
