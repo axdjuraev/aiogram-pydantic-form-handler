@@ -26,6 +26,7 @@ class BaseDialects(ABC):
     SKIP_STEP_DATA = 'skip_step'
     ADD_MORE = 'Add more?'
     SEND_FILE = 'Send a file for `{field_name}`'
+    REQUIRED_ONLY_ONE_FILE = 'Please send only one file'
     SEND_FILES = 'Send files for `{field_name}`'
 
 
@@ -53,4 +54,5 @@ class RuDialects(BaseDialects):
     ADD_MORE = 'Добавить еще?'
     SEND_FILE = 'Отправить файл для `{field_name}`'
     SEND_FILES = 'Отправить файлы для `{field_name}`'
+    REQUIRED_ONLY_ONE_FILE = 'Пожалуйста, отправьте только один файл'
 
