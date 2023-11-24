@@ -8,6 +8,7 @@ from pydantic_base_aiogram.main import SchemaBaseHandlersGroup
 
 class DynamicHandlersGroupBuilder:
     _DEFAULT_SCHEMA_NAME_POSTFIX = "Schema"
+    _DEFAULT_TBASEMODEL = BaseModel
 
     def __init__(
         self, 
@@ -16,12 +17,14 @@ class DynamicHandlersGroupBuilder:
         extra_schema: Optional[list[BaseModel]] = None,
         extra_types: Optional[dict[str, type]] = None,
         schema_name_postfix: Optional[str] = None,
+        TBaseModel: Optional[Type[BaseModel]] = None,
     ) -> None:
         self._field_metadas = field_metadas
         self._getters = getters or {}
         self._extra_types = extra_types or {}
         self._schemas = extra_schema.copy() if extra_schema else []
         self._schema_name_postfix = schema_name_postfix or self._DEFAULT_SCHEMA_NAME_POSTFIX
+        self._TBaseModel = TBaseModel or self._DEFAULT_TBASEMODEL
         self._check_getters()
 
     def _check_getters(self):
@@ -57,7 +60,7 @@ class DynamicHandlersGroupBuilder:
 
         properties['__annotations__'] = types
 
-        return type(schema_name, (BaseModel,), properties)
+        return type(schema_name, (self._TBaseModel,), properties)
     
     def _load_type(self, name: str) -> type:
         try:

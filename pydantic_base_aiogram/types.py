@@ -108,6 +108,8 @@ class BaseSingleHandler(ABC, BindAbleCallable):
             if isinstance(parent, list):
                 if len(parent) < 1:
                     parent.append({})
+                elif data_key in parent[-1]:
+                    parent.append({})
 
                 parent = parent[-1]
 
