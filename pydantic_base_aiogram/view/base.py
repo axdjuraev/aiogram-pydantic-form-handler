@@ -40,7 +40,7 @@ class BaseView(AbstractView):
             or self.view_text_format
         ).format(
             field_name=self.field_name,
-            seprator=self._text_seperator_symbol[-1]
+            separator=self._text_seperator_symbol[-1]
         )
 
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
