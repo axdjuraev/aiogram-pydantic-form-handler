@@ -16,10 +16,10 @@ class FType(Protocol):
     mime_type: Optional[str] = None
 
 
-def extract_file_from_message(message: Message) -> Optional[FType]:
+def extract_file_from_message(message: Message) -> Optional[tuple[FType, str]]:
     for name in FILE_TYPE_NAMES:
         if (res := getattr(message, name, None)):
-            return res
+            return res, name
 
     return None
 

@@ -4,13 +4,16 @@ from datetime import date
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 from enum import Enum
+from aiogram.types import InputMedia
 
 from pydantic_base_aiogram.field_factory import FieldFactory
+
 from .type_base_message_text import TypeBaseMessageTextController
 from .date_message_text import DateMessageTextController
 from .cq_checkbox import CQCheckboxController
 from .custom_data_str import CustomDataStrController
 from .bool import BoolController
+from .file import FileController
 
 
 class ControllerFactory(FieldFactory, ABC):
