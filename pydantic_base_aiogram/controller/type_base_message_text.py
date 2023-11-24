@@ -17,6 +17,9 @@ class TypeBaseMessageTextController(BaseController):
 
     async def format_data(self, self_: THandler, event: Event[Message], state: FSMContext):
         try:
+            if self._is_list:
+                return str(event._event.text).split(self._text_seperator_symbol[0])
+
             return self.field.type_(event._event.text)
         except ValueError:
             raise DataValidationError(self.dialects.INVALID_TYPE_DATA)
