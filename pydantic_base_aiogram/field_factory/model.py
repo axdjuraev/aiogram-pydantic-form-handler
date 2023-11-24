@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 from typing import Optional, Type
+from aiogram.types import InputMedia
 
 from pydantic import BaseModel
 from pydantic.fields import ModelField
@@ -35,6 +36,10 @@ class ModelFieldFactory(BaseFieldFactory):
         return views
 
     def create4modelmetaclass(self, field: ModelField, parents: Optional[Iterable[str]] = None, **kwargs):
+
+        if issubclass(field.type_, InputMedia):
+            return self.create4type(field, parents=parents, **kwargs)
+
         kwargs.pop('state')
         states = getattr(kwargs.pop('states'), field.name)
         logger.debug(f"[{self.__class__.__name__}][_create_modelmetaclass_view]: {field.name=}; {parents=}; {kwargs=};")
