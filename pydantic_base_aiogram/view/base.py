@@ -13,6 +13,8 @@ from .abstract import AbstractView
 
 
 class BaseView(AbstractView):
+    _IGNORE_LIST_BUTTON = False
+
     def __init__(
         self, 
         state: State,
@@ -81,7 +83,7 @@ class BaseView(AbstractView):
                 callback_data=f"{self.base_cq_prefix}_{self.dialects.SKIP_STEP_DATA}",
             )
 
-        if is_list_type(self.field.outer_type_):
+        if is_list_type(self.field.outer_type_) and not self._IGNORE_LIST_BUTTON:
             builder.button(
                 text=self.dialects.READY_BUTTON, 
                 callback_data=self.dialects.READY_BUTTON_DATA, 
