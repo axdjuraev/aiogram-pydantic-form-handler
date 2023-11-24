@@ -91,6 +91,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
             or field.field_info.extra.get('data_key')
             or self.field.name
         )
+        self._is_list = is_list_type(self.field.outer_type_)
         self._text_seperator_symbol = (
             text_seperator_symbol  
             or self.field.field_info.extra.get('seperator_symbol') 

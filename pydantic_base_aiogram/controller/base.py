@@ -10,7 +10,6 @@ from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers 
 from pydantic_base_aiogram.field_factory import logger
 from pydantic_base_aiogram.types import Event
 from pydantic_base_aiogram.exceptions import DataValidationError, RequireMultipleError
-from pydantic_base_aiogram.utils.abstractions import is_list_type
 
 from .abstract import AbstractController
 
@@ -33,7 +32,6 @@ class BaseController(AbstractController, ABC):
         self._async_data_validator = async_data_validator or self.field.field_info.extra.get('async_data_validator')
         self._data_validator = data_validator or self.field.field_info.extra.get('data_validator')
         self._validator_method = validator_method or self.field.field_info.extra.get('validator_method')
-        self._is_list = is_list_type(self.field.outer_type_)
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_callback_data(self) -> str:

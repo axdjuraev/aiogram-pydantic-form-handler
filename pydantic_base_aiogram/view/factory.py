@@ -1,6 +1,6 @@
 from abc import ABC
 from typing import Iterable, Type
-from pydantic import BaseModel, SubclassError
+from pydantic import BaseModel
 from pydantic.fields import ModelField
 from enum import Enum
 
@@ -11,6 +11,7 @@ from .int import IntView
 from .enum import EnumView
 from .models import ModelsView
 from .bool import BoolView
+from .file import FileView
 
 
 class ViewFactory(FieldFactory, ABC):
@@ -20,6 +21,7 @@ class ViewFactory(FieldFactory, ABC):
         float: FloatView,
         Enum: EnumView,
         bool: BoolView,
+        bytes: FileView,
     }
 
     def create_by_schema(self, schema: Type[BaseModel], **kwargs):

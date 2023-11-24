@@ -25,6 +25,8 @@ class BaseDialects(ABC):
     READY_BUTTON_DATA = 'ready'
     SKIP_STEP_DATA = 'skip_step'
     ADD_MORE = 'Add more?'
+    SEND_FILE = 'Send a file for `{field_name}`'
+    SEND_FILES = 'Send files for `{field_name}`'
 
 
 class EnDialects(BaseDialects):
@@ -49,4 +51,6 @@ class RuDialects(BaseDialects):
     READY_BUTTON = 'Готово'
     SKIP_BUTTON = 'Пропустить'
     ADD_MORE = 'Добавить еще?'
+    SEND_FILE = 'Отправить файл для `{field_name}`'
+    SEND_FILES = 'Отправить файлы для `{field_name}`'
 
