@@ -49,6 +49,8 @@ class BindAbleCallable(Protocol):
 
 
 class BaseSingleHandler(ABC, BindAbleCallable):
+    _DEFAULT_TEXT_SEPRATOR_SYMBOL = ('\n', 'новой строкой')
+
     name: str
     step_name: str
     is_custom: bool
@@ -68,6 +70,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         base_cq_prefix: str = "_",
         data_key: Optional[str] = None,
         is_list_item: bool = False,
+        text_seperator_symbol: Optional[tuple[str, str]] = None,
         **_,
     ) -> None:
         self.field = field
@@ -87,6 +90,11 @@ class BaseSingleHandler(ABC, BindAbleCallable):
             data_key
             or field.field_info.extra.get('data_key')
             or self.field.name
+        )
+        self._text_seperator_symbol = (
+            text_seperator_symbol  
+            or self.field.field_info.extra.get('seperator_symbol') 
+            or self._DEFAULT_TEXT_SEPRATOR_SYMBOL
         )
 
     async def _setvalue(self, value, state: FSMContext, *, key: Optional[str] = None):

@@ -1,3 +1,4 @@
+from pydantic_base_aiogram.utils.abstractions import is_list_type
 from .base import BaseView
 
 
@@ -7,8 +8,8 @@ class StrView(BaseView):
     @property
     def view_text_format(self):
         return (
-            self.dialects.CHOOSE_FROM_LIST_OR_INPUT if self.is_extra_str 
-            else self.dialects.CHOOSE_FROM_LIST
+            self.dialects.INPUT_STR_LIST if is_list_type(self.field.outer_type_)
+            else self.dialects.INPUT_STR
         )
 
     @classmethod

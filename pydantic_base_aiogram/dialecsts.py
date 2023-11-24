@@ -8,6 +8,7 @@ class BaseDialects(ABC):
     CHOOSE_FROM_LIST = 'Choose value for `{field_name}`'
     CHOOSE_FROM_LIST_OR_INPUT = 'Choose or enter value for `{field_name}`'
     INPUT_STR = 'Enter a string for `{field_name}`'
+    INPUT_STR_LIST = 'Enter a string items for `{field_name}`, separated by `{separator}`'
     INPUT_INT = 'Enter a number for `{field_name}`'
     INPUT_FLOAT = 'Enter a decimal number for `{field_name}`'
     CHOOSE = 'Select a value for `{field_name}`'
@@ -31,10 +32,11 @@ class EnDialects(BaseDialects):
 
 
 class RuDialects(BaseDialects):
-    INVALID_TYPE_DATA = 'Неправилный тип данных'
     INVALID_FORMAT_DATE = 'Неправилный формат даты. Должен совпадать с YYYY-MM-DD'
+    INVALID_TYPE_DATA = 'Неправилный тип данных'
     INPUT = 'Введите значение для `{field_name}`'
     INPUT_STR = 'Введите строку для `{field_name}`'
+    INPUT_STR_LIST = 'Введите строкы для `{field_name}`, разделенные `{separator}`'
     INPUT_INT = 'Введите число для `{field_name}`'
     INPUT_FLOAT = 'Введите десятичное число для `{field_name}`'
     CHOOSE = 'Выберите значение для `{field_name}`'
