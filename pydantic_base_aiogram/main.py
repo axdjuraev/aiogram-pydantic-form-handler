@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from pydantic_base_aiogram.dialecsts import BaseDialects
 from pydantic_base_aiogram.types import Event, CallableWithNext, BaseSingleHandler
+from pydantic_base_aiogram.utils.middleware.album import AlbumMessageMiddleware
 
 from .view import ViewFactory
 from .controller import ControllerFactory
@@ -23,6 +24,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
     __abstract__ = True
     __full_laad__ = True
 
+    _DEFAULT_ALBUM_MIDDLEWARE_LATENCY = 0.01
     DIALECTS: BaseDialects = BaseDialects()
     BACK_ALLOWED = True
 
@@ -34,7 +36,12 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
     _except_steps: list = []
     _add_more_handlers = None
 
-    def __init__(self, finish_call: Callable[[TBaseSchema, Event, FSMContext], Awaitable], router: Optional[Router] = None) -> None:
+    def __init__(
+        self, 
+        finish_call: Callable[[TBaseSchema, Event, FSMContext], Awaitable], 
+        router: Optional[Router] = None,
+        album_middleware_latency: Optional[float] = None,
+    ) -> None:
         self._finish_call = finish_call
         self.router = router or Router()
         self._register_bindabls(tuple(self.views.values()))  # type: ignore
@@ -44,6 +51,10 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
             self.DIALECTS, 
             self.base_cq_prefix,
             self.DIALECTS.BACK_BUTTON_DATA,
+        )
+        self._album_middleware_latency = (
+            album_middleware_latency 
+            or self._DEFAULT_ALBUM_MIDDLEWARE_LATENCY
         )
 
     async def add_more_final_call(self, event, state, choice: int):
@@ -260,6 +271,8 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         return (await state.get_data()).get(f'__tree_choice_{step_name}__')
 
     def register2router(self, router: Router) -> Router:
+        router.message.middleware(AlbumMessageMiddleware(self._album_middleware_latency))
+
         router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.BACK_BUTTON_DATA}")(self.back)
         router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.SKIP_STEP_DATA}")(self.skip)
 
