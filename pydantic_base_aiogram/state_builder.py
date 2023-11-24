@@ -4,6 +4,7 @@ from types import UnionType
 from typing import Union, Type, get_origin, get_args
 from aiogram.fsm.state import State, StatesGroup
 from pydantic import BaseModel
+from aiogram.types import InputMedia
 
 
 def is_union(obj):
@@ -13,6 +14,13 @@ def is_union(obj):
 class SchemaStates(StatesGroup):
     def __init__(self, base_name: str) -> None:
         self._base_name = base_name
+        self._unit_types = self._get_unit_types
+
+    @property
+    def _get_unit_types(self) -> list:
+        return [
+            InputMedia,
+        ]
 
     @classmethod
     def create(cls, schema: Type[BaseModel], self = None) -> 'SchemaStates':
@@ -22,8 +30,11 @@ class SchemaStates(StatesGroup):
             type_ = field.type_
 
             if (
-                (isclass(type_) and issubclass(type_, BaseModel)) 
-                or (is_union(type_) and issubclass(get_args(type_)[-1], BaseModel))
+                (
+                    (isclass(type_) and issubclass(type_, BaseModel)) 
+                    or (is_union(type_) and issubclass(get_args(type_)[-1], BaseModel))
+                )
+                and not type_ in self._unit_types
             ):
                 schemas = get_args(field.type_) if is_union(field.type_) else (field.type_,)
                 setattr(self, field.name, cls(f"{self._base_name}.{field.name}"))

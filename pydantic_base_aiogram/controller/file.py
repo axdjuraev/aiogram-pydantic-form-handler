@@ -1,7 +1,9 @@
-from aiogram import types
+from aiogram import Router, types
+from aiogram.filters.state import StateFilter
 
-from pydantic_base_aiogram.exceptions import DataValidationError
 from pydantic_base_aiogram.types import Event
+from pydantic_base_aiogram.field_factory.base import logger
+from pydantic_base_aiogram.exceptions import DataValidationError
 from pydantic_base_aiogram.utils.file import extract_file_from_message
 from pydantic_base_aiogram.utils.proxy.album_message import ProxyAlbumMessage
 
@@ -37,4 +39,10 @@ class FileController(BaseController):
             return input_files[-1]
 
         return input_files
+
+    def register2router(self, router: Router) -> Router:
+        router.message(StateFilter(self.state))(self.__call__)
+
+        logger.debug(f"[{self.__class__.__name__}][register2router]: {locals()=};")
+        return router
 
