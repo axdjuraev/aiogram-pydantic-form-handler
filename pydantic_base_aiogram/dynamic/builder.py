@@ -16,6 +16,7 @@ class DynamicHandlersGroupBuilder:
         getters: Optional[dict[str, Callable]] = None,
         extra_schema: Optional[list[BaseModel]] = None,
         extra_types: Optional[dict[str, type]] = None,
+        extra_props: Optional[dict] = None,
         schema_name_postfix: Optional[str] = None,
         TSchemaBaseModel: Optional[Type[BaseModel]] = None,
     ) -> None:
@@ -25,6 +26,7 @@ class DynamicHandlersGroupBuilder:
         self._schemas = extra_schema.copy() if extra_schema else []
         self._schema_name_postfix = schema_name_postfix or self._DEFAULT_SCHEMA_NAME_POSTFIX
         self._TSchemaBaseModel = TSchemaBaseModel or self._DEFAULT_TSCHEMA_BASEMODEL
+        self._extra_props = extra_props
         self._check_getters()
 
     def _check_getters(self):
@@ -35,6 +37,12 @@ class DynamicHandlersGroupBuilder:
             ), f"Getter `{meta._getter_name}` not found!"
             assert self._load_type(meta._type) is not None, f"Type `{meta._type}` not found!"
 
+    def _body_exec_extra_props(self, n: dict):
+        if not self._extra_props:
+            return
+
+        n.update(self._extra_props)
+
     def build(
         self, 
         name: Optional[str] = None
@@ -42,7 +50,13 @@ class DynamicHandlersGroupBuilder:
         name = name or str(uuid4())
         schema_name = f"{name}{self._schema_name_postfix}"
         TSchema = self._build_schema(schema_name)
-        TRes = new_class(name, (SchemaBaseHandlersGroup[TSchema],), {}) 
+
+        TRes = new_class(
+            name, 
+            bases=(SchemaBaseHandlersGroup[TSchema],), 
+            kwds={},
+            exec_body=self._body_exec_extra_props,
+        ) 
 
         return (TSchema, TRes)
 
