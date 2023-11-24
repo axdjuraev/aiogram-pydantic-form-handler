@@ -23,6 +23,7 @@ class ControllerFactory(FieldFactory, ABC):
         Union[str, Enum]: CustomDataStrController,
         bool: BoolController,
         date: DateMessageTextController,
+        InputMedia: FileController,
     }
 
     def create4models(self, field: ModelField, models: list[Type[BaseModel]], kwargs: dict):
