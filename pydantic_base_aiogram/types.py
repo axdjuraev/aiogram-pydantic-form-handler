@@ -6,7 +6,7 @@ from pydantic.fields import ModelField
 from pydantic_base_aiogram.utils.abstractions import is_list_type
 from pydantic_base_aiogram.utils.step import get_step_name
 from pydantic_base_aiogram.dialecsts import BaseDialects
-from aiogram import Router
+from aiogram import Router, types
 
 
 class KeyboardItem(dict):
@@ -253,4 +253,16 @@ class Event(Generic[TEvent]):
             await self.add_stack_message(state, getattr(res, 'message_id'))
 
         return res
+
+
+FType = [
+    types.ContentType.DOCUMENT, 
+    types.ContentType.PHOTO, 
+    types.ContentType.AUDIO, 
+    types.ContentType.VIDEO,
+    types.ContentType.VIDEO_NOTE,
+    types.ContentType.VOICE,
+    types.ContentType.STICKER,
+    types.ContentType.ANIMATION,
+]
 
