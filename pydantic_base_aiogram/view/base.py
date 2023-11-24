@@ -14,6 +14,7 @@ from .abstract import AbstractView
 
 class BaseView(AbstractView):
     _IGNORE_LIST_BUTTON = False
+    _DEFAULT_TEXT_SEPRATOR_SYMBOL = ('\n', 'новой строкой')
 
     def __init__(
         self, 
@@ -22,6 +23,7 @@ class BaseView(AbstractView):
         extra_keys: Optional[dict[str, str]] = None,
         getter: Optional[DataGetterCallable] = None,
         item_callback_data: Optional[str] = None,
+        text_seprator_symbol: Optional[tuple[str, str]] = None,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs, name_format="{step_name}_view")
@@ -39,11 +41,11 @@ class BaseView(AbstractView):
             self.field.field_info.extra.get('view_text') 
             or self.view_text_format.format(field_name=self.field_name)
         )
-
-        # TODO(ax): remove this debug thing 
-        if self.name == 'fields_is_list_view':
-            print(1)
-        # TODO(ax): remove this debug thing
+        self._text_seprator_symbol = (
+            text_seprator_symbol  
+            or self.field.field_info.extra.get('text_seprator_symbol') 
+            or self._DEFAULT_TEXT_SEPRATOR_SYMBOL
+        )
 
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 

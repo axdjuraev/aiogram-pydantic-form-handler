@@ -2,6 +2,15 @@ from .base import BaseView
 
 
 class StrView(BaseView):
+    _IGNORE_LIST_BUTTON = True
+
+    @property
+    def view_text_format(self):
+        return (
+            self.dialects.CHOOSE_FROM_LIST_OR_INPUT if self.is_extra_str 
+            else self.dialects.CHOOSE_FROM_LIST
+        )
+
     @classmethod
     def create(cls, field, **kwargs) -> 'BaseView':
         if getter := field.field_info.extra.get('getter'):
