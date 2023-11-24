@@ -10,7 +10,6 @@ from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers 
 from pydantic_base_aiogram.field_factory import logger
 from pydantic_base_aiogram.types import Event
 from pydantic_base_aiogram.exceptions import DataValidationError, RequireMultipleError
-from pydantic_base_aiogram.utils.abstractions import is_list_type
 
 from .abstract import AbstractController
 
