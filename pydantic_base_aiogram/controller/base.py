@@ -42,7 +42,6 @@ class BaseController(AbstractController, ABC):
 
 
     async def __call__(self, self_: THandler, event: Union[types.Message, types.CallbackQuery], state: FSMContext) -> Any:
-        raise NotImplementedError
         return await self.main(self_, Event(event), state)  # type: ignore
 
     @abstractmethod
