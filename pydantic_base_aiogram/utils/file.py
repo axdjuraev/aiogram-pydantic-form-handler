@@ -19,6 +19,9 @@ class FType(Protocol):
 def extract_file_from_message(message: Message) -> Optional[tuple[FType, str]]:
     for name in FILE_TYPE_NAMES:
         if (res := getattr(message, name, None)):
+            if isinstance(res, list):
+                res = res[-1]
+
             return res, name
 
     return None
