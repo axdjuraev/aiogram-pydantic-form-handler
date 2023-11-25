@@ -4,11 +4,15 @@ from types import new_class
 from pydantic import BaseModel, Field
 from pydantic_base_aiogram.dynamic.field_metadata import FieldMetadata
 from pydantic_base_aiogram.main import SchemaBaseHandlersGroup
+from pydantic_base_aiogram.types import FileType
 
 
 class DynamicHandlersGroupBuilder:
     _DEFAULT_SCHEMA_NAME_POSTFIX = "Schema"
     _DEFAULT_TSCHEMA_BASEMODEL = BaseModel
+    _DEFAULT_EXTRA_TYPES = {
+        FileType.__name__: FileType,
+    }
 
     def __init__(
         self, 
@@ -23,6 +27,7 @@ class DynamicHandlersGroupBuilder:
         self._field_metadas = field_metadas
         self._getters = getters or {}
         self._extra_types = extra_types or {}
+        self._extra_types.update(self._DEFAULT_EXTRA_TYPES)
         self._schemas = extra_schema.copy() if extra_schema else []
         self._schema_name_postfix = schema_name_postfix or self._DEFAULT_SCHEMA_NAME_POSTFIX
         self._TSchemaBaseModel = TSchemaBaseModel or self._DEFAULT_TSCHEMA_BASEMODEL
