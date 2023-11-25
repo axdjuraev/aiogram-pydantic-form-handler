@@ -3,9 +3,11 @@ from aiogram import Bot
 from aiogram.types import Message
 from pydantic import BaseModel
 
+from pydantic_base_aiogram.types import FileType
+
 
 class ProxyAlbumMessage(Message, BaseModel):
-    album: list[Message] = []
+    album: list[FileType] = []
     bot: Optional[Bot] = None
     
     class Config:

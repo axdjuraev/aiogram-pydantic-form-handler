@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import Any, Generic, Iterable, Optional, Protocol, TypeVar, Union, runtime_checkable
+from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
+from pydantic import BaseModel as _BaseSchema
 from pydantic.fields import ModelField
+
 from pydantic_base_aiogram.utils.abstractions import is_list_type
 from pydantic_base_aiogram.utils.step import get_step_name
 from pydantic_base_aiogram.dialecsts import BaseDialects
-from aiogram import Router, types
 
 
 class KeyboardItem(dict):
@@ -265,4 +267,12 @@ FType = [
     types.ContentType.STICKER,
     types.ContentType.ANIMATION,
 ]
+
+
+class FileType(_BaseSchema):
+    file_id: str
+    file_name: str
+    mime_type: str
+    content_type: Optional[str] = None
+    msg: Message
 
