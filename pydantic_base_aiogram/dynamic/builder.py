@@ -68,9 +68,8 @@ class DynamicHandlersGroupBuilder:
         for meta in self._field_metadas:
             getter = meta._getter_name and self._getters[meta._getter_name]
             field = Field(view_text=meta._view_text, getter=getter)
-            property_name = str(uuid4())
-            properties[property_name] = field
-            types[property_name] = self._load_type(meta._type)
+            properties[meta._field_name] = field
+            types[meta._field_name] = self._load_type(meta._type)
 
         properties['__annotations__'] = types
 
