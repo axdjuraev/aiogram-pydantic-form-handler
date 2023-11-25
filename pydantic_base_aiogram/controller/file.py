@@ -15,30 +15,13 @@ class FileController(BaseController):
         if not isinstance(event._event, ProxyAlbumMessage):
             raise NotImplementedError(f'`{self.__class__.__name__}` requires `AlbumMiddleware` for usage')
 
-        input_files = []
-        
-        for file_message in event._event.album:
-            media = extract_file_from_message(file_message)
-
-            if media:
-                input_file, type_name = media
-                event._event.audio
-                TMedia = getattr(types, f'InputMedia{type_name.upper()}', types.InputMediaDocument)
-                input_files.append(
-                    TMedia(
-                        media=input_file.file_id,
-                        caption=file_message.caption,
-                        type=type_name,
-                    )
-                )
-
         if not self._is_list:
-            if len(input_files) > 1:
+            if len(event._event.album) > 1:
                 raise DataValidationError(self.dialects.REQUIRED_ONLY_ONE_FILE)
 
-            return input_files[-1]
+            return event._event.album[-1]
 
-        return input_files
+        return event._event.album 
 
     def register2router(self, router: Router) -> Router:
         router.message(StateFilter(self.state))(self.__call__)

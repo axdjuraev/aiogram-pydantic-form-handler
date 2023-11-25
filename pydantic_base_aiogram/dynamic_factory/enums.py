@@ -1,5 +1,7 @@
 from enum import Enum
 
+from pydantic_base_aiogram.types import FileType
+
 
 class DescriptiveEnum(Enum):
     def __init__(self, name, description) -> None:
@@ -16,7 +18,8 @@ class DescriptiveEnum(Enum):
 
 
 class InputFormTypesEnum(DescriptiveEnum):
-  Integer = ('int', 'Целочисленный тип')
-  Float = ('float', 'Число с плавающей точкой')
-  String = ('str', 'Строка')
+  Integer = (int.__name__, 'Целочисленный тип')
+  Float = (float.__name__, 'Число с плавающей точкой')
+  String = (str.__name__, 'Строка')
+  File = (FileType.__name__, 'Файл')
 

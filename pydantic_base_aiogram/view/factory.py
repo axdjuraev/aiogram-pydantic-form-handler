@@ -1,11 +1,11 @@
 from abc import ABC
 from typing import Iterable, Type
-from aiogram.types import InputMedia
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 from enum import Enum
 
 from pydantic_base_aiogram.field_factory import FieldFactory, logger
+from pydantic_base_aiogram.types import FileType
 from .string import StrView
 from .float import FloatView
 from .int import IntView
@@ -22,7 +22,7 @@ class ViewFactory(FieldFactory, ABC):
         float: FloatView,
         Enum: EnumView,
         bool: BoolView,
-        InputMedia: FileView,
+        FileType: FileView,
     }
 
     def create_by_schema(self, schema: Type[BaseModel], **kwargs):

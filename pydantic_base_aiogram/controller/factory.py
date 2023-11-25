@@ -4,9 +4,9 @@ from datetime import date
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 from enum import Enum
-from aiogram.types import InputMedia
 
 from pydantic_base_aiogram.field_factory import FieldFactory
+from pydantic_base_aiogram.types import FileType
 
 from .type_base_message_text import TypeBaseMessageTextController
 from .date_message_text import DateMessageTextController
@@ -23,7 +23,7 @@ class ControllerFactory(FieldFactory, ABC):
         Union[str, Enum]: CustomDataStrController,
         bool: BoolController,
         date: DateMessageTextController,
-        InputMedia: FileController,
+        FileType: FileController,
     }
 
     def create4models(self, field: ModelField, models: list[Type[BaseModel]], kwargs: dict):
