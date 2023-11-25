@@ -65,6 +65,12 @@ class DynamicHandlersGroupBuilder:
 
         return (TSchema, TRes)
 
+    def _create_dump_returner(self, extra_keys: dict):
+        async def dump_returner(*_):
+            return extra_keys
+
+        return dump_returner
+
     def _build_schema(self, schema_name: Optional[str] = None) -> Type[BaseModel]:
         schema_name = schema_name or str(uuid4())
         properties = {}
@@ -72,6 +78,10 @@ class DynamicHandlersGroupBuilder:
 
         for meta in self._field_metadas:
             getter = meta._getter_name and self._getters[meta._getter_name]
+
+            if meta._extra_keys and not getter:
+                getter = self._create_dump_returner(meta._extra_keys)
+
             field = Field(view_text=meta._view_text, getter=getter)
             properties[meta._field_name] = field
             types[meta._field_name] = self._load_type(meta._type)
