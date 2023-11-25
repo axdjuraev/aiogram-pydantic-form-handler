@@ -43,7 +43,6 @@ class AlbumMessageMiddleware(BaseMiddleware):
 
     def _get_message_as_doc(self, message: Message):
         file= extract_file_from_message(message)
-        print(f"{file=}")
 
         if not file:
             return

@@ -11,8 +11,6 @@ from .base import BaseController
 
 class FileController(BaseController):
     async def format_data(self, self_, event: Event[ProxyAlbumMessage], _):
-        print(f"{event._event=}")
-
         if not hasattr(event._event, 'album'):
             raise NotImplementedError(f'`{self.__class__.__name__}` requires `AlbumMiddleware` for usage')
 
