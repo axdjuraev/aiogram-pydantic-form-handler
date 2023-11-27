@@ -190,6 +190,21 @@ tests = ["attrs[tests-no-zope]", "zope-interface"]
 tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-xdist[psutil]"]
 
 [[package]]
+name = "axabc"
+version = "0.0.62"
+description = "library that defines abstractions for some repeated essences"
+optional = false
+python-versions = "*"
+files = [
+    {file = "axabc-0.0.62-py3-none-any.whl", hash = "sha256:aaa7b2dbbd8ab302195fc4c595774cadd60ec9e7ab78751e388f6155e551f8e9"},
+    {file = "axabc-0.0.62.tar.gz", hash = "sha256:efb070135be3151eebfdf934e39f5680f641b251c75823a8e9dd8b334c837399"},
+]
+
+[package.dependencies]
+pydantic = "1.10.4"
+uuid = "1.30"
+
+[[package]]
 name = "certifi"
 version = "2023.7.22"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -541,6 +556,16 @@ files = [
 ]
 
 [[package]]
+name = "uuid"
+version = "1.30"
+description = "UUID object and generation functions (Python 2.3 or higher)"
+optional = false
+python-versions = "*"
+files = [
+    {file = "uuid-1.30.tar.gz", hash = "sha256:1f87cc004ac5120466f36c5beae48b4c48cc411968eed0eaecd3da82aa96193f"},
+]
+
+[[package]]
 name = "yarl"
 version = "1.9.2"
 description = "Yet another URL library"
@@ -630,4 +655,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "11c92f41aa66f8b394b2ea26acbbce07199f6fd051f36bd28e44c6cd3948fd10"
+content-hash = "31f399706a1dec209b7494b70e4dcd83b3dddbffdbaefbaa7efe13b7950718fb"
