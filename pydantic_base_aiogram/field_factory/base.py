@@ -1,3 +1,4 @@
+from aiogram.types import InputMedia
 from axabc.logging import SimpleStreamLogger
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
@@ -5,12 +6,23 @@ from typing import Any, Optional
 from aiogram.fsm.state import StatesGroup
 from pydantic.fields import ModelField
 
+from pydantic_base_aiogram.types import FileType
+
 
 logger = SimpleStreamLogger.create('aiogram-pydantic-handler')
 
 
 class BaseFieldFactory(ABC):
     CONVERT_DIALECTS: dict[type, Any] = {}
+
+    def __init__(self) -> None:
+        self._unit_types = self._get_unit_types()
+
+    def _get_unit_types(self) -> list:
+        return [
+            InputMedia,
+            FileType,
+        ]
 
     @abstractmethod
     def create(self, field: ModelField, states: StatesGroup, parents: Optional[Iterable[str]] = None, **kwargs):
