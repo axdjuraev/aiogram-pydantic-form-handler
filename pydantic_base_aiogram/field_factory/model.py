@@ -36,7 +36,7 @@ class ModelFieldFactory(BaseFieldFactory):
         return views
 
     def create4modelmetaclass(self, field: ModelField, parents: Optional[Iterable[str]] = None, **kwargs):
-        if field.type_ in self._UNIT_TYPES:
+        if field.type_ in self._unit_types:
             return self.create4type(field, parents=parents, **kwargs)
 
         kwargs.pop('state')
