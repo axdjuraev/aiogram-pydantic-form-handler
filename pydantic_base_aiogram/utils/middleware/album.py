@@ -9,7 +9,7 @@ from pydantic_base_aiogram.utils.proxy.album_message import ProxyAlbumMessage
 
 
 class AlbumMessageMiddleware(BaseMiddleware):
-    def __init__(self, latency: float = 0.1) -> None:
+    def __init__(self, latency: float = 0.01) -> None:
         self.album_data: dict[str, list] = {}
         self.latency = latency
         self.bot: Optional[Bot] = None
