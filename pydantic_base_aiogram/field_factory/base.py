@@ -1,5 +1,4 @@
 from aiogram.types import InputMedia
-from axabc.logging import SimpleFileLogger
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import Any, Optional
@@ -7,9 +6,10 @@ from aiogram.fsm.state import StatesGroup
 from pydantic.fields import ModelField
 
 from pydantic_base_aiogram.types import FileType
+from pydantic_base_aiogram.utils.proxy_logger import ProxyLogger
 
 
-logger = SimpleFileLogger.create('aiogram-pydantic-handler')
+logger = ProxyLogger(name='pydantic-base-aiogram')
 
 
 class BaseFieldFactory(ABC):
