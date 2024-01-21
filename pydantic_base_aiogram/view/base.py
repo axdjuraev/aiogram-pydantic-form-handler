@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Optional
+from typing import Any, Callable, Iterable, Optional, Union
 from pydantic.fields import ModelField
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
@@ -33,7 +33,14 @@ class BaseView(AbstractView):
         self.getter = getter or self.field.field_info.extra.get('getter')
         self.is_static_keyboard = self.getter is None
         self.keyboard_page_size = 10
-        self.keyboard = self._build_base_keyboard() if self.is_static_keyboard else None
+        self.keyboard = (
+            self._build_base_keyboard() 
+            if (
+                self.is_static_keyboard 
+                and self.back_data_getter is None 
+            )
+            else None
+        )
         self.field_name = self.field.field_info.extra.get('short_name') or self.field.name
         self.text = (
             self.field.field_info.extra.get('view_text') 
