@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Generic, Iterable, Optional, Protocol, TypeVar, Union, runtime_checkable
+from typing import Any, Callable, Generic, Iterable, Optional, Protocol, TypeVar, Union, runtime_checkable
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
@@ -16,6 +16,18 @@ class KeyboardItem(dict):
         key: callback_data
         value: text
     """
+
+
+@runtime_checkable
+class Referencer(Protocol):
+    def _ref_data_getter(self) -> Any:
+        pass
+
+
+@runtime_checkable
+class ReferenceRegister(Protocol):
+    def __call__(self, referencer: Any, _getter_name: str) -> Any:
+        raise NotImplementedError
 
 
 @runtime_checkable
@@ -57,6 +69,8 @@ class BaseSingleHandler(ABC, BindAbleCallable):
     step_name: str
     is_custom: bool
     tree_id: Optional[int] = None
+    _back_data_getter: Callable
+    back_data = None
 
     def __init__(
         self,
@@ -84,7 +98,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         self.tree_id = tree_id
         self.tree_head_step_name = tree_head_step_name
         self.is_has_back = is_has_back
-        self.back_data = back_data
+        self._back_data_getter: Callable = back_data  # type: ignore
         self.back_allowed = back_allowed
         self.base_cq_prefix = base_cq_prefix
         self.is_list_item = is_list_item
@@ -99,6 +113,16 @@ class BaseSingleHandler(ABC, BindAbleCallable):
             or self.field.field_info.extra.get('seperator_symbol') 
             or self._DEFAULT_TEXT_SEPRATOR_SYMBOL
         )
+
+        if isinstance(back_data, ReferenceRegister):
+            back_data(self, '_back_data_getter')
+            self.__class__.back_data
+        else:
+            self.back_data = back_data
+            self.back_data_getter = None
+
+    def back_data_getter(self): 
+        return self._back_data_getter() 
 
     async def _setvalue(self, value, state: FSMContext, *, key: Optional[str] = None):
         data_key = key or self.data_key
