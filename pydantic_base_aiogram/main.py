@@ -1,5 +1,5 @@
 from types import MethodType
-from typing import Awaitable, Callable, Generic, Iterable, Optional, TypeVar
+from typing import Awaitable, Callable, Generic, Iterable, Optional, TypeAlias, TypeVar, Union
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from pydantic_base_aiogram.dialecsts import BaseDialects
 from pydantic_base_aiogram.types import Event, CallableWithNext, BaseSingleHandler
 from pydantic_base_aiogram.utils.middleware.album import AlbumMessageMiddleware
+from pydantic_base_aiogram.utils.reference_register import ReferenceRegister
 
 from .view import ViewFactory
 from .controller import ControllerFactory
@@ -18,6 +19,7 @@ from .utils.add_more_handlers import AddMoreHandlers
 
 
 TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
+TBackData: TypeAlias = Optional[Union[str, ReferenceRegister, 'ellipsis']]
 
 
 class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic[TBaseSchema]):
@@ -29,18 +31,21 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
     BACK_ALLOWED = True
 
     base_cq_prefix: str
-    back_data: Optional[str] = None
+    back_data: TBackData = None
     views: dict[str, CallableWithNext]
     controllers: dict[str, CallableWithNext]
     step_tree_tails: dict[str, list[CallableWithNext]] = {}
     _except_steps: list = []
     _add_more_handlers = None
+    _reference_register: ReferenceRegister
 
     def __init__(
         self, 
         finish_call: Callable[[TBaseSchema, Event, FSMContext], Awaitable], 
         router: Optional[Router] = None,
         album_middleware_latency: Optional[float] = None,
+        *,
+        back_data_getter: Optional[Callable] = None, 
     ) -> None:
         self._finish_call = finish_call
         self.router = router or Router()
@@ -56,6 +61,11 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
             album_middleware_latency 
             or self._DEFAULT_ALBUM_MIDDLEWARE_LATENCY
         )
+        self._back_data_getter = back_data_getter or self._back_data_getter
+        self.__class__._reference_register.bind(self._back_data_getter)
+
+    def _back_data_getter(self):
+        return None
 
     async def add_more_final_call(self, event, state, choice: int):
         step_name = await self._get_current_step(state)
@@ -72,13 +82,18 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
             item.elem.register2router(self.router)
 
-    def __init_subclass__(cls, back_data: Optional[str] = None) -> None:
+    def __init_subclass__(cls, back_data: TBackData = None) -> None:
         if not super().__init_subclass__():
             return
 
+        cls._reference_register = ReferenceRegister()
         cls.states = SchemaStates.create(cls.Schema)
         cls.base_cq_prefix = cls.Schema.__name__.lower()
+
         cls.back_data = back_data
+
+        if cls.back_data is ...:
+            cls.back_data = cls._reference_register
 
         data = {
             'schema': cls.Schema,
