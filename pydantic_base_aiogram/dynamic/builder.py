@@ -59,7 +59,7 @@ class DynamicHandlersGroupBuilder:
         TRes = new_class(
             name, 
             bases=(SchemaBaseHandlersGroup[TSchema],), 
-            kwds={},
+            kwds={'back_data': ...},
             exec_body=self._body_exec_extra_props,
         ) 
 
