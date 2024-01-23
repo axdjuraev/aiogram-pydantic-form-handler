@@ -22,6 +22,7 @@ class BaseController(AbstractController, ABC):
         async_data_validator: Optional[Callable[[Event, FSMContext], Awaitable[Any]]] = None,
         data_validator: Optional[Callable[[Event, FSMContext], Any]] = None,
         validator_method: Optional[str] = None,
+        pre_next_method: Optional[str] = None,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs, name_format="{step_name}_ctrl")
@@ -32,12 +33,12 @@ class BaseController(AbstractController, ABC):
         self._async_data_validator = async_data_validator or self.field.field_info.extra.get('async_data_validator')
         self._data_validator = data_validator or self.field.field_info.extra.get('data_validator')
         self._validator_method = validator_method or self.field.field_info.extra.get('validator_method')
+        self._pre_next_method = pre_next_method or self.field.field_info.extra.get('pre_next_method')
         logger.debug(f"[{self.__class__.__name__}][__init__]: {locals()=};")
 
     def _get_callback_data(self) -> str:
         top_levels = '.'.join(self.parents or tuple())
         return f"{top_levels}.{self.field.name}"
-
 
     async def __call__(self, self_: THandler, event: Union[types.Message, types.CallbackQuery], state: FSMContext) -> Any:
         return await self.main(self_, Event(event), state)  # type: ignore
@@ -70,6 +71,10 @@ class BaseController(AbstractController, ABC):
             return
 
         await self._setvalue(res, state)
+
+        if self._pre_next_method:
+            return await getattr(self_, self._pre_next_method)(event, state)
+
         await self_.next(event, state, self.step_name)
 
     def bind(self, elem):
