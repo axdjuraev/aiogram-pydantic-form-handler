@@ -31,7 +31,7 @@ class BaseView(AbstractView):
         self.callback_data = self._get_callback_data()
         self._extra_keys = extra_keys or self.field.field_info.extra.get('extra_keys')
         self.getter = getter or self.field.field_info.extra.get('getter')
-        self.is_static_keyboard = self.getter is None
+        self.is_static_keyboard = not self._is_state_base_manage and self.getter is None
         self.keyboard_page_size = 10
         self.keyboard = (
             self._build_base_keyboard() 
@@ -71,9 +71,15 @@ class BaseView(AbstractView):
                     callback_data=cd,
                 )
 
-        return self._build_base_keyboard(builder)
+        back_cq = None
 
-    def _build_base_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None):
+        if self._is_state_base_manage:
+            state_data = await state.get_data()
+            back_cq = state_data.pop('cback_cq', None)
+
+        return self._build_base_keyboard(builder, back_cq=back_cq)
+
+    def _build_base_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None, *, back_cq = None):
         builder = builder or InlineKeyboardBuilder()
 
         for data, text in self.extra_keys.items():
@@ -94,13 +100,21 @@ class BaseView(AbstractView):
                 callback_data=self.dialects.READY_BUTTON_DATA, 
             )
 
-        if (self.is_has_back or self.back_data) and self.back_allowed:
+        back_cq = back_cq or (
+            self.back_allowed 
+            and (
+                (
+                    self.is_has_back
+                    and f"{self.base_cq_prefix}_{self.dialects.BACK_BUTTON_DATA}"
+                )
+                or self.back_data 
+            )
+        )
+
+        if back_cq:
             builder.button(
                 text=self.dialects.BACK_BUTTON, 
-                callback_data=(
-                    self.back_data
-                    or f"{self.base_cq_prefix}_{self.dialects.BACK_BUTTON_DATA}"
-                )
+                callback_data=back_cq,
             )
 
         return builder.adjust(1)

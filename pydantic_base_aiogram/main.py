@@ -29,6 +29,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
     _DEFAULT_ALBUM_MIDDLEWARE_LATENCY = 0.01
     DIALECTS: BaseDialects = BaseDialects()
     BACK_ALLOWED = True
+    STATE_BASE_MANAGE: bool = False
 
     base_cq_prefix: str
     back_data: TBackData = None
@@ -104,6 +105,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
             'back_allowed': cls.BACK_ALLOWED,
             'base_cq_prefix': cls.base_cq_prefix,
             'back_data': cls.back_data,
+            'state_base_manage': cls.STATE_BASE_MANAGE,
         }
 
         cls.views = cls._register_nextabls(ViewFactory().create_by_schema(**data), set_step_tree_tails=True)

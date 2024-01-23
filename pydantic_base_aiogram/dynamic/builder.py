@@ -14,6 +14,8 @@ class DynamicHandlersGroupBuilder:
         FileType.__name__: FileType,
     }
 
+    STATE_BASE_MANAGE: bool = False
+
     def __init__(
         self, 
         field_metadas: list[FieldMetadata], 
@@ -31,7 +33,10 @@ class DynamicHandlersGroupBuilder:
         self._schemas = extra_schema.copy() if extra_schema else []
         self._schema_name_postfix = schema_name_postfix or self._DEFAULT_SCHEMA_NAME_POSTFIX
         self._TSchemaBaseModel = TSchemaBaseModel or self._DEFAULT_TSCHEMA_BASEMODEL
-        self._extra_props = extra_props
+        self._extra_props = extra_props or {}
+        self._extra_props.update(
+            STATE_BASE_MANAGE=self.STATE_BASE_MANAGE,
+        )
         self._check_getters()
 
     def _check_getters(self):
@@ -59,7 +64,7 @@ class DynamicHandlersGroupBuilder:
         TRes = new_class(
             name, 
             bases=(SchemaBaseHandlersGroup[TSchema],), 
-            kwds={'back_data': ...},
+            kwds={},
             exec_body=self._body_exec_extra_props,
         ) 
 

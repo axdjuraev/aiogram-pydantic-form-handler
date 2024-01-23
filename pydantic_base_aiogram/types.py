@@ -87,6 +87,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         data_key: Optional[str] = None,
         is_list_item: bool = False,
         text_seperator_symbol: Optional[tuple[str, str]] = None,
+        state_base_manage: bool = False, 
         **_,
     ) -> None:
         self.field = field
@@ -120,6 +121,8 @@ class BaseSingleHandler(ABC, BindAbleCallable):
         else:
             self.back_data = back_data
             self.back_data_getter = None
+
+        self._is_state_base_manage = state_base_manage
 
     def back_data_getter(self): 
         return self._back_data_getter() 
