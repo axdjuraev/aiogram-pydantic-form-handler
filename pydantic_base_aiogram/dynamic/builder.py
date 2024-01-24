@@ -55,7 +55,9 @@ class DynamicHandlersGroupBuilder:
 
     def build(
         self, 
-        name: Optional[str] = None
+        name: Optional[str] = None,
+        *,
+        extra_handler_kwargs: Optional[dict] = None,
     ) -> tuple[Type[BaseModel], Type[SchemaBaseHandlersGroup]]:
         name = name or str(uuid4())
         schema_name = f"{name}{self._schema_name_postfix}"
@@ -64,7 +66,7 @@ class DynamicHandlersGroupBuilder:
         TRes = new_class(
             name, 
             bases=(SchemaBaseHandlersGroup[TSchema],), 
-            kwds={},
+            kwds=extra_handler_kwargs or {},
             exec_body=self._body_exec_extra_props,
         ) 
 
