@@ -91,7 +91,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         cls.states = SchemaStates.create(cls.Schema)
         cls.base_cq_prefix = cls.Schema.__name__.lower()
 
-        cls.back_data = back_data
+        cls.back_data = back_data or cls.back_data
 
         if cls.back_data is ...:
             cls.back_data = cls._reference_register
