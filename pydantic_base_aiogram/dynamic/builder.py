@@ -89,7 +89,11 @@ class DynamicHandlersGroupBuilder:
             if meta._extra_keys and not getter:
                 getter = self._create_dump_returner(meta._extra_keys)
 
-            field = Field(view_text=meta._view_text, getter=getter)
+            field = Field(
+                view_text=meta._view_text, 
+                getter=getter, 
+                pre_next_method=meta._pre_next_method
+            )
             properties[meta._field_name] = field
             types[meta._field_name] = self._load_type(meta._type)
 
