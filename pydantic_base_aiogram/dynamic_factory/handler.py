@@ -6,3 +6,8 @@ from .schema import SchemaBuilderSchema
 class SchemaBuilderHandlers(SchemaBaseHandlersGroup[SchemaBuilderSchema]):
     DIALECTS = RuDialects()
 
+    _except_steps = [
+        "fields_is_list",
+        "fields_pre_next_method",
+    ]
+
