@@ -4,12 +4,13 @@ from pydantic.fields import ModelField
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
+from aiogram.dispatcher.event.bases import SkipHandler
 from aiogram.filters.state import StateFilter
 
 from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_base_aiogram.field_factory import logger
 from pydantic_base_aiogram.types import Event
-from pydantic_base_aiogram.exceptions import DataValidationError, RequireMultipleError
+from pydantic_base_aiogram.exceptions import DataValidationError, RequireContiniousMultipleError, RequireMultipleError
 
 from .abstract import AbstractController
 
@@ -64,6 +65,9 @@ class BaseController(AbstractController, ABC):
             return await event.answer(self.dialects.INVALID_TYPE_DATA)
         except DataValidationError as e:
             return await event.answer(e.detail)
+        except RequireContiniousMultipleError as e:
+            await self._setvalue(e.value, state)
+            raise SkipHandler
         except RequireMultipleError as e:
             return await self._setvalue(e.value, state)
 
