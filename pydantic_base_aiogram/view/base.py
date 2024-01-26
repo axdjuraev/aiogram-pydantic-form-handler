@@ -60,7 +60,7 @@ class BaseView(AbstractView):
     def extra_keys(self) -> dict[str, str]:
         return (self._extra_keys and self._extra_keys.copy()) or {}
 
-    async def get_dynamic_keyboard(self, state: FSMContext, page: int = 1, builder: Optional[InlineKeyboardBuilder] = None):
+    async def get_dynamic_keyboard(self, state: FSMContext, page: int = 1, builder: Optional[InlineKeyboardBuilder] = None, **kwargs):
         builder = builder or InlineKeyboardBuilder()
 
         if self.getter is not None:
@@ -77,7 +77,7 @@ class BaseView(AbstractView):
             state_data = await state.get_data()
             back_cq = state_data.pop('cback_cq', None)
 
-        return self._build_base_keyboard(builder, back_cq=back_cq)
+        return self._build_base_keyboard(builder, back_cq=back_cq, **kwargs)
 
     def _build_base_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None, *, back_cq = None, ignore_list: Optional[bool] = None):
         builder = builder or InlineKeyboardBuilder()
