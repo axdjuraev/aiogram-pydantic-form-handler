@@ -16,3 +16,7 @@ class RequireMultipleError(BasePydanticBaseAiogramException):
         super().__init__(*args)
         self.value = value
 
+
+class RequireContiniousMultipleError(RequireMultipleError):
+    pass
+
