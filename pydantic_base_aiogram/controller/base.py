@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from types import MethodType
 from typing import Any, Awaitable, Callable, Iterable, Optional, Union
 from pydantic.fields import ModelField
-from aiogram import Router, types
+from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
 from aiogram.dispatcher.event.bases import SkipHandler
@@ -75,19 +76,28 @@ class BaseController(AbstractController, ABC):
             return
 
         await self._setvalue(res, state)
+        await self._next(self_, event, state, self.step_name)
 
+    async def ready_controller(self, self_: THandler, event_type, state: FSMContext):
+        await self._next(self_, Event(event_type), state, self.step_name)
+
+    async def _next(self, self_: THandler, event: Event, state: FSMContext, step_name: str):
         if self._pre_next_method:
             return await getattr(self_, self._pre_next_method)(event, state)
 
-        await self_.next(event, state, self.step_name)
+        await self_.next(event, state, step_name)
 
     def bind(self, elem):
         if self._validator_method and not hasattr(elem, self._validator_method):
             raise NotImplementedError(f"`{elem.__class__.__name__}` has not validator_method `{self._validator_method}`")
+
+        self.ready_controller = MethodType(self.ready_controller, elem)
         return super().bind(elem)
     
     def register2router(self, router: Router) -> Router:
-        router.message(StateFilter(self.state))(self.__call__)
+        sf = StateFilter(self.state)
+        router.callback_query(F.data.startswith(self.dialects.READY_BUTTON_DATA), sf)(self.ready_controller)
+        router.message(sf)(self.__call__)
         
         logger.debug(f"[{self.__class__.__name__}][register2router]: {locals()=};")
         return router
