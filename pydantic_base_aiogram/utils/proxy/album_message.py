@@ -21,7 +21,10 @@ class ProxyAlbumMessage(Message, BaseModel):
                 msg = await self.bot.send_message(chat_id, kwargs.pop('caption'), **kwargs)
                 reply_id = msg.message_id
 
-            last_album = (await self.bot.send_media_group(chat_id, media=self.album, reply_to_message_id=reply_id))[0]  # type: ignore
+            media = [x.get_as_input_media() for x in self.album]
+            album_messages = await self.bot.send_media_group(chat_id, media=media, reply_to_message_id=reply_id)
+            last_album = album_messages[0]
+
             return msg or last_album
         
         return await super().copy_to(chat_id, *args, **kwargs)

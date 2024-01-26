@@ -302,4 +302,12 @@ class FileType(_BaseSchema):
     mime_type: str
     content_type: Optional[str] = None
     msg: Message
+        
+    def get_as_input_media(self):
+        TMedia = getattr(types, f"InputMedia{str(self.content_type).title()}", types.InputMediaDocument)
+        return TMedia(
+            media=self.file_id,
+            type=self.msg.content_type,
+            parse_mode='Markdown',
+        )
 
