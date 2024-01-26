@@ -1,4 +1,5 @@
 from typing import Any, Callable, Iterable, Optional, Union
+from aiogram.types import Message
 from pydantic.fields import ModelField
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
@@ -149,12 +150,22 @@ class BaseView(AbstractView):
         if not reply_markup or not reply_markup.inline_keyboard:  # type: ignore
             reply_markup = None
 
-        await event.answer(
+        res = await event.answer(
             text=self.text, 
             state=state, 
             reply_markup=reply_markup,  # type: ignore
         )
+
+        if isinstance(res, Message):
+            await self._set_last_view_msg(res, state)
+
         await state.set_state(self.state)
+
+    async def _set_last_view_msg(self, message: Message, state: FSMContext):
+        await state.update_data(__last_view_msg_id__=message.message_id)
+
+    async def _get_last_view_msg_id(self, state_data: dict):
+        return state_data.get('__last_view_msg_id__')
 
     @classmethod
     def create(cls, field: ModelField, **kwargs) -> 'BaseView':
