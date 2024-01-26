@@ -1,5 +1,5 @@
 from typing import Any, Callable, Iterable, Optional, Union
-from aiogram.types import Message
+from aiogram.types import InlineKeyboardMarkup, Message
 from pydantic.fields import ModelField
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
@@ -150,8 +150,11 @@ class BaseView(AbstractView):
         if not reply_markup or not reply_markup.inline_keyboard:  # type: ignore
             reply_markup = None
 
+        await self._show_view(event, state, self.text, reply_markup)
+
+    async def _show_view(self, event: Event, state: FSMContext, text: str, reply_markup=None):
         res = await event.answer(
-            text=self.text, 
+            text=text, 
             state=state, 
             reply_markup=reply_markup,  # type: ignore
         )
