@@ -242,6 +242,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
     async def back(self, event: CallbackQuery, state: FSMContext):
         current_step = await self._get_current_step(state)
+
         try:
             if not current_step:
                 raise NotImplementedError
@@ -297,6 +298,8 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
         if self._add_more_handlers:
             self._add_more_handlers.register2router(router)
+
+        logger.debug(f"[{self.__class__.__name__}]: router registered")
 
         return router
  
