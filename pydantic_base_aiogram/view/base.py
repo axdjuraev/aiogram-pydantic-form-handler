@@ -79,7 +79,7 @@ class BaseView(AbstractView):
 
         return self._build_base_keyboard(builder, back_cq=back_cq)
 
-    def _build_base_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None, *, back_cq = None):
+    def _build_base_keyboard(self, builder: Optional[InlineKeyboardBuilder] = None, *, back_cq = None, ignore_list: Optional[bool] = None):
         builder = builder or InlineKeyboardBuilder()
 
         for data, text in self.extra_keys.items():
@@ -94,7 +94,9 @@ class BaseView(AbstractView):
                 callback_data=f"{self.base_cq_prefix}_{self.dialects.SKIP_STEP_DATA}",
             )
 
-        if is_list_type(self.field.outer_type_) and not self._IGNORE_LIST_BUTTON:
+        ignore_list = ignore_list if ignore_list is not None else self._IGNORE_LIST_BUTTON
+
+        if is_list_type(self.field.outer_type_) and not ignore_list:
             builder.button(
                 text=self.dialects.READY_BUTTON, 
                 callback_data=self.dialects.READY_BUTTON_DATA, 
