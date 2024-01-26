@@ -1,4 +1,5 @@
 from aiogram import Router
+from aiogram.dispatcher.event.bases import SkipHandler
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 
@@ -16,7 +17,7 @@ class FileView(BaseView):
 
         return self.dialects.SEND_FILE
     
-    async def add_more_view(self, event_type, state: FSMContext):
+    async def add_more_view(self, event: Event, state: FSMContext):
         state_data = await state.get_data()
 
         if (last_view_messsage_id := await self._get_last_view_msg_id(state_data)):
@@ -29,7 +30,6 @@ class FileView(BaseView):
             except Exception:
                 pass
         
-        event = Event(event_type)
         keyboard = await self.get_dynamic_keyboard(state, ignore_list=False)
         await self._show_view(event, state, self.dialects.WAITING_EXTRA_FILES, keyboard.as_markup())
 

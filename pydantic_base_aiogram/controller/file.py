@@ -1,4 +1,4 @@
-from aiogram import Router
+from aiogram import F, Router
 from aiogram.filters.state import StateFilter
 
 from pydantic_base_aiogram.types import Event
@@ -23,7 +23,10 @@ class FileController(BaseController):
         raise RequireContiniousMultipleError(value=event._event.album)
 
     def register2router(self, router: Router) -> Router:
-        router.message(StateFilter(self.state))(self.__call__)
+        sf = StateFilter(self.state)
+
+        router.message(sf)(self.__call__)
+        router.callback_query(F.data == self.dialects.READY_BUTTON_DATA, sf)(self.ready_controller)
 
         logger.debug(f"[{self.__class__.__name__}][register2router]: {locals()=};")
         return router

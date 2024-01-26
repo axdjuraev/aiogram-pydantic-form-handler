@@ -50,8 +50,8 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
     ) -> None:
         self._finish_call = finish_call
         self.router = router or Router()
-        self._register_bindabls(tuple(self.views.values()))  # type: ignore
         self._register_bindabls(tuple(self.controllers.values()))  # type: ignore
+        self._register_bindabls(tuple(self.views.values()))  # type: ignore
         self._add_more_handlers = AddMoreHandlers(
             self.add_more_final_call, 
             self.DIALECTS, 

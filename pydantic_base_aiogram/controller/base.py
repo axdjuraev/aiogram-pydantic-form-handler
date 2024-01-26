@@ -68,7 +68,7 @@ class BaseController(AbstractController, ABC):
             return await event.answer(e.detail)
         except RequireContiniousMultipleError as e:
             await self._setvalue(e.value, state)
-            raise SkipHandler
+            return await getattr((self_.views.get(self.step_name).elem), 'add_more_view')(event, state)
         except RequireMultipleError as e:
             return await self._setvalue(e.value, state)
 

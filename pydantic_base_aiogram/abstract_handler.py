@@ -4,10 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from pydantic import BaseModel
 
-from pydantic_base_aiogram.types import Event
+from pydantic_base_aiogram.types import Event, CallableWithNext
 from pydantic_base_aiogram.dialecsts import BaseDialects
-
-from .view.abstract import AbstractView
 
 
 TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
@@ -15,7 +13,7 @@ TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
 
 class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
     Schema: Type[TBaseSchema]
-    views: list[AbstractView]
+    views: dict[str, CallableWithNext]
     states: StatesGroup
     DIALECTS: BaseDialects
 
