@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Type, TypeVar, Generic, Union
+from typing import Iterable, Optional, Type, TypeVar, Generic, Union
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from pydantic import BaseModel
@@ -36,6 +36,14 @@ class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
             raise e
 
         return True
+
+    @abstractmethod
+    async def _get_state_files(self, state: FSMContext):
+        pass
+
+    @abstractmethod
+    async def _add_state_files(self, state: FSMContext, data: Iterable):
+        pass
 
     @abstractmethod
     async def next(

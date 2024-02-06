@@ -6,7 +6,7 @@ from aiogram.types import CallbackQuery
 from pydantic import BaseModel
 
 from pydantic_base_aiogram.dialecsts import BaseDialects
-from pydantic_base_aiogram.types import Event, CallableWithNext, BaseSingleHandler
+from pydantic_base_aiogram.types import Event, CallableWithNext, BaseSingleHandler, FileType
 from pydantic_base_aiogram.utils.middleware.album import AlbumMessageMiddleware
 from pydantic_base_aiogram.utils.reference_register import ReferenceRegister
 
@@ -281,6 +281,17 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
     async def convert_final_data(self, data: dict):
         return self.Schema(**data[self.Schema.__name__])
+    
+    @staticmethod
+    async def _get_state_files(state: FSMContext):
+        state_data = await state.get_data()
+        return state_data.get('__files__', [])
+
+    @staticmethod
+    async def _add_state_files(state: FSMContext, data: Iterable[FileType]):
+        files = await SchemaBaseHandlersGroup._get_state_files(state)
+        files.extend(data)
+        await state.update_data(__files__=files)
 
     async def _get_current_step(self, state: FSMContext):
         return (await state.get_data()).get('__step__')
@@ -289,8 +300,6 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         return (await state.get_data()).get(f'__tree_choice_{step_name}__')
 
     def register2router(self, router: Router) -> Router:
-        router.message.middleware(AlbumMessageMiddleware(self._album_middleware_latency))
-
         router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.BACK_BUTTON_DATA}")(self.back)
         router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.SKIP_STEP_DATA}")(self.skip)
 
