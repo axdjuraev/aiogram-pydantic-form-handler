@@ -1,6 +1,6 @@
 import asyncio
-from typing import Optional
-from aiogram import BaseMiddleware, Bot
+from aiogram import BaseMiddleware
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from pydantic_base_aiogram.types import FType, FileType
@@ -12,16 +12,13 @@ class AlbumMessageMiddleware(BaseMiddleware):
     def __init__(self, latency: float = 0.1) -> None:
         self.album_data: dict[str, list] = {}
         self.latency = latency
-        self.bot: Optional[Bot] = None
         super().__init__()
 
     async def __call__(self, handler, message: Message, data):
         if message.content_type not in FType:
             return await handler(message, data)
 
-        if not self.bot:
-            self.bot = data['state'].bot
-
+        state = data['state']
         key = message.media_group_id or str(message.message_id)
         doc = self._get_message_as_doc(message)
 
@@ -32,7 +29,7 @@ class AlbumMessageMiddleware(BaseMiddleware):
             await asyncio.sleep(self.latency)
 
             data['_is_last'] = True
-            message = self._get_proxified_msg(message, self.album_data[key])
+            message = self._get_proxified_msg(message, self.album_data[key], state)
             await handler(message, data)
 
         if message.media_group_id and data.get("_is_last"):
@@ -42,9 +39,7 @@ class AlbumMessageMiddleware(BaseMiddleware):
         return await super().__call__(handler, message, data)
 
     def _get_message_as_doc(self, message: Message):
-        file= extract_file_from_message(message)
-
-        if not file:
+        if not (file := extract_file_from_message(message)):
             return
 
         file, type_name = file
@@ -57,12 +52,11 @@ class AlbumMessageMiddleware(BaseMiddleware):
             msg=message,
         )
 
-    def _get_proxified_msg(self, message: Message, album: list):
+    def _get_proxified_msg(self, message: Message, album: list, state: FSMContext):
         return ProxyAlbumMessage(
             **{
                 **message.dict(),
                 'album': album,
-                'bot': self.bot,
+                'bot': state.bot,
             }
         )
-
