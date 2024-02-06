@@ -92,7 +92,8 @@ class DynamicHandlersGroupBuilder:
             field = Field(
                 view_text=meta._view_text, 
                 getter=getter, 
-                pre_next_method=meta._pre_next_method
+                pre_next_method=meta._pre_next_method,
+                **meta._extra,
             )
             properties[meta._field_name] = field
             types[meta._field_name] = self._load_type(meta._type)
