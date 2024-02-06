@@ -5,7 +5,6 @@ from pydantic.fields import ModelField
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
-from aiogram.dispatcher.event.bases import SkipHandler
 from aiogram.filters.state import StateFilter
 
 from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
