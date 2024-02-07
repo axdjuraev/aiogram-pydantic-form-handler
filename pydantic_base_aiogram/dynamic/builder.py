@@ -25,6 +25,7 @@ class DynamicHandlersGroupBuilder:
         extra_props: Optional[dict] = None,
         schema_name_postfix: Optional[str] = None,
         TSchemaBaseModel: Optional[Type[BaseModel]] = None,
+        TBaseHandlers: Type[SchemaBaseHandlersGroup] = SchemaBaseHandlersGroup,
     ) -> None:
         self._field_metadas = field_metadas
         self._getters = getters or {}
@@ -37,6 +38,7 @@ class DynamicHandlersGroupBuilder:
         self._extra_props.update(
             STATE_BASE_MANAGE=self.STATE_BASE_MANAGE,
         )
+        self._TBaseHandlers = TBaseHandlers
         self._check_getters()
 
     def _check_getters(self):
@@ -65,7 +67,7 @@ class DynamicHandlersGroupBuilder:
 
         TRes = new_class(
             name, 
-            bases=(SchemaBaseHandlersGroup[TSchema],), 
+            bases=(self._TBaseHandlers[TSchema],), 
             kwds=extra_handler_kwargs or {},
             exec_body=self._body_exec_extra_props,
         ) 

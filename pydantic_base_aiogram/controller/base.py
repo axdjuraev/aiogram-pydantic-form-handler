@@ -82,7 +82,7 @@ class BaseController(AbstractController, ABC):
 
     async def _next(self, self_: THandler, event: Event, state: FSMContext, step_name: str):
         if self._pre_next_method:
-            return await getattr(self_, self._pre_next_method)(self, event, state)
+            return await getattr(self_, self._pre_next_method)(self, self_, event, state)
 
         await self_.next(event, state, step_name)
 

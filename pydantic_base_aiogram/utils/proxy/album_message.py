@@ -17,6 +17,7 @@ class ProxyAlbumMessage(Message, BaseModel):
         if self.album and self.bot:
             msg = None
             reply_id = kwargs.get('reply_to_message_id')
+
             if 'caption' in kwargs:
                 msg = await self.bot.send_message(chat_id, kwargs.pop('caption'), **kwargs)
                 reply_id = msg.message_id
