@@ -286,15 +286,35 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         return self.Schema(**data[self.Schema.__name__])
     
     @staticmethod
-    async def _get_state_files(state: FSMContext):
+    async def _get_all_state_files(state: FSMContext):
         state_data = await state.get_data()
-        return state_data.get('__files__', [])
+        state_files = []
+
+        for v in state_data.get('__files__', {}).values():
+            state_files.extend(v)
+
+        return state_files
 
     @staticmethod
-    async def _add_state_files(state: FSMContext, data: Iterable[FileType]):
-        files = await SchemaBaseHandlersGroup._get_state_files(state)
+    async def _get_state_files(key, state: FSMContext):
+        state_data = await state.get_data()
+        state_files = state_data.get('__files__', {})
+        return state_files.get(key, [])
+
+    @staticmethod
+    async def _add_state_files(key, data: Iterable[FileType], state: FSMContext):
+        files = await SchemaBaseHandlersGroup._get_state_files(key, state)
         files.extend(data)
         await state.update_data(__files__=files)
+
+    @staticmethod
+    async def _remove_state_files(key, state: FSMContext):
+        state_data = await state.get_data()
+        state_files = state_data.get('__files__', {})
+        
+        if key in state_files:
+            del state_files[key]
+            await state.update_data(__files__=state_files)
 
     async def _get_current_step(self, state: FSMContext):
         return (await state.get_data()).get('__step__')

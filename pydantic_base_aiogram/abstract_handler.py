@@ -38,11 +38,15 @@ class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
         return True
 
     @abstractmethod
-    async def _get_state_files(self, state: FSMContext):
+    async def _get_state_files(self, key, state: FSMContext):
         pass
 
     @abstractmethod
-    async def _add_state_files(self, state: FSMContext, data: Iterable):
+    async def _add_state_files(self, key, data: Iterable, state: FSMContext):
+        pass
+
+    @abstractmethod
+    async def _remove_state_files(self, key, state: FSMContext):
         pass
 
     @abstractmethod

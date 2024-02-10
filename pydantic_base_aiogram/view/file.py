@@ -1,8 +1,8 @@
 from aiogram import Router
-from aiogram.dispatcher.event.bases import SkipHandler
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 
+from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_base_aiogram.types import Event
 from .base import BaseView
 
@@ -16,6 +16,10 @@ class FileView(BaseView):
             return self.dialects.SEND_FILES
 
         return self.dialects.SEND_FILE
+    
+    async def main(self, self_: THandler, event, state, **kwargs):
+        await self_._remove_state_files(self.step_name, state)
+        return await super().main(self_, event, state, **kwargs)
     
     async def add_more_view(self, event: Event, state: FSMContext):
         state_data = await state.get_data()

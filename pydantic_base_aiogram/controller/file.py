@@ -21,7 +21,7 @@ class FileController(BaseController):
 
             return event._event.album[-1]
 
-        await self_._add_state_files(state, event._event.album)
+        await self_._add_state_files(self.step_name, event._event.album, state)
         raise RequireContiniousMultipleError(value=event._event.album)
 
     def register2router(self, router: Router) -> Router:
