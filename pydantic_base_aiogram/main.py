@@ -241,8 +241,8 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         except NotImplementedError:
             return await self.finish(event, state)
 
-    async def back(self, event: CallbackQuery, state: FSMContext):
-        current_step = await self._get_current_step(state)
+    async def back(self, event: CallbackQuery, state: FSMContext, *, current_step=None):
+        current_step = current_step or await self._get_current_step(state)
 
         try:
             if not current_step:
