@@ -85,7 +85,9 @@ class BaseView(AbstractView):
                 )
 
 
-        if not back_cq and self._is_state_base_manage:
+        if back_cq is not None:
+            self.back_data = back_cq
+        elif self._is_state_base_manage:
             state_data = await state.get_data()
             back_cq = state_data.pop('cback_cq', None)
 
@@ -117,11 +119,11 @@ class BaseView(AbstractView):
         back_cq = back_cq or (
             self.back_allowed 
             and (
-                (
+                self.back_data 
+                or (
                     self.is_has_back
                     and f"{self.base_cq_prefix}_{self.dialects.BACK_BUTTON_DATA}"
                 )
-                or self.back_data 
             )
         )
 
