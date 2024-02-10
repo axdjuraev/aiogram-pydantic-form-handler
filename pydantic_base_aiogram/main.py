@@ -198,6 +198,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         *,
         skip_loop_prompt: bool = False,
         restart_loop: bool = False,
+        **kwargs,
     ):
         try:
             update = event
@@ -231,11 +232,11 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
                 )
             ):
                 if restart_loop:
-                    return await parent_view.elem.__call__(update, state) 
+                    return await parent_view.elem.__call__(update, state, **kwargs) 
 
                 return await self.show_add_more_view(event, state)
 
-            return await current.next(update, state)
+            return await current.next(update, state, **kwargs)
 
         except NotImplementedError:
             return await self.finish(event, state)

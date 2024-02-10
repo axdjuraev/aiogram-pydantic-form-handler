@@ -61,7 +61,14 @@ class BaseView(AbstractView):
     def extra_keys(self) -> dict[str, str]:
         return (self._extra_keys and self._extra_keys.copy()) or {}
 
-    async def get_dynamic_keyboard(self, state: FSMContext, page: int = 1, builder: Optional[InlineKeyboardBuilder] = None, **kwargs):
+    async def get_dynamic_keyboard(
+        self, 
+        state: FSMContext, 
+        page: int = 1, 
+        builder: Optional[InlineKeyboardBuilder] = None, 
+        back_cq = None,
+        **kwargs,
+    ):
         builder = builder or InlineKeyboardBuilder()
 
         if self.getter is not None:
@@ -72,9 +79,8 @@ class BaseView(AbstractView):
                     callback_data=cd,
                 )
 
-        back_cq = None
 
-        if self._is_state_base_manage:
+        if not back_cq and self._is_state_base_manage:
             state_data = await state.get_data()
             back_cq = state_data.pop('cback_cq', None)
 
@@ -141,10 +147,10 @@ class BaseView(AbstractView):
     async def _set_current_step(self, state: FSMContext):
         await state.update_data(__step__=self.step_name)
 
-    async def main(self, self_: THandler, event: Event, state: FSMContext) -> Any:
+    async def main(self, self_: THandler, event: Event, state: FSMContext, **kwargs) -> Any:
         reply_markup=(  # type: ignore
             self.keyboard if self.keyboard
-            else await self.get_dynamic_keyboard(state)
+            else await self.get_dynamic_keyboard(state, **kwargs)
         ).as_markup()
 
         if not reply_markup or not reply_markup.inline_keyboard:  # type: ignore
