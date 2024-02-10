@@ -23,6 +23,7 @@ class BaseView(AbstractView):
         extra_keys: Optional[dict[str, str]] = None,
         getter: Optional[DataGetterCallable] = None,
         item_callback_data: Optional[str] = None,
+        force_dynamic_keyboard: bool = False,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs, name_format="{step_name}_view")
@@ -32,7 +33,11 @@ class BaseView(AbstractView):
         self.callback_data = self._get_callback_data()
         self._extra_keys = extra_keys or self.field.field_info.extra.get('extra_keys')
         self.getter = getter or self.field.field_info.extra.get('getter')
-        self.is_static_keyboard = not self._is_state_base_manage and self.getter is None
+        self.is_static_keyboard = (
+            not force_dynamic_keyboard
+            and not self._is_state_base_manage 
+            and self.getter is None
+        )
         self.keyboard_page_size = 10
         self.keyboard = (
             self._build_base_keyboard() 
@@ -138,9 +143,9 @@ class BaseView(AbstractView):
         logger.debug(f"[{self.__class__.__name__}][register2router]: {locals()=};")
         return router
 
-    async def __call__(self, self_: THandler, event, state: FSMContext) -> Any:
+    async def __call__(self, self_: THandler, event, state: FSMContext, **kwargs) -> Any:
         event = Event(event)
-        res = await self.main(self_, event, state)
+        res = await self.main(self_, event, state, **kwargs)
         await self._set_current_step(state)
         return res
 

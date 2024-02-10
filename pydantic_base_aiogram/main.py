@@ -30,6 +30,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
     DIALECTS: BaseDialects = BaseDialects()
     BACK_ALLOWED = True
     STATE_BASE_MANAGE: bool = False
+    FORCE_DYNAMIC_KEYBOARD = False
 
     base_cq_prefix: str
     back_data: TBackData = None
@@ -106,6 +107,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
             'base_cq_prefix': cls.base_cq_prefix,
             'back_data': cls.back_data,
             'state_base_manage': cls.STATE_BASE_MANAGE,
+            'force_dynamic_keyboard': cls.FORCE_DYNAMIC_KEYBOARD,
         }
 
         cls.views = cls._register_nextabls(ViewFactory().create_by_schema(**data), set_step_tree_tails=True)
@@ -209,7 +211,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
                 event = Event(event)
             
             if not current_step:
-                return await self.start_point(self, update, state)
+                return await self.start_point(self, update, state, **kwargs)
 
             current = self.views[current_step]
 
