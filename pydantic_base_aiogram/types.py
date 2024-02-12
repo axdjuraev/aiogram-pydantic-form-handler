@@ -298,6 +298,7 @@ FType = [
 
 class FileType(_BaseSchema):
     file_id: str
+    file_unique_id: str
     file_name: str
     mime_type: str
     content_type: Optional[str] = None

@@ -46,6 +46,7 @@ class AlbumMessageMiddleware(BaseMiddleware):
 
         return FileType(
             file_id=file.file_id,
+            file_unique_id=file.file_unique_id,
             file_name=str(getattr(file, 'file_name', file.file_id)),
             mime_type=str(getattr(file, 'mime_type', 'image/jpeg')),
             content_type=type_name,
