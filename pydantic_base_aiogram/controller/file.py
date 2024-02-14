@@ -4,6 +4,7 @@ from aiogram.filters.state import StateFilter
 from pydantic_base_aiogram.types import Event
 from pydantic_base_aiogram.field_factory.base import logger
 from pydantic_base_aiogram.exceptions import DataValidationError, RequireContiniousMultipleError
+from pydantic_base_aiogram.utils.middleware.type_album import Album
 from pydantic_base_aiogram.utils.proxy.album_message import ProxyAlbumMessage
 from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
 
@@ -15,14 +16,20 @@ class FileController(BaseController):
         if not hasattr(event._event, 'album'):
             raise NotImplementedError(f'`{self.__class__.__name__}` requires `AlbumMiddleware` for usage')
 
-        if not self._is_list:
-            if len(event._event.album) > 1:
+        if not event._event.album._items:
+            DataValidationError(self.dialects.INVALID_TYPE_DATA)
+
+        album = await self_._get_state_files(self.step_name, state)
+        album.extend(event._event.album)
+        await self_._add_state_files(self.step_name, album, state)
+
+        if not self.field.type_ is Album:
+            if len(event._event.album._items) > 1:
                 raise DataValidationError(self.dialects.REQUIRED_ONLY_ONE_FILE)
 
             return event._event.album[-1]
 
-        await self_._add_state_files(self.step_name, event._event.album, state)
-        raise RequireContiniousMultipleError(value=event._event.album)
+        raise RequireContiniousMultipleError(value=album)
 
     def register2router(self, router: Router) -> Router:
         sf = StateFilter(self.state)

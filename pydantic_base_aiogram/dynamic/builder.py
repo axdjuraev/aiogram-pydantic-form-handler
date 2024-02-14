@@ -4,7 +4,7 @@ from types import new_class
 from pydantic import BaseModel, Field
 from pydantic_base_aiogram.dynamic.field_metadata import FieldMetadata
 from pydantic_base_aiogram.main import SchemaBaseHandlersGroup
-from pydantic_base_aiogram.types import FileType
+from pydantic_base_aiogram.types import FileType, OptionalFile, Album, OptionalAlbum
 
 
 class DynamicHandlersGroupBuilder:
@@ -12,6 +12,9 @@ class DynamicHandlersGroupBuilder:
     _DEFAULT_TSCHEMA_BASEMODEL = BaseModel
     _DEFAULT_EXTRA_TYPES = {
         FileType.__name__: FileType,
+        OptionalFile.__name__: OptionalFile,
+        Album.__name__: Album,
+        OptionalAlbum.__name__: OptionalAlbum
     }
 
     STATE_BASE_MANAGE: bool = False

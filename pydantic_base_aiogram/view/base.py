@@ -6,10 +6,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.state import State
 
-from pydantic_base_aiogram.types import DataGetterCallable, Event
+from pydantic_base_aiogram.types import DataGetterCallable, Event, OptionalAlbum
 from pydantic_base_aiogram.abstract_handler import AbstractPydanticFormHandlers as THandler
 from pydantic_base_aiogram.field_factory import logger
 from pydantic_base_aiogram.utils.abstractions import is_list_type
+from pydantic_base_aiogram.utils.middleware.type_album import Album
 from .abstract import AbstractView
 
 
@@ -109,8 +110,14 @@ class BaseView(AbstractView):
             )
 
         ignore_list = ignore_list if ignore_list is not None else self._IGNORE_LIST_BUTTON
+        print(f"{self.field.outer_type_=}")
 
-        if is_list_type(self.field.outer_type_) and not ignore_list:
+        if (
+            (
+                is_list_type(self.field.outer_type_) 
+                or issubclass(self.field.outer_type_, (Album, OptionalAlbum))
+            ) and not ignore_list
+        ):
             builder.button(
                 text=self.dialects.READY_BUTTON, 
                 callback_data=self.dialects.READY_BUTTON_DATA, 

@@ -1,19 +1,27 @@
-from typing import Iterable
-from pydantic_base_aiogram.types import FileType
+from typing import TYPE_CHECKING, Iterable
+
+
+if TYPE_CHECKING:
+    from pydantic_base_aiogram.types import FileType
 
 
 class Album:
     def __init__(self) -> None:
-        self._items: list[FileType] = []
+        self._items: 'list[FileType]' = []
         self.max_bytes = 0
         self.html_contents = []
 
-    def add(self, obj: FileType):
+    def add(self, obj: 'FileType'):
         self._items.append(obj)
         self.max_bytes += obj.file.file_size or 0
         self.html_contents.append(obj.msg.html_text)
 
-    def __iter__(self) -> Iterable[FileType]:
+    def extend(self, other: 'Album'):
+        self._items.extend(other._items)
+        self.max_bytes += other.max_bytes
+        self.html_contents.extend(other.html_contents)
+
+    def __iter__(self) -> 'Iterable[FileType]':
         return iter(self._items)
     
     def __getitem__(self, index):

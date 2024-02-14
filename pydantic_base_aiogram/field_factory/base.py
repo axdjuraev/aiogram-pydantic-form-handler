@@ -5,7 +5,7 @@ from typing import Any, Optional
 from aiogram.fsm.state import StatesGroup
 from pydantic.fields import ModelField
 
-from pydantic_base_aiogram.types import FileType
+from pydantic_base_aiogram.types import FileType, OptionalFile, OptionalAlbum, Album
 from pydantic_base_aiogram.utils.proxy_logger import ProxyLogger
 
 
@@ -22,6 +22,9 @@ class BaseFieldFactory(ABC):
         return [
             InputMedia,
             FileType,
+            Album,
+            OptionalAlbum,
+            OptionalFile,
         ]
 
     @abstractmethod

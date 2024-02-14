@@ -299,9 +299,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         all_files = await cls._get_files(state)
 
         for v in (all_files).values():
-            res._items.extend(v)
-            res.html_contents.extend(v.html_contents)
-            res.max_bytes += v.max_bytes
+            res.extend(v)
 
         return res
 
@@ -316,9 +314,7 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         state_files = await cls._get_files(state)
 
         album: Album = state_files.get(key, Album())
-        album.max_bytes += data.max_bytes
-        album._items.extend(data._items)
-        album.html_contents.extend(data.html_contents)
+        album.extend(data)
 
         state_files[key] = album
         await state.update_data(__files__=state_files)

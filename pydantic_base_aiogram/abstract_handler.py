@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from pydantic_base_aiogram.types import Event, CallableWithNext
 from pydantic_base_aiogram.dialecsts import BaseDialects
+from pydantic_base_aiogram.utils.middleware.type_album import Album
 
 
 TBaseSchema = TypeVar("TBaseSchema", bound=BaseModel)
@@ -38,11 +39,11 @@ class AbstractPydanticFormHandlers(ABC, Generic[TBaseSchema]):
         return True
 
     @abstractmethod
-    async def _get_state_files(self, key, state: FSMContext):
+    async def _get_state_files(self, key, state: FSMContext) -> Album:
         pass
 
     @abstractmethod
-    async def _add_state_files(self, key, data: Iterable, state: FSMContext):
+    async def _add_state_files(self, key, data: Album, state: FSMContext):
         pass
 
     @abstractmethod

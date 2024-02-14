@@ -6,7 +6,9 @@ from pydantic.fields import ModelField
 from enum import Enum
 
 from pydantic_base_aiogram.field_factory import FieldFactory
-from pydantic_base_aiogram.types import FileType
+from pydantic_base_aiogram.types import FileType, OptionalAlbum, OptionalFile
+from pydantic_base_aiogram.utils.middleware.type_album import Album
+from pydantic_base_aiogram.controller.optional_file import OptionalFileController
 
 from .type_base_message_text import TypeBaseMessageTextController
 from .date_message_text import DateMessageTextController
@@ -24,6 +26,9 @@ class ControllerFactory(FieldFactory, ABC):
         bool: BoolController,
         date: DateMessageTextController,
         FileType: FileController,
+        Album: FileController,
+        OptionalFile: OptionalFileController,
+        OptionalAlbum: OptionalFileController,
     }
 
     def create4models(self, field: ModelField, models: list[Type[BaseModel]], kwargs: dict):

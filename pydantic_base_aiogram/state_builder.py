@@ -6,7 +6,7 @@ from aiogram.fsm.state import State, StatesGroup
 from pydantic import BaseModel
 from aiogram.types import InputMedia
 
-from pydantic_base_aiogram.types import FileType
+from pydantic_base_aiogram.types import FileType, Album, OptionalFile, OptionalAlbum
 
 
 def is_union(obj):
@@ -23,6 +23,9 @@ class SchemaStates(StatesGroup):
         return [
             InputMedia,
             FileType,
+            Album,
+            OptionalAlbum,
+            OptionalFile,
         ]
 
     @classmethod

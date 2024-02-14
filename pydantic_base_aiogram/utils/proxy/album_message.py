@@ -17,16 +17,16 @@ class ProxyAlbumMessage(Message, BaseModel):
             msg = None
             reply_id = kwargs.get('reply_to_message_id')
 
-            if kwargs.pop('caption', None) is not None:
-                text = '<br/>'.join(self.album.html_contents)
-                msg = await self.bot.send_message(chat_id, text, **kwargs)
+            if caption := kwargs.pop('caption', None):
+                msg = await self.bot.send_message(chat_id, caption, **kwargs)  # type: ignore
                 reply_id = msg.message_id
 
-            media = [x.get_as_input_media() for x in self.album._items]
-            album_messages = await self.bot.send_media_group(chat_id, media=media, reply_to_message_id=reply_id)
-            last_album = album_messages[0]
+            if self.album._items:
+                media = [x.get_as_input_media() for x in self.album._items]
+                album_messages = await self.bot.send_media_group(chat_id, media=media, reply_to_message_id=reply_id)
+                return album_messages[0]
 
-            return msg or last_album
+            return msg
         
         return await super().copy_to(chat_id, *args, **kwargs)
 

@@ -5,7 +5,8 @@ from pydantic.fields import ModelField
 from enum import Enum
 
 from pydantic_base_aiogram.field_factory import FieldFactory, logger
-from pydantic_base_aiogram.types import FileType
+from pydantic_base_aiogram.types import FileType, OptionalAlbum, OptionalFile
+from pydantic_base_aiogram.utils.middleware.type_album import Album
 from .string import StrView
 from .float import FloatView
 from .int import IntView
@@ -23,6 +24,9 @@ class ViewFactory(FieldFactory, ABC):
         Enum: EnumView,
         bool: BoolView,
         FileType: FileView,
+        Album: FileView,
+        OptionalFile: FileView,
+        OptionalAlbum: FileView,
     }
 
     def create_by_schema(self, schema: Type[BaseModel], **kwargs):

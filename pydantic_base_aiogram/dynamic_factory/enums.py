@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic_base_aiogram.types import FileType
+from pydantic_base_aiogram.types import FileType, Album, OptionalFile, OptionalAlbum
 
 
 class DescriptiveEnum(Enum):
@@ -18,9 +18,10 @@ class DescriptiveEnum(Enum):
 
 
 class InputFormTypesEnum(DescriptiveEnum):
-  Integer = (int.__name__, 'Целочисленный тип')
-  Float = (float.__name__, 'Число с плавающей точкой')
-  String = (str.__name__, 'Строка')
-  File = (FileType.__name__, 'Файл')
-  Album = (f'list[{FileType.__name__}]', 'Альбом')
-
+    Integer = (int.__name__, 'Целочисленный тип')
+    Float = (float.__name__, 'Число с плавающей точкой')
+    String = (str.__name__, 'Строка')
+    File = (FileType.__name__, 'Файл')
+    FileOptional = (OptionalFile.__name__, 'Файл по выбору')
+    Album = (Album.__name__, 'Альбом')
+    AlbumOptional = (OptionalAlbum.__name__, 'Альбом по выбору')
