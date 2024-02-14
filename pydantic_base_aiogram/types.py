@@ -8,6 +8,7 @@ from pydantic.fields import ModelField
 
 from pydantic_base_aiogram.utils.abstractions import is_list_type
 from pydantic_base_aiogram.utils.file import TDocument
+from pydantic_base_aiogram.utils.middleware.type_album import Album
 from pydantic_base_aiogram.utils.step import get_step_name
 from pydantic_base_aiogram.dialecsts import BaseDialects
 
@@ -128,10 +129,9 @@ class BaseSingleHandler(ABC, BindAbleCallable):
     def back_data_getter(self): 
         return self._back_data_getter() 
 
-    async def _setvalue(self, value, state: FSMContext, *, key: Optional[str] = None):
-        data_key = key or self.data_key
-        data = await state.get_data()
-        parent_elem = data
+    async def _get_value_parent(self, data_key, state: FSMContext, state_data: Optional[dict] = None):
+        state_data = state_data or await state.get_data()
+        parent_elem = state_data
 
         for parent_name in self.parents:
             parent = parent_elem.get(parent_name)
@@ -153,6 +153,16 @@ class BaseSingleHandler(ABC, BindAbleCallable):
                 parent = parent[-1]
 
             parent_elem = parent
+
+        return parent_elem
+    
+    async def _getvalue(self, data_key, state: FSMContext, state_data=None):
+        parent_elem = await self._get_value_parent(data_key, state, state_data)
+        return parent_elem.get(data_key)
+
+    async def _setvalue(self, value, state: FSMContext, *, key: Optional[str] = None):
+        data_key = key or self.data_key
+        parent_elem = await self._get_value_parent(data_key, state)
 
         if not is_list_type(self.field.outer_type_):
             parent_elem[data_key] = value
@@ -313,4 +323,14 @@ class FileType(_BaseSchema):
             type=self.msg.content_type,
             parse_mode='Markdown',
         )
+
+
+class OptionalFile(_BaseSchema):
+    item: FileType
+    html_content_text: str
+
+
+class OptionalAlbum(_BaseSchema):
+    album: Album
+    html_content_text: str
 
