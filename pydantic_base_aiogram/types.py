@@ -7,6 +7,7 @@ from pydantic import BaseModel as _BaseSchema
 from pydantic.fields import ModelField
 
 from pydantic_base_aiogram.utils.abstractions import is_list_type
+from pydantic_base_aiogram.utils.file import TDocument
 from pydantic_base_aiogram.utils.step import get_step_name
 from pydantic_base_aiogram.dialecsts import BaseDialects
 
@@ -302,6 +303,7 @@ class FileType(_BaseSchema):
     file_name: str
     mime_type: str
     content_type: Optional[str] = None
+    file: TDocument
     msg: Message
         
     def get_as_input_media(self):

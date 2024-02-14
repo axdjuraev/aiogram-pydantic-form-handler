@@ -6,11 +6,12 @@ from aiogram.types import Message
 from pydantic_base_aiogram.types import FType, FileType
 from pydantic_base_aiogram.utils.file import extract_file_from_message
 from pydantic_base_aiogram.utils.proxy.album_message import ProxyAlbumMessage
+from .type_album import Album 
 
 
 class AlbumMessageMiddleware(BaseMiddleware):
     def __init__(self, latency: float = 0.1) -> None:
-        self.album_data: dict[str, list] = {}
+        self.album_data: dict[str, Album] = {}
         self.latency = latency
         super().__init__()
 
@@ -18,14 +19,18 @@ class AlbumMessageMiddleware(BaseMiddleware):
         if message.content_type not in FType:
             return await handler(message, data)
 
-        state = data['state']
         key = message.media_group_id or str(message.message_id)
-        doc = self._get_message_as_doc(message)
+        
+        if not (doc := self._get_message_as_doc(message)):
+            return await handler(message, data)
+
+        state = data['state']
 
         try:
-            self.album_data[key].append(doc)
+            self.album_data[key].add(doc)
         except KeyError:
-            self.album_data[key] = [doc]
+            self.album_data[key] = Album()
+            self.album_data[key].add(doc)
             await asyncio.sleep(self.latency)
 
             data['_is_last'] = True
@@ -50,10 +55,11 @@ class AlbumMessageMiddleware(BaseMiddleware):
             file_name=str(getattr(file, 'file_name', file.file_id)),
             mime_type=str(getattr(file, 'mime_type', 'image/jpeg')),
             content_type=type_name,
+            file=file,
             msg=message,
         )
 
-    def _get_proxified_msg(self, message: Message, album: list, state: FSMContext):
+    def _get_proxified_msg(self, message: Message, album: Album, state: FSMContext):
         return ProxyAlbumMessage(
             **{
                 **message.dict(),

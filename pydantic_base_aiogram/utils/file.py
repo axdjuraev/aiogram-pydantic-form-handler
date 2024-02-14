@@ -1,8 +1,6 @@
+from aiogram import types
+from typing import Protocol, Optional, TypeAlias, Union, runtime_checkable
 
-
-from typing import Protocol, runtime_checkable
-from aiogram.types import Message
-from aiogram.types.input_media_document import Optional
 
 
 FILE_TYPE_NAMES = {'video', 'audio', 'document', 'photo', 'animation', 'voice', 'video_note'}
@@ -16,7 +14,20 @@ class FType(Protocol):
     mime_type: Optional[str] = None
 
 
-def extract_file_from_message(message: Message) -> Optional[tuple[FType, str]]:
+TDocument: TypeAlias = Union[
+    types.Audio, 
+    types.Document,
+    types.Video,
+    types.Sticker,
+    types.Voice,
+    types.Animation,
+    types.VideoNote,
+    types.PhotoSize
+
+]
+
+
+def extract_file_from_message(message: types.Message) -> Optional[tuple[TDocument, str]]:
     for name in FILE_TYPE_NAMES:
         if (res := getattr(message, name, None)):
             if isinstance(res, list):

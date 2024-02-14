@@ -1,13 +1,13 @@
 from typing import Optional
 from aiogram import Bot
 from aiogram.types import Message
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from pydantic_base_aiogram.types import FileType
+from pydantic_base_aiogram.utils.middleware.type_album import Album
 
 
 class ProxyAlbumMessage(Message, BaseModel):
-    album: list[FileType] = []
+    album: Album = Field(default_factory=Album)
     bot: Optional[Bot] = None
     
     class Config:
@@ -22,7 +22,7 @@ class ProxyAlbumMessage(Message, BaseModel):
                 msg = await self.bot.send_message(chat_id, kwargs.pop('caption'), **kwargs)
                 reply_id = msg.message_id
 
-            media = [x.get_as_input_media() for x in self.album]
+            media = [x.get_as_input_media() for x in self.album._items]
             album_messages = await self.bot.send_media_group(chat_id, media=media, reply_to_message_id=reply_id)
             last_album = album_messages[0]
 
