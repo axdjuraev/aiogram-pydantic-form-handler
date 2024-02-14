@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from pydantic_base_aiogram.dialecsts import BaseDialects
 from pydantic_base_aiogram.types import Event, CallableWithNext, BaseSingleHandler, FileType
 from pydantic_base_aiogram.utils.middleware.album import AlbumMessageMiddleware
+from pydantic_base_aiogram.utils.middleware.type_album import Album
 from pydantic_base_aiogram.utils.reference_register import ReferenceRegister
 
 from .view import ViewFactory
@@ -294,28 +295,32 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
 
     @classmethod
     async def _get_all_state_files(cls, state: FSMContext):
-        state_files = []
+        res = Album()
         all_files = await cls._get_files(state)
 
         for v in (all_files).values():
-            state_files.extend(v)
+            res._items.extend(v)
+            res.html_contents.extend(v.html_contents)
+            res.max_bytes += v.max_bytes
 
-        return state_files
+        return res
 
     @staticmethod
     async def _get_state_files(key, state: FSMContext):
         state_data = await state.get_data()
         state_files = state_data.get('__files__', {})
-        return state_files.get(key, [])
+        return state_files.get(key, Album())
 
     @classmethod
-    async def _add_state_files(cls, key, data: Iterable[FileType], state: FSMContext):
+    async def _add_state_files(cls, key, data: Album, state: FSMContext):
         state_files = await cls._get_files(state)
 
-        files = state_files.get(key, [])
-        files.extend(data)
+        album: Album = state_files.get(key, Album())
+        album.max_bytes += data.max_bytes
+        album._items.extend(data._items)
+        album.html_contents.extend(data.html_contents)
 
-        state_files[key] = files
+        state_files[key] = album
         await state.update_data(__files__=state_files)
 
     @classmethod
