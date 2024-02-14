@@ -22,4 +22,5 @@ class InputFormTypesEnum(DescriptiveEnum):
   Float = (float.__name__, 'Число с плавающей точкой')
   String = (str.__name__, 'Строка')
   File = (FileType.__name__, 'Файл')
+  Album = (f'list[{FileType.__name__}]', 'Альбом')
 
