@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
 from typing import Any, Callable, Generic, Iterable, Optional, Protocol, TypeVar, Union, runtime_checkable
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
@@ -162,7 +162,8 @@ class BaseSingleHandler(ABC, BindAbleCallable):
 
     async def _setvalue(self, value, state: FSMContext, *, key: Optional[str] = None):
         data_key = key or self.data_key
-        parent_elem = await self._get_value_parent(data_key, state)
+        state_data = await state.get_data()
+        parent_elem = await self._get_value_parent(data_key, state, state_data)
 
         if not is_list_type(self.field.outer_type_):
             parent_elem[data_key] = value
@@ -176,7 +177,7 @@ class BaseSingleHandler(ABC, BindAbleCallable):
 
             parent_elem[data_key] = elems
 
-        await state.update_data(**data)
+        await state.update_data(**state_data)
 
     @abstractmethod
     async def __call__(self, *args: Any, **kwds: Any) -> Any:
@@ -307,7 +308,13 @@ FType = [
 ]
 
 
-class FileType(_BaseSchema):
+class BaseFileType(ABC):
+    @abstractproperty
+    def text_reprsentation(self) -> str:
+        raise NotImplementedError
+
+
+class FileType(BaseFileType, _BaseSchema):
     file_id: str
     file_unique_id: str
     file_name: str
@@ -323,14 +330,33 @@ class FileType(_BaseSchema):
             type=self.msg.content_type,
             parse_mode='Markdown',
         )
+    
+    @property
+    def text_reprsentation(self) -> str:
+        return self.msg.html_text
 
 
-class OptionalFile(_BaseSchema):
+class OptionalFile(BaseFileType, _BaseSchema):
     item: FileType
     html_content_text: str
 
+    @property
+    def text_reprsentation(self) -> str:
+        return self.html_content_text
 
-class OptionalAlbum(_BaseSchema):
+
+class OptionalAlbum(BaseFileType, _BaseSchema):
     album: Album
     html_content_text: str
+
+    def extend(self, other: "OptionalAlbum"):
+        self.album.extend(other.album)
+        self.html_content_text += f"\n{other.html_content_text}"
+
+    @property
+    def text_reprsentation(self) -> str:
+        return self.html_content_text
+
+    class Config:
+        arbitrary_types_allowed = True
 
