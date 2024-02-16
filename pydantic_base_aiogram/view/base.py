@@ -110,7 +110,6 @@ class BaseView(AbstractView):
             )
 
         ignore_list = ignore_list if ignore_list is not None else self._IGNORE_LIST_BUTTON
-        print(f"{self.field.outer_type_=}")
 
         if (
             (
