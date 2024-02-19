@@ -7,9 +7,14 @@ from pydantic_base_aiogram.main import SchemaBaseHandlersGroup
 from pydantic_base_aiogram.types import FileType, OptionalFile, Album, OptionalAlbum
 
 
+class CustomBaseModel(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+
 class DynamicHandlersGroupBuilder:
     _DEFAULT_SCHEMA_NAME_POSTFIX = "Schema"
-    _DEFAULT_TSCHEMA_BASEMODEL = BaseModel
+    _DEFAULT_TSCHEMA_BASEMODEL = CustomBaseModel 
     _DEFAULT_EXTRA_TYPES = {
         FileType.__name__: FileType,
         OptionalFile.__name__: OptionalFile,
