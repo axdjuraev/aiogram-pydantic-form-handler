@@ -345,6 +345,9 @@ class OptionalFile(BaseFileType, _BaseSchema):
     def text_reprsentation(self) -> str:
         return self.html_content_text
 
+    class Config:
+        arbitrary_types_allowed = True
+
 
 class OptionalAlbum(BaseFileType, _BaseSchema):
     album: Album
