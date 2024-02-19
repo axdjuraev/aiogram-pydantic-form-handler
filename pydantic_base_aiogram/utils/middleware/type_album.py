@@ -24,7 +24,7 @@ class Album(BaseFileType):
 
     @property
     def text_reprsentation(self) -> str:
-        return '\n'.join(self.text_reprsentation)
+        return '\n'.join(self.html_contents)
 
     def __iter__(self) -> 'Iterable[FileType]':
         return iter(self._items)
