@@ -6,8 +6,7 @@ from pydantic.fields import ModelField
 from enum import Enum
 
 from pydantic_base_aiogram.field_factory import FieldFactory
-from pydantic_base_aiogram.types import FileType, OptionalAlbum, OptionalFile
-from pydantic_base_aiogram.utils.middleware.type_album import Album
+from pydantic_base_aiogram.types import FileType, OptionalAlbum, OptionalFile, Album
 from pydantic_base_aiogram.controller.optional_file import OptionalFileController
 
 from .type_base_message_text import TypeBaseMessageTextController

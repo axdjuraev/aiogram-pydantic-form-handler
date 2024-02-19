@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING, Iterable
+from .base_file_type import BaseFileType
 
 
 if TYPE_CHECKING:
     from pydantic_base_aiogram.types import FileType
 
 
-class Album:
+class Album(BaseFileType):
     def __init__(self) -> None:
         self._items: 'list[FileType]' = []
         self.max_bytes = 0
@@ -20,6 +21,10 @@ class Album:
         self._items.extend(other._items)
         self.max_bytes += other.max_bytes
         self.html_contents.extend(other.html_contents)
+
+    @property
+    def text_reprsentation(self) -> str:
+        return '\n'.join(self.text_reprsentation)
 
     def __iter__(self) -> 'Iterable[FileType]':
         return iter(self._items)

@@ -5,8 +5,7 @@ from pydantic.fields import ModelField
 from enum import Enum
 
 from pydantic_base_aiogram.field_factory import FieldFactory, logger
-from pydantic_base_aiogram.types import FileType, OptionalAlbum, OptionalFile
-from pydantic_base_aiogram.utils.middleware.type_album import Album
+from pydantic_base_aiogram.types import FileType, OptionalAlbum, OptionalFile, Album
 from .string import StrView
 from .float import FloatView
 from .int import IntView

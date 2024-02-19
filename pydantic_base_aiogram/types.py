@@ -8,7 +8,7 @@ from pydantic.fields import ModelField
 
 from pydantic_base_aiogram.utils.abstractions import is_list_type
 from pydantic_base_aiogram.utils.file import TDocument
-from pydantic_base_aiogram.utils.middleware.type_album import Album
+from pydantic_base_aiogram.utils.middleware.type_album import Album, BaseFileType
 from pydantic_base_aiogram.utils.step import get_step_name
 from pydantic_base_aiogram.dialecsts import BaseDialects
 
@@ -309,11 +309,6 @@ FType = [
 ]
 
 
-class BaseFileType(ABC):
-    @abstractproperty
-    def text_reprsentation(self) -> str:
-        raise NotImplementedError
-
 
 class FileType(BaseFileType, _BaseSchema):
     file_id: str
@@ -344,9 +339,6 @@ class OptionalFile(BaseFileType, _BaseSchema):
     @property
     def text_reprsentation(self) -> str:
         return self.html_content_text
-
-    class Config:
-        arbitrary_types_allowed = True
 
 
 class OptionalAlbum(BaseFileType, _BaseSchema):
