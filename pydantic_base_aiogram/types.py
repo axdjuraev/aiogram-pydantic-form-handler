@@ -258,6 +258,7 @@ class Event(Generic[TEvent]):
     def __init__(self, event: TEvent) -> None:
         self._event = event
         self._answer = event.message.edit_text if isinstance(event, EditAbleEvent) else event.answer
+        self._data = event.data if isinstance(event, CallbackQuery) else event.html_text
         self.default_parse_mode = 'Markdown'
 
     async def _get_stack(self, state: FSMContext):
