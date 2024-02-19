@@ -6,8 +6,7 @@ from aiogram.types import CallbackQuery
 from pydantic import BaseModel
 
 from pydantic_base_aiogram.dialecsts import BaseDialects
-from pydantic_base_aiogram.types import Event, CallableWithNext, BaseSingleHandler, FileType
-from pydantic_base_aiogram.utils.middleware.album import AlbumMessageMiddleware
+from pydantic_base_aiogram.types import Event, CallableWithNext, BaseSingleHandler
 from pydantic_base_aiogram.utils.middleware.type_album import Album
 from pydantic_base_aiogram.utils.reference_register import ReferenceRegister
 
