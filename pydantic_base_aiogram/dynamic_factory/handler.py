@@ -13,8 +13,6 @@ class SchemaBuilderHandlers(SchemaBaseHandlersGroup[SchemaBuilderSchema]):
 
 
 class SchemaFieldAddHandler(SchemaBaseHandlersGroup[InputSchema]):
-    DIALECTS = RuDialects()
-
     _except_steps = [
         "is_list",
         "pre_next_method",
