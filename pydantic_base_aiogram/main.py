@@ -6,7 +6,8 @@ from aiogram.types import CallbackQuery
 from pydantic import BaseModel
 
 from pydantic_base_aiogram.dialecsts import BaseDialects
-from pydantic_base_aiogram.types import Event, CallableWithNext, BaseSingleHandler
+from pydantic_base_aiogram.types import Event, CallableWithNext, BaseSingleHandler, FileType
+from pydantic_base_aiogram.utils.middleware.album import AlbumMessageMiddleware
 from pydantic_base_aiogram.utils.middleware.type_album import Album
 from pydantic_base_aiogram.utils.reference_register import ReferenceRegister
 
@@ -333,13 +334,13 @@ class SchemaBaseHandlersGroup(AbstractPydanticFormHandlers[TBaseSchema], Generic
         return (await state.get_data()).get(f'__tree_choice_{step_name}__')
 
     def register2router(self, router: Router) -> Router:
-        router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.BACK_BUTTON_DATA}")(self.back)
-        router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.SKIP_STEP_DATA}")(self.skip)
+        self.router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.BACK_BUTTON_DATA}")(self.back)
+        self.router.callback_query(F.data == f"{self.base_cq_prefix}_{self.DIALECTS.SKIP_STEP_DATA}")(self.skip)
 
         router.include_router(self.router)
 
         if self._add_more_handlers:
-            self._add_more_handlers.register2router(router)
+            self._add_more_handlers.register2router(self.router)
 
         logger.debug(f"[{self.__class__.__name__}]: router registered")
 
