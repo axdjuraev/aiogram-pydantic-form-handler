@@ -17,7 +17,7 @@ class FileController(BaseController):
             raise NotImplementedError(f'`{self.__class__.__name__}` requires `AlbumMiddleware` for usage')
 
         if not event._event.album._items:
-            DataValidationError(self.dialects.INVALID_TYPE_DATA)
+            raise DataValidationError(self.dialects.INVALID_TYPE_DATA)
 
         album = await self_._get_state_files(self.step_name, state)
         album.extend(event._event.album)
